@@ -34,6 +34,7 @@ const nextMilestones = [
 export default function HomePage() {
   const assignmentHref = '/assignment' as Route;
   const gaokaoHref = '/gaokao' as Route;
+  const roadmapHref = '/roadmap' as Route;
   const latestCourses = getLatestCourses(6);
   const latestChapters = Array.from(new Set(latestCourses.map((course) => course.chapter))).map((chapter) => mapChapterName(chapter));
 
@@ -58,6 +59,9 @@ export default function HomePage() {
           </Link>
           <Link href={gaokaoHref} className="rounded-xl bg-tide px-5 py-3 text-sm font-medium text-white transition hover:bg-tide/90">
             查看高三真题规划
+          </Link>
+          <Link href={roadmapHref} className="rounded-xl bg-white px-5 py-3 text-sm font-medium text-tide ring-1 ring-tide/20 transition hover:bg-tide/5">
+            高中学习路径图
           </Link>
           <Link href={assignmentHref} className="rounded-xl border border-tide/20 px-5 py-3 text-sm font-medium text-tide transition hover:bg-tide/5">
             个性化作业
