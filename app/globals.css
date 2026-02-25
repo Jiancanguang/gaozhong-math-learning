@@ -1,0 +1,47 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Noto Serif SC', 'Songti SC', 'STSong', 'SimSun', serif;
+}
+
+.mdx-content h2 {
+  margin-top: 1.5rem;
+  font-size: 1.25rem;
+  line-height: 1.7rem;
+  font-weight: 700;
+  color: #0d3b66;
+}
+
+.mdx-content h3 {
+  margin-top: 1rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.mdx-content p,
+.mdx-content li {
+  margin-top: 0.65rem;
+  color: rgb(15 23 42 / 0.86);
+}
+
+.mdx-content ul {
+  padding-left: 1.25rem;
+  list-style: disc;
+}
+
+.mdx-content code {
+  border-radius: 0.375rem;
+  background: rgb(13 59 102 / 0.08);
+  padding: 0.1rem 0.3rem;
+}
