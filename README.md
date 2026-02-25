@@ -26,6 +26,69 @@
 - `duration`
 - `updatedAt`
 
+`videoUrl` 支持以下格式（推荐 B 站）：
+
+- B 站完整链接：`https://www.bilibili.com/video/BV...`
+- B 站 BV 号：`BV...`
+- B 站 av 号：`av123456`
+
+示例：
+
+```mdx
+---
+title: 函数概念与定义域入门
+grade: '10'
+chapter: functions
+videoUrl: https://www.bilibili.com/video/BV1xx411c7mD
+duration: 18分钟
+updatedAt: 2026-02-25
+order: 1
+summary: 从对应关系出发理解函数，掌握定义域和值域的判定方法。
+---
+```
+
+## 线上视频后台（Supabase）
+
+如果部署在 Vercel，建议使用 Supabase 存课程视频链接覆盖值，不直接改仓库文件。
+
+1. 在 Supabase SQL Editor 执行建表：
+
+```sql
+create table if not exists public.course_video_overrides (
+  course_id text primary key,
+  video_url text not null,
+  updated_at timestamptz not null default now()
+);
+
+create or replace function public.touch_course_video_overrides_updated_at()
+returns trigger as $$
+begin
+  new.updated_at = now();
+  return new;
+end;
+$$ language plpgsql;
+
+drop trigger if exists trg_touch_course_video_overrides_updated_at on public.course_video_overrides;
+create trigger trg_touch_course_video_overrides_updated_at
+before update on public.course_video_overrides
+for each row execute function public.touch_course_video_overrides_updated_at();
+```
+
+2. 在 Vercel 项目里配置环境变量：
+
+- `SUPABASE_URL`
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `COURSE_ADMIN_TOKEN`（你自定义的后台口令）
+
+3. 发布后访问后台：
+
+- `/admin/videos`
+
+4. 在后台输入口令登录后，按课程填写/清空视频覆盖链接：
+
+- 保存后立即生效到课程详情页
+- 留空或点击“清空覆盖”会回退到 MDX 里的 `videoUrl`
+
 ## 本地启动
 
 1. 安装 Node.js 18.17+（当前项目依赖 Next.js 14）

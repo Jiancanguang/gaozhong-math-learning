@@ -5,6 +5,8 @@ export function Header() {
   const assignmentHref = '/assignment' as Route;
   const gaokaoHref = '/gaokao' as Route;
   const roadmapHref = '/roadmap' as Route;
+  const adminVideosHref = '/admin/videos' as Route;
+  const showAdminEntry = process.env.NODE_ENV === 'production';
 
   return (
     <header className="border-b border-tide/10 bg-paper/90 backdrop-blur-sm">
@@ -28,6 +30,11 @@ export function Header() {
           <Link href={assignmentHref} className="transition hover:text-accent">
             个性化作业
           </Link>
+          {showAdminEntry ? (
+            <Link href={adminVideosHref} className="transition hover:text-accent">
+              视频后台
+            </Link>
+          ) : null}
           <Link href="/about" className="transition hover:text-accent">
             关于与反馈
           </Link>

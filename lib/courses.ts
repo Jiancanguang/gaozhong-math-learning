@@ -3,6 +3,7 @@ import path from 'node:path';
 import matter from 'gray-matter';
 import { compileMDX } from 'next-mdx-remote/rsc';
 import { mapChapterName } from '@/lib/course-meta';
+import { getVideoOverrideByCourseId } from '@/lib/video-overrides';
 
 const CONTENT_ROOT = path.join(process.cwd(), 'content', 'courses');
 
@@ -121,6 +122,11 @@ export async function getCourseContent(courseId: string) {
 
   try {
     const { meta, content } = parseCourseFile(target);
+    const overrideVideoUrl = await getVideoOverrideByCourseId(courseId);
+    if (overrideVideoUrl) {
+      meta.videoUrl = overrideVideoUrl;
+    }
+
     const mdx = await compileMDX({
       source: content,
       options: {
@@ -141,21 +147,62 @@ export async function getCourseContent(courseId: string) {
 export { mapChapterName };
 
 export function toEmbedVideoUrl(url: string): string {
-  if (url.includes('youtube.com/watch?v=')) {
-    const u = new URL(url);
-    const videoId = u.searchParams.get('v');
-    if (videoId) return `https://www.youtube.com/embed/${videoId}`;
+  const raw = url.trim();
+  if (!raw) return '';
+
+  const bvMatch = raw.match(/(BV[0-9A-Za-z]{10})/);
+  if (bvMatch?.[1]) {
+    return `https://player.bilibili.com/player.html?bvid=${bvMatch[1]}&page=1`;
   }
 
-  if (url.includes('youtu.be/')) {
-    const videoId = url.split('youtu.be/')[1]?.split('?')[0];
-    if (videoId) return `https://www.youtube.com/embed/${videoId}`;
+  const avMatch = raw.match(/(?:^|[^0-9])(av\d{1,12})(?:$|[^0-9])/i);
+  if (avMatch?.[1]) {
+    return `https://player.bilibili.com/player.html?aid=${avMatch[1].replace(/^av/i, '')}&page=1`;
   }
 
-  if (url.includes('bilibili.com/video/')) {
-    const part = url.split('bilibili.com/video/')[1]?.split('?')[0];
-    if (part) return `https://player.bilibili.com/player.html?bvid=${part}&page=1`;
+  try {
+    const parsed = new URL(raw);
+    const host = parsed.hostname.toLowerCase();
+
+    if (host.includes('youtube.com') && parsed.pathname === '/watch') {
+      const videoId = parsed.searchParams.get('v');
+      if (videoId) return `https://www.youtube.com/embed/${videoId}`;
+    }
+
+    if (host === 'youtu.be') {
+      const videoId = parsed.pathname.split('/').filter(Boolean)[0];
+      if (videoId) return `https://www.youtube.com/embed/${videoId}`;
+    }
+
+    if (host === 'player.bilibili.com' && parsed.pathname.includes('/player.html')) {
+      return parsed.toString();
+    }
+
+    if (host.includes('bilibili.com')) {
+      const page = Number(parsed.searchParams.get('p') ?? '1') || 1;
+      const pathBv = parsed.pathname.match(/\/video\/(BV[0-9A-Za-z]{10})/i)?.[1];
+      if (pathBv) {
+        return `https://player.bilibili.com/player.html?bvid=${pathBv}&page=${page}`;
+      }
+
+      const pathAv = parsed.pathname.match(/\/video\/av(\d{1,12})/i)?.[1];
+      if (pathAv) {
+        return `https://player.bilibili.com/player.html?aid=${pathAv}&page=${page}`;
+      }
+
+      const bvid = parsed.searchParams.get('bvid');
+      if (bvid) {
+        return `https://player.bilibili.com/player.html?bvid=${bvid}&page=${page}`;
+      }
+
+      const aid = parsed.searchParams.get('aid');
+      if (aid) {
+        return `https://player.bilibili.com/player.html?aid=${aid}&page=${page}`;
+      }
+    }
+  } catch {
+    // Keep raw value fallback for unsupported formats.
   }
 
-  return url;
+  return raw;
 }

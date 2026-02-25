@@ -34,15 +34,21 @@ export default async function CourseDetailPage({ params }: CourseDetailPageProps
       </header>
 
       <section className="mt-6 overflow-hidden rounded-2xl border border-tide/10 bg-black shadow-card">
-        <div className="relative aspect-video w-full">
-          <iframe
-            className="absolute inset-0 h-full w-full"
-            src={embedUrl}
-            title={`${meta.title} 视频讲解`}
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-          />
-        </div>
+        {embedUrl ? (
+          <div className="relative aspect-video w-full">
+            <iframe
+              className="absolute inset-0 h-full w-full"
+              src={embedUrl}
+              title={`${meta.title} 视频讲解`}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          </div>
+        ) : (
+          <div className="flex aspect-video w-full items-center justify-center px-6 text-center text-sm text-white/80">
+            当前课程暂未配置视频。请在课程 MDX 的 frontmatter 中填写 videoUrl（支持 B 站视频链接、BV 号、av 号）。
+          </div>
+        )}
       </section>
 
       <section className="mt-6 rounded-2xl border border-tide/10 bg-white/90 p-6">
