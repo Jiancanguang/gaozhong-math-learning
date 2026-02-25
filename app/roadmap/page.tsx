@@ -22,8 +22,8 @@ const pathNodes: PathNode[] = [
     unitList: ['6.1 平面向量的概念', '6.2 平面向量的运算', '6.3 基本定理及坐标表示', '6.4 平面向量的应用'],
     chapterKey: 'vectors',
     query: '向量',
-    x: 9,
-    y: 18
+    x: 15,
+    y: 24
   },
   {
     id: 'complex',
@@ -32,8 +32,8 @@ const pathNodes: PathNode[] = [
     unitList: ['7.1 复数的概念', '7.2 复数的四则运算', '7.3 复数的三角表示'],
     chapterKey: 'complex',
     query: '复数',
-    x: 31,
-    y: 18
+    x: 39,
+    y: 24
   },
   {
     id: 'solid',
@@ -42,8 +42,8 @@ const pathNodes: PathNode[] = [
     unitList: ['8.1 基本立体图形', '8.2 立体图形的直观图', '8.3 表面积与体积', '8.4 空间点线面位置关系', '8.5 空间直线、平面的平行', '8.6 空间直线、平面的垂直'],
     chapterKey: 'solid-geometry',
     query: '立体几何',
-    x: 54,
-    y: 18
+    x: 63,
+    y: 24
   },
   {
     id: 'stats',
@@ -52,8 +52,8 @@ const pathNodes: PathNode[] = [
     unitList: ['9.1 随机抽样', '9.2 用样本估计总体', '9.3 统计案例'],
     chapterKey: 'statistics',
     query: '统计',
-    x: 77,
-    y: 18
+    x: 75,
+    y: 60
   },
   {
     id: 'prob',
@@ -62,8 +62,8 @@ const pathNodes: PathNode[] = [
     unitList: ['10.1 随机事件与概率', '10.2 事件的相互独立性', '10.3 频率与概率'],
     chapterKey: 'probability',
     query: '概率',
-    x: 50,
-    y: 84
+    x: 39,
+    y: 60
   }
 ];
 
@@ -76,6 +76,17 @@ const edges: Array<{ from: string; to: string }> = [
 
 function getNodeById(id: string) {
   return pathNodes.find((node) => node.id === id);
+}
+
+function buildEdgePath(from: PathNode, to: PathNode) {
+  const verticalDistance = Math.abs(from.y - to.y);
+  if (verticalDistance < 2) {
+    return `M ${from.x} ${from.y} L ${to.x} ${to.y}`;
+  }
+
+  // Use a soft curve for cross-row transitions to avoid sharp, chaotic long diagonals.
+  const controlOffset = Math.max(8, verticalDistance * 0.45);
+  return `M ${from.x} ${from.y} C ${from.x} ${from.y + controlOffset}, ${to.x} ${to.y - controlOffset}, ${to.x} ${to.y}`;
 }
 
 export default function RoadmapPage() {
@@ -96,7 +107,7 @@ export default function RoadmapPage() {
       </header>
 
       <section className="mt-8 hidden rounded-3xl border border-tide/10 bg-white/90 p-6 md:block">
-        <div className="relative h-[620px] w-full">
+        <div className="relative h-[420px] w-full lg:h-[450px]">
           <svg className="absolute inset-0 h-full w-full" viewBox="0 0 100 100" preserveAspectRatio="none">
             <defs>
               <marker id="arrow" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto" markerUnits="strokeWidth">
@@ -109,15 +120,13 @@ export default function RoadmapPage() {
               if (!from || !to) return null;
 
               return (
-                <line
+                <path
                   key={`${edge.from}-${edge.to}`}
-                  x1={from.x}
-                  y1={from.y}
-                  x2={to.x}
-                  y2={to.y}
+                  d={buildEdgePath(from, to)}
                   stroke="#0d3b66"
-                  strokeWidth="0.4"
-                  strokeOpacity="0.45"
+                  strokeWidth="0.35"
+                  strokeOpacity="0.5"
+                  fill="none"
                   markerEnd="url(#arrow)"
                 />
               );
@@ -132,7 +141,7 @@ export default function RoadmapPage() {
             return (
               <article
                 key={node.id}
-                className="absolute w-60 -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-tide/15 bg-paper/95 p-4 shadow-sm"
+                className="absolute w-52 -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-tide/15 bg-paper/95 p-4 shadow-sm lg:w-56 xl:w-60"
                 style={{
                   left: `${node.x}%`,
                   top: `${node.y}%`
