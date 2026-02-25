@@ -8,13 +8,13 @@ import './globals.css';
 export const metadata: Metadata = {
   metadataBase: new URL('https://example.com'),
   title: {
-    default: '高中数学学习站',
-    template: '%s | 高中数学学习站'
+    default: '数学教学主页',
+    template: '%s | 数学教学主页'
   },
-  description: '面向高一高二同步学习的数学课程平台，提供短视频讲解、知识点讲义、例题分析与课后小练。',
+  description: '数学个人教学网站，聚焦高一下同步课程与高三高考真题讲解。',
   openGraph: {
-    title: '高中数学学习站',
-    description: '高一高二同步数学课程：短视频 + 讲义 + 例题 + 小练',
+    title: '数学教学主页',
+    description: '高一下同步课程 + 高三高考真题讲解',
     type: 'website',
     locale: 'zh_CN'
   }

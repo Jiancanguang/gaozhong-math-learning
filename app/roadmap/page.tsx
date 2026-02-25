@@ -99,10 +99,10 @@ export default function RoadmapPage() {
   return (
     <div className="mx-auto w-full max-w-6xl px-4 pb-12 pt-8 sm:px-6 lg:px-8">
       <header className="rounded-3xl border border-tide/10 bg-white/80 p-7 shadow-card">
-        <p className="text-sm font-semibold uppercase tracking-wider text-accent">人教 A 版 · 必修第二册</p>
-        <h1 className="mt-2 text-3xl font-semibold text-tide">学习路径图</h1>
+        <p className="text-sm font-semibold uppercase tracking-wider text-accent">高三高考真题讲解 · 筹备区</p>
+        <h1 className="mt-2 text-3xl font-semibold text-tide">真题讲解路径图</h1>
         <p className="mt-3 max-w-3xl text-sm text-ink/80">
-          路径严格对应教材第六章到第十章：平面向量、复数、立体几何初步、统计、概率。每个节点会显示当前站内课程覆盖度。
+          先用现有章节能力做题型映射，后续将逐步替换为按年份、卷别、题型组织的高考真题讲解路径。每个节点会显示站内内容覆盖度。
         </p>
       </header>
 

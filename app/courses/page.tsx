@@ -32,7 +32,7 @@ export default function CoursesPage({ searchParams }: CoursesPageProps) {
   return (
     <div className="mx-auto w-full max-w-6xl px-4 pb-12 pt-8 sm:px-6 lg:px-8">
       <h1 className="text-3xl font-semibold text-tide">课程列表</h1>
-      <p className="mt-3 text-sm text-ink/75">按年级、章节筛选并支持关键词搜索（课程标题/标签）。</p>
+      <p className="mt-3 text-sm text-ink/75">当前以高一下同步课程为主，支持按年级、章节和关键词检索。</p>
 
       <form className="mt-6 grid gap-3 rounded-2xl border border-tide/10 bg-white/80 p-4 md:grid-cols-4">
         <select name="grade" defaultValue={gradeFilter ?? ''} className="rounded-lg border border-tide/20 bg-white px-3 py-2 text-sm outline-none focus:border-accent">
