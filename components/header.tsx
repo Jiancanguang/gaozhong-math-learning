@@ -3,6 +3,7 @@ import Link from 'next/link';
 
 export function Header() {
   const assignmentHref = '/assignment' as Route;
+  const gaokaoHref = '/gaokao' as Route;
 
   return (
     <header className="border-b border-tide/10 bg-paper/90 backdrop-blur-sm">
@@ -14,7 +15,7 @@ export function Header() {
           <Link href="/courses?grade=10" className="transition hover:text-accent">
             高一下同步
           </Link>
-          <Link href="/roadmap" className="transition hover:text-accent">
+          <Link href={gaokaoHref} className="transition hover:text-accent">
             高三真题
           </Link>
           <Link href="/courses" className="transition hover:text-accent">

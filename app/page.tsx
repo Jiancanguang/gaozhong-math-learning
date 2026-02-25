@@ -15,7 +15,7 @@ const focusTracks = [
     title: '高三高考真题讲解',
     description: '以近年真题为线索，拆解压轴题思路、评分点与时间分配策略。',
     timeline: '本阶段优先推进',
-    href: '/roadmap' as Route
+    href: '/gaokao' as Route
   }
 ];
 
@@ -33,6 +33,7 @@ const nextMilestones = [
 
 export default function HomePage() {
   const assignmentHref = '/assignment' as Route;
+  const gaokaoHref = '/gaokao' as Route;
   const latestCourses = getLatestCourses(6);
   const latestChapters = Array.from(new Set(latestCourses.map((course) => course.chapter))).map((chapter) => mapChapterName(chapter));
 
@@ -55,7 +56,7 @@ export default function HomePage() {
           <Link href="/courses?grade=10" className="rounded-xl bg-accent px-5 py-3 text-sm font-medium text-white transition hover:bg-accent/90">
             进入高一下课程
           </Link>
-          <Link href="/roadmap" className="rounded-xl bg-tide px-5 py-3 text-sm font-medium text-white transition hover:bg-tide/90">
+          <Link href={gaokaoHref} className="rounded-xl bg-tide px-5 py-3 text-sm font-medium text-white transition hover:bg-tide/90">
             查看高三真题规划
           </Link>
           <Link href={assignmentHref} className="rounded-xl border border-tide/20 px-5 py-3 text-sm font-medium text-tide transition hover:bg-tide/5">
@@ -130,6 +131,20 @@ export default function HomePage() {
             <CourseCard key={course.id} course={course} />
           ))}
         </div>
+      </section>
+
+      <section className="mt-12">
+        <article className="rounded-2xl border border-tide/10 bg-white/80 p-6">
+          <h2 className="text-2xl font-semibold text-tide">联系与反馈</h2>
+          <p className="mt-2 text-sm text-ink/80">如果你想补某个章节、某套真题，或者反馈讲义问题，可通过以下方式联系。</p>
+          <div className="mt-4 flex flex-wrap gap-3 text-sm">
+            <span className="rounded-lg bg-tide/10 px-3 py-2 text-tide">邮箱：jiancanguang@qq.com</span>
+            <span className="rounded-lg bg-tide/10 px-3 py-2 text-tide">B 站 / 抖音 / 公众号：主页持续更新</span>
+          </div>
+          <Link href="/about" className="mt-4 inline-flex text-sm font-medium text-accent hover:underline">
+            查看完整说明
+          </Link>
+        </article>
       </section>
     </div>
   );
