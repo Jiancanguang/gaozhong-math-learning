@@ -15,6 +15,31 @@ body {
   font-family: 'Noto Serif SC', 'Songti SC', 'STSong', 'SimSun', serif;
 }
 
+.gaokao-system-theme {
+  --gs-bg: #f6fbff;
+  --gs-card: #ffffff;
+  --gs-ink: #0b253a;
+  --gs-muted: #40607a;
+  --gs-primary: #0f6d8c;
+  --gs-accent: #f08a24;
+  --gs-line: rgba(15, 109, 140, 0.18);
+  background:
+    radial-gradient(circle at 8% 8%, rgba(15, 109, 140, 0.14) 0%, rgba(246, 251, 255, 0) 33%),
+    radial-gradient(circle at 90% 0%, rgba(240, 138, 36, 0.16) 0%, rgba(246, 251, 255, 0) 30%),
+    linear-gradient(180deg, #f6fbff 0%, #fefcf7 100%);
+  color: var(--gs-ink);
+  border-radius: 1.5rem;
+  padding: 1rem;
+  border: 1px solid var(--gs-line);
+}
+
+.gaokao-system-theme .gs-card {
+  background: var(--gs-card);
+  border: 1px solid var(--gs-line);
+  border-radius: 1rem;
+  box-shadow: 0 10px 24px rgba(11, 37, 58, 0.08);
+}
+
 .mdx-content h2 {
   margin-top: 1.5rem;
   font-size: 1.25rem;

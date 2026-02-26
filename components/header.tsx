@@ -4,6 +4,7 @@ import Link from 'next/link';
 export function Header() {
   const assignmentHref = '/assignment' as Route;
   const gaokaoHref = '/gaokao' as Route;
+  const gaokaoSystemHref = '/gaokao-system' as Route;
   const roadmapHref = '/roadmap' as Route;
   const adminVideosHref = '/admin/videos' as Route;
   const showAdminEntry = process.env.NODE_ENV === 'production';
@@ -20,6 +21,9 @@ export function Header() {
           </Link>
           <Link href={gaokaoHref} className="transition hover:text-accent">
             高三真题
+          </Link>
+          <Link href={gaokaoSystemHref} className="transition hover:text-accent">
+            系统提分
           </Link>
           <Link href={roadmapHref} className="transition hover:text-accent">
             学习路径图
