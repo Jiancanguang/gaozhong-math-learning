@@ -36,6 +36,7 @@ export default function HomePage() {
   const gaokaoHref = '/gaokao' as Route;
   const gaokaoSystemHref = '/gaokao-system' as Route;
   const roadmapHref = '/roadmap' as Route;
+  const resourcesHref = '/resources' as Route;
   const latestCourses = getLatestCourses(6);
   const latestChapters = Array.from(new Set(latestCourses.map((course) => course.chapter))).map((chapter) => mapChapterName(chapter));
 
@@ -69,6 +70,9 @@ export default function HomePage() {
           </Link>
           <Link href={assignmentHref} className="rounded-xl border border-tide/20 px-5 py-3 text-sm font-medium text-tide transition hover:bg-tide/5">
             个性化作业
+          </Link>
+          <Link href={resourcesHref} className="rounded-xl border border-tide/20 px-5 py-3 text-sm font-medium text-tide transition hover:bg-tide/5">
+            教学资源
           </Link>
           <Link href="/courses" className="rounded-xl border border-tide/20 px-5 py-3 text-sm font-medium text-tide transition hover:bg-tide/5">
             全部课程

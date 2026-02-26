@@ -6,6 +6,7 @@ export function Header() {
   const gaokaoHref = '/gaokao' as Route;
   const gaokaoSystemHref = '/gaokao-system' as Route;
   const roadmapHref = '/roadmap' as Route;
+  const resourcesHref = '/resources' as Route;
   const adminVideosHref = '/admin/videos' as Route;
   const showAdminEntry = process.env.NODE_ENV === 'production';
 
@@ -27,6 +28,9 @@ export function Header() {
           </Link>
           <Link href={roadmapHref} className="transition hover:text-accent">
             学习路径图
+          </Link>
+          <Link href={resourcesHref} className="transition hover:text-accent">
+            教学资源
           </Link>
           <Link href="/courses" className="transition hover:text-accent">
             课程
