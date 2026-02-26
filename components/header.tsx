@@ -23,7 +23,7 @@ export function Header() {
             高三真题
           </Link>
           <Link href={gaokaoSystemHref} className="transition hover:text-accent">
-            系统提分
+            高考提分系统
           </Link>
           <Link href={roadmapHref} className="transition hover:text-accent">
             学习路径图
