@@ -193,7 +193,7 @@ export default function RoadmapPage() {
           <p className="text-xs text-ink/70">主线：前置知识 → 平面向量核心 → 后续分支 → 高考综合应用</p>
         </div>
 
-        <div className="relative mt-5 hidden h-[760px] rounded-2xl border border-slate-200 bg-gradient-to-br from-[#f8fbff] via-[#fdfdf8] to-[#fff8f3] p-6 md:block">
+        <div className="relative mt-5 hidden h-[820px] rounded-2xl border border-slate-200 bg-gradient-to-br from-[#f8fbff] via-[#fdfdf8] to-[#fff8f3] p-6 md:block">
           <svg className="absolute inset-0 h-full w-full" viewBox="0 0 100 100" preserveAspectRatio="none">
             <defs>
               <marker id="flow-arrow-main" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="strokeWidth">
@@ -208,13 +208,13 @@ export default function RoadmapPage() {
             <path d="M50 27 V35" fill="none" stroke="#1d4f73" strokeWidth="0.22" markerEnd="url(#flow-arrow-main)" />
             <path d="M76 27 V32 H50" fill="none" stroke="#94a3b8" strokeWidth="0.18" />
 
-            <path d="M50 58 V64 H23 V69" fill="none" stroke="#64748b" strokeWidth="0.18" markerEnd="url(#flow-arrow-sub)" />
-            <path d="M50 58 V69" fill="none" stroke="#1d4f73" strokeWidth="0.22" markerEnd="url(#flow-arrow-main)" />
-            <path d="M50 58 V64 H77 V69" fill="none" stroke="#64748b" strokeWidth="0.18" markerEnd="url(#flow-arrow-sub)" />
+            <path d="M50 53 V61 H23 V68" fill="none" stroke="#64748b" strokeWidth="0.18" markerEnd="url(#flow-arrow-sub)" />
+            <path d="M50 53 V68" fill="none" stroke="#1d4f73" strokeWidth="0.22" markerEnd="url(#flow-arrow-main)" />
+            <path d="M50 53 V61 H77 V68" fill="none" stroke="#64748b" strokeWidth="0.18" markerEnd="url(#flow-arrow-sub)" />
 
-            <path d="M23 81 V85 H50 V89" fill="none" stroke="#94a3b8" strokeWidth="0.18" />
-            <path d="M50 81 V89" fill="none" stroke="#1d4f73" strokeWidth="0.22" markerEnd="url(#flow-arrow-main)" />
-            <path d="M77 81 V85 H50" fill="none" stroke="#94a3b8" strokeWidth="0.18" />
+            <path d="M23 86 V90 H50 V94" fill="none" stroke="#94a3b8" strokeWidth="0.18" />
+            <path d="M50 86 V94" fill="none" stroke="#1d4f73" strokeWidth="0.22" markerEnd="url(#flow-arrow-main)" />
+            <path d="M77 86 V90 H50" fill="none" stroke="#94a3b8" strokeWidth="0.18" />
           </svg>
 
           <article className="absolute left-[8%] top-[5%] w-[84%] rounded-2xl border border-slate-200 bg-white/85 p-4 shadow-[0_10px_30px_-24px_rgba(15,23,42,0.45)]">
@@ -226,9 +226,9 @@ export default function RoadmapPage() {
             </div>
           </article>
 
-          <article className="absolute left-[22%] top-[34%] w-[56%] rounded-2xl border border-[#b7d4ea] bg-white p-6 shadow-[0_24px_40px_-28px_rgba(29,78,115,0.5)]">
+          <article className="absolute left-[22%] top-[32%] w-[56%] rounded-2xl border border-[#b7d4ea] bg-white px-6 pb-5 pt-6 shadow-[0_24px_40px_-28px_rgba(29,78,115,0.5)]">
             <h3 className="text-center text-[2.6rem] font-semibold text-[#1d4f73]">第六章 平面向量及其应用</h3>
-            <ul className="mt-5 space-y-3 text-[1.7rem] text-slate-800">
+            <ul className="mt-4 space-y-2.5 text-[1.58rem] text-slate-800">
               <li>
                 <span className="font-semibold text-[#c45524]">6.1</span> 概念（方向 + 大小）
               </li>
@@ -244,22 +244,22 @@ export default function RoadmapPage() {
             </ul>
           </article>
 
-          <article className="absolute left-[11%] top-[70%] w-[23%] rounded-2xl border border-slate-200 bg-white/90 p-4 shadow-[0_8px_24px_-24px_rgba(15,23,42,0.45)]">
+          <article className="absolute left-[11%] top-[72%] w-[23%] rounded-2xl border border-slate-200 bg-white/90 p-4 shadow-[0_8px_24px_-24px_rgba(15,23,42,0.45)]">
             <h4 className="text-[1.8rem] font-semibold text-slate-800">解三角形</h4>
             <p className="mt-1 text-[1.35rem] text-slate-600">余弦/正弦定理</p>
           </article>
 
-          <article className="absolute left-[38.5%] top-[70%] w-[23%] rounded-2xl border border-slate-200 bg-white/90 p-4 shadow-[0_8px_24px_-24px_rgba(15,23,42,0.45)]">
+          <article className="absolute left-[38.5%] top-[72%] w-[23%] rounded-2xl border border-slate-200 bg-white/90 p-4 shadow-[0_8px_24px_-24px_rgba(15,23,42,0.45)]">
             <h4 className="text-[1.8rem] font-semibold text-slate-800">解析几何</h4>
             <p className="mt-1 text-[1.35rem] text-slate-600">直线/圆锥曲线</p>
           </article>
 
-          <article className="absolute left-[66%] top-[70%] w-[23%] rounded-2xl border border-slate-200 bg-white/90 p-4 shadow-[0_8px_24px_-24px_rgba(15,23,42,0.45)]">
+          <article className="absolute left-[66%] top-[72%] w-[23%] rounded-2xl border border-slate-200 bg-white/90 p-4 shadow-[0_8px_24px_-24px_rgba(15,23,42,0.45)]">
             <h4 className="text-[1.8rem] font-semibold text-slate-800">空间向量</h4>
             <p className="mt-1 text-[1.35rem] text-slate-600">立体几何迁移</p>
           </article>
 
-          <article className="absolute left-[35%] top-[87%] w-[30%] rounded-2xl border border-[#b7d4ea] bg-white p-3 text-center shadow-[0_24px_40px_-30px_rgba(29,78,115,0.55)]">
+          <article className="absolute left-[35%] top-[91%] w-[30%] rounded-2xl border border-[#b7d4ea] bg-white p-3 text-center shadow-[0_24px_40px_-30px_rgba(29,78,115,0.55)]">
             <h4 className="text-[1.8rem] font-semibold text-[#1d4f73]">高考综合应用</h4>
             <p className="mt-1 text-[1.2rem] text-slate-600">向量贯穿始终</p>
           </article>
