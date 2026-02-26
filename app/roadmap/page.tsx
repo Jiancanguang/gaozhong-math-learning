@@ -189,29 +189,91 @@ export default function RoadmapPage() {
 
       <section className="mt-8 rounded-3xl border border-tide/10 bg-white/90 p-6">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <h2 className="text-xl font-semibold text-tide">学习路径总览</h2>
-          <p className="text-xs text-ink/70">实线主线：必须完成 ｜ 虚线迁移：进阶强化</p>
+          <h2 className="text-xl font-semibold text-tide">学习路径总览（方框 + 连线）</h2>
+          <p className="text-xs text-ink/70">主线：前置 → 核心 → 后续迁移 → 综合应用</p>
         </div>
 
-        <div className="mt-5 grid gap-4 lg:grid-cols-4">
-          {layers.map((layer, index) => (
-            <article key={layer.title} className="rounded-2xl border border-tide/10 bg-paper/95 p-4 shadow-sm">
-              <p className="text-xs font-medium text-accent">Layer {index + 1}</p>
-              <h3 className="mt-1 text-lg font-semibold text-tide">{layer.title}</h3>
+        <div className="relative mt-5 hidden h-[980px] rounded-2xl border border-tide/10 bg-paper/70 p-4 md:block">
+          <svg className="absolute inset-0 h-full w-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <defs>
+              <marker id="flow-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="strokeWidth">
+                <path d="M0,0 L0,8 L8,4 z" fill="#1f2a44" />
+              </marker>
+            </defs>
+
+            <path d="M24 30 V34 H50 V38" fill="none" stroke="#1f2a44" strokeWidth="0.22" markerEnd="url(#flow-arrow)" />
+            <path d="M46 30 V34" fill="none" stroke="#1f2a44" strokeWidth="0.22" />
+            <path d="M72 30 V34 H50" fill="none" stroke="#1f2a44" strokeWidth="0.22" />
+
+            <path d="M50 66 V71 H23 V74" fill="none" stroke="#1f2a44" strokeWidth="0.22" markerEnd="url(#flow-arrow)" />
+            <path d="M50 66 V74" fill="none" stroke="#1f2a44" strokeWidth="0.22" markerEnd="url(#flow-arrow)" />
+            <path d="M50 66 V71 H77 V74" fill="none" stroke="#1f2a44" strokeWidth="0.22" markerEnd="url(#flow-arrow)" />
+
+            <path d="M23 86 V89 H50 V92" fill="none" stroke="#1f2a44" strokeWidth="0.22" markerEnd="url(#flow-arrow)" />
+            <path d="M50 86 V92" fill="none" stroke="#1f2a44" strokeWidth="0.22" markerEnd="url(#flow-arrow)" />
+            <path d="M77 86 V89 H50" fill="none" stroke="#1f2a44" strokeWidth="0.22" />
+          </svg>
+
+          <article className="absolute left-[8%] top-[6%] w-[84%] rounded-xl border border-tide/70 bg-white/90 p-4">
+            <h3 className="text-center text-xl font-semibold tracking-[0.2em] text-tide">前置知识</h3>
+            <div className="mt-4 grid grid-cols-3 gap-4">
+              <div className="rounded-lg border border-tide/60 p-3 text-sm text-ink/90">平面直角坐标系</div>
+              <div className="rounded-lg border border-tide/60 p-3 text-sm text-ink/90">三角函数（必修一）</div>
+              <div className="rounded-lg border border-tide/60 p-3 text-sm text-ink/90">初中平面几何（平行/垂直/三角形）</div>
+            </div>
+          </article>
+
+          <article className="absolute left-[25%] top-[38%] w-[50%] rounded-xl border border-tide/70 bg-white/95 p-5">
+            <h3 className="text-center text-2xl font-semibold text-tide">第六章 平面向量及其应用</h3>
+            <ul className="mt-4 space-y-3 text-lg text-ink/90">
+              <li>
+                <span className="font-semibold text-accent">6.1</span> 概念（方向 + 大小）
+              </li>
+              <li>
+                <span className="font-semibold text-accent">6.2</span> 运算（加/减/数乘/数量积）
+              </li>
+              <li>
+                <span className="font-semibold text-accent">6.3</span> 坐标表示（坐标化判定）
+              </li>
+              <li>
+                <span className="font-semibold text-accent">6.4</span> 应用（证明/最值/轨迹）
+              </li>
+            </ul>
+          </article>
+
+          <article className="absolute left-[12%] top-[74%] w-[22%] rounded-xl border border-tide/70 bg-white/90 p-3">
+            <h4 className="text-lg font-semibold text-tide">解三角形</h4>
+            <p className="mt-1 text-sm text-ink/80">余弦/正弦定理</p>
+          </article>
+
+          <article className="absolute left-[39%] top-[74%] w-[22%] rounded-xl border border-tide/70 bg-white/90 p-3">
+            <h4 className="text-lg font-semibold text-tide">解析几何</h4>
+            <p className="mt-1 text-sm text-ink/80">直线/圆锥曲线</p>
+          </article>
+
+          <article className="absolute left-[66%] top-[74%] w-[22%] rounded-xl border border-tide/70 bg-white/90 p-3">
+            <h4 className="text-lg font-semibold text-tide">空间向量</h4>
+            <p className="mt-1 text-sm text-ink/80">立体几何迁移</p>
+          </article>
+
+          <article className="absolute left-[35%] top-[92%] w-[30%] rounded-xl border border-tide/70 bg-white p-3 text-center">
+            <h4 className="text-lg font-semibold text-tide">高考综合应用</h4>
+            <p className="mt-1 text-sm text-ink/80">向量贯穿始终</p>
+          </article>
+        </div>
+
+        <div className="mt-5 grid gap-3 md:hidden">
+          {layers.map((layer) => (
+            <article key={layer.title} className="rounded-2xl border border-tide/10 bg-paper/95 p-4">
+              <h3 className="text-base font-semibold text-tide">{layer.title}</h3>
               <p className="text-xs text-ink/65">{layer.subtitle}</p>
-              <ul className="mt-3 space-y-2 text-sm text-ink/85">
+              <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-ink/85">
                 {layer.nodes.map((node) => (
-                  <li key={node} className="rounded-xl border border-tide/10 bg-white/80 px-3 py-2">
-                    {node}
-                  </li>
+                  <li key={node}>{node}</li>
                 ))}
               </ul>
             </article>
           ))}
-        </div>
-
-        <div className="mt-4 rounded-2xl border border-dashed border-tide/20 bg-white/70 p-4 text-xs text-ink/75">
-          迁移建议：共线与线性表示 → 解析几何；数量积应用 → 圆锥曲线；解析几何训练可反哺综合应用建模。
         </div>
       </section>
 
