@@ -12,6 +12,7 @@ const navItems = [
   { label: '信息架构', href: '/gaokao-system/architecture' as Route },
   { label: '系统框架', href: '/gaokao-system/framework' as Route },
   { label: '诊断评估', href: '/gaokao-system/diagnosis' as Route },
+  { label: '难度分级', href: '/gaokao-system/difficulty-grading' as Route },
   { label: '方法库', href: '/gaokao-system/methods' as Route },
   { label: '学科突破', href: '/gaokao-system/subjects' as Route },
   { label: '30天计划', href: '/gaokao-system/30days' as Route },

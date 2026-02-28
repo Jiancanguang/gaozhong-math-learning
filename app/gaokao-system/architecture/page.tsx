@@ -18,6 +18,12 @@ const columns = [
     outline: '五维评分、分层建议、优先动作'
   },
   {
+    section: '难度分级',
+    pages: ['`/gaokao-system/difficulty-grading`'],
+    goal: '把“题目难度”讲成可理解、可使用的标准',
+    outline: '录取线逻辑、五维模型、修正规则、例题校准、使用建议'
+  },
+  {
     section: '方法库',
     pages: ['`/gaokao-system/methods`'],
     goal: '结构化方法索引',
