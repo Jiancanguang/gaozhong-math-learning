@@ -5,6 +5,7 @@ export function Header() {
   const assignmentHref = '/assignment' as Route;
   const gaokaoHref = '/gaokao' as Route;
   const gaokaoSystemHref = '/gaokao-system' as Route;
+  const difficultyGradingHref = '/gaokao-system/difficulty-grading' as Route;
   const roadmapHref = '/roadmap' as Route;
   const resourcesHref = '/resources' as Route;
   const adminVideosHref = '/admin/videos' as Route;
@@ -25,6 +26,9 @@ export function Header() {
           </Link>
           <Link href={gaokaoSystemHref} className="transition hover:text-accent">
             提分专区
+          </Link>
+          <Link href={difficultyGradingHref} className="transition hover:text-accent">
+            难度分级
           </Link>
           <Link href={roadmapHref} className="transition hover:text-accent">
             学习路径
