@@ -14,7 +14,7 @@ export function Header() {
     <header className="border-b border-tide/10 bg-paper/90 backdrop-blur-sm">
       <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
         <Link href="/" className="text-lg font-semibold text-tide">
-          数学教学主页
+          高中数学教学主页
         </Link>
         <nav className="flex items-center gap-4 text-sm text-ink/80">
           <Link href="/courses?grade=10" className="transition hover:text-accent">

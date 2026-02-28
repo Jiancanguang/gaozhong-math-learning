@@ -5,16 +5,22 @@ import { Header } from '@/components/header';
 
 import './globals.css';
 
+const siteName = '高中数学教学主页';
+const siteDescription = '同步课程、真题讲解与系统提分方法，帮助学生看得懂、做得出、能复盘。';
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://example.com');
+
 export const metadata: Metadata = {
-  metadataBase: new URL('https://example.com'),
+  metadataBase: new URL(siteUrl),
+  applicationName: siteName,
   title: {
-    default: '数学教学主页',
-    template: '%s | 数学教学主页'
+    default: siteName,
+    template: `%s | ${siteName}`
   },
-  description: '数学个人教学网站，聚焦高一下同步课程与高三高考真题讲解。',
+  description: siteDescription,
   openGraph: {
-    title: '数学教学主页',
-    description: '高一下同步课程 + 高三高考真题讲解',
+    title: siteName,
+    description: siteDescription,
+    siteName,
     type: 'website',
     locale: 'zh_CN'
   }
