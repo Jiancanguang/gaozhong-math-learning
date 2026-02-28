@@ -7,28 +7,29 @@ import { getLatestCourses, mapChapterName } from '@/lib/courses';
 const focusTracks = [
   {
     title: '高一下同步课程',
-    description: '按学校进度讲透每周重点，覆盖函数、数列、三角与解析几何核心题型。',
+    description: '按学校进度稳步推进，先把函数、数列、三角和解析几何学清楚。',
     timeline: '每周更新 2-3 节',
     href: '/courses?grade=10' as Route
   },
   {
     title: '高三高考真题讲解',
-    description: '以近年真题为线索，拆解压轴题思路、评分点与时间分配策略。',
-    timeline: '本阶段优先推进',
+    description: '按年份和题型拆真题，抓思路、得分点和高频失分环节。',
+    timeline: '持续更新中',
     href: '/gaokao' as Route
   }
 ];
 
 const profileHighlights = [
-  '个人教学站点，目标是把复杂知识点讲清、讲短、讲会',
-  '所有课程围绕“看得懂 + 做得出 + 能复盘”三件事设计',
-  '先完成主页与课程框架，再持续补齐高三真题专题'
+  '同步课程',
+  '真题讲解',
+  '系统提分',
+  '看得懂 + 做得出 + 能复盘'
 ];
 
 const nextMilestones = [
-  '完成首页个人化改版与导航整理',
-  '上线高一下同步课第一批章节（函数/数列/三角）',
-  '搭建高三真题讲解专区并持续更新套卷解析'
+  '持续补齐高一下核心章节',
+  '按专题更新高三真题讲解',
+  '把课程、作业和提分工具逐步连成闭环'
 ];
 
 export default function HomePage() {
@@ -44,9 +45,9 @@ export default function HomePage() {
     <div className="mx-auto w-full max-w-6xl px-4 pb-12 pt-8 sm:px-6 lg:px-8">
       <section className="rounded-3xl border border-tide/10 bg-white/80 p-8 shadow-card">
         <p className="text-sm font-semibold uppercase tracking-wider text-accent">Personal Teaching Hub</p>
-        <h1 className="mt-3 text-3xl font-semibold text-tide sm:text-4xl">高中数学个人主页</h1>
-        <p className="mt-4 max-w-2xl text-base text-ink/80">
-          这里是我的教学主站。当前重点先做两件事：高一下同步课程系统化上线，以及高三高考真题讲解持续更新。
+        <h1 className="mt-3 text-3xl font-semibold text-tide sm:text-4xl">高中数学，不只学懂，更要稳稳提分</h1>
+        <p className="mt-4 max-w-3xl text-base text-ink/80">
+          这是我的数学教学主站。这里既有高一下同步课程，也有高三真题讲解和系统提分方法，目标很明确：把知识点讲清楚，把题型做出来，把错误复盘掉。
         </p>
         <div className="mt-6 flex flex-wrap gap-3 text-sm">
           {profileHighlights.map((item) => (
@@ -57,25 +58,25 @@ export default function HomePage() {
         </div>
         <div className="mt-8 flex flex-wrap gap-3">
           <Link href="/courses?grade=10" className="rounded-xl bg-accent px-5 py-3 text-sm font-medium text-white transition hover:bg-accent/90">
-            进入高一下课程
+            进入同步课程
           </Link>
           <Link href={gaokaoHref} className="rounded-xl bg-tide px-5 py-3 text-sm font-medium text-white transition hover:bg-tide/90">
-            查看高三真题规划
+            进入真题专区
           </Link>
           <Link href={gaokaoSystemHref} className="rounded-xl bg-white px-5 py-3 text-sm font-medium text-tide ring-1 ring-tide/20 transition hover:bg-tide/5">
-            进入系统提分
+            进入提分专区
           </Link>
           <Link href={roadmapHref} className="rounded-xl bg-white px-5 py-3 text-sm font-medium text-tide ring-1 ring-tide/20 transition hover:bg-tide/5">
-            高中学习路径图
+            查看学习路径
           </Link>
           <Link href={assignmentHref} className="rounded-xl border border-tide/20 px-5 py-3 text-sm font-medium text-tide transition hover:bg-tide/5">
-            个性化作业
+            生成作业方案
           </Link>
           <Link href={resourcesHref} className="rounded-xl border border-tide/20 px-5 py-3 text-sm font-medium text-tide transition hover:bg-tide/5">
-            教学资源
+            打开资料库
           </Link>
           <Link href="/courses" className="rounded-xl border border-tide/20 px-5 py-3 text-sm font-medium text-tide transition hover:bg-tide/5">
-            全部课程
+            浏览全部内容
           </Link>
         </div>
       </section>
@@ -97,8 +98,8 @@ export default function HomePage() {
         <article className="rounded-2xl border border-tide/10 bg-white/80 p-6">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <h2 className="text-2xl font-semibold text-tide">当前进度与下一步</h2>
-              <p className="mt-2 text-sm text-ink/75">这是站点当前建设节奏，方便学生和家长了解更新计划。</p>
+              <h2 className="text-2xl font-semibold text-tide">当前重点</h2>
+              <p className="mt-2 text-sm text-ink/75">网站框架已经基本成型，接下来重点是持续补内容、补专题、补工具。</p>
             </div>
             <Link href="/about" className="rounded-xl border border-tide/20 px-4 py-2 text-sm font-medium text-tide transition hover:bg-tide/5">
               查看说明
@@ -117,9 +118,9 @@ export default function HomePage() {
 
       <section className="mt-12">
         <div className="flex items-end justify-between">
-          <h2 className="text-2xl font-semibold text-tide">覆盖章节</h2>
+          <h2 className="text-2xl font-semibold text-tide">当前覆盖内容</h2>
           <Link href="/courses" className="text-sm font-medium text-accent hover:underline">
-            课程总览
+            浏览课程库
           </Link>
         </div>
         <div className="mt-5 flex flex-wrap gap-3">
@@ -133,9 +134,9 @@ export default function HomePage() {
 
       <section className="mt-12">
         <div className="flex items-end justify-between">
-          <h2 className="text-2xl font-semibold text-tide">最新课程</h2>
+          <h2 className="text-2xl font-semibold text-tide">最新上线</h2>
           <Link href="/courses" className="text-sm font-medium text-accent hover:underline">
-            查看全部
+            查看全部内容
           </Link>
         </div>
         <div className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -147,14 +148,14 @@ export default function HomePage() {
 
       <section className="mt-12">
         <article className="rounded-2xl border border-tide/10 bg-white/80 p-6">
-          <h2 className="text-2xl font-semibold text-tide">联系与反馈</h2>
-          <p className="mt-2 text-sm text-ink/80">如果你想补某个章节、某套真题，或者反馈讲义问题，可通过以下方式联系。</p>
+          <h2 className="text-2xl font-semibold text-tide">联系我</h2>
+          <p className="mt-2 text-sm text-ink/80">想补某个章节、某套真题，或者发现讲义问题，都可以直接联系我。</p>
           <div className="mt-4 flex flex-wrap gap-3 text-sm">
             <span className="rounded-lg bg-tide/10 px-3 py-2 text-tide">邮箱：jiancanguang@qq.com</span>
             <span className="rounded-lg bg-tide/10 px-3 py-2 text-tide">B 站 / 抖音 / 公众号：主页持续更新</span>
           </div>
           <Link href="/about" className="mt-4 inline-flex text-sm font-medium text-accent hover:underline">
-            查看完整说明
+            查看详细说明
           </Link>
         </article>
       </section>
