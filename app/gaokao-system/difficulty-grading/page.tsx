@@ -102,9 +102,9 @@ function ExampleCard({ example }: { example: ExampleCase }) {
   const level = levelReferences[example.level];
 
   return (
-    <article className="rounded-2xl border border-[var(--gs-line)] bg-white p-5 shadow-sm">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
+    <article className="flex h-full flex-col rounded-2xl border border-[var(--gs-line)] bg-white p-5 shadow-sm">
+      <div className="flex min-h-[5.5rem] items-start justify-between gap-3">
+        <div className="min-w-0 flex-1 pr-2">
           <p className="text-sm font-semibold uppercase tracking-wide text-[var(--gs-accent)]">{example.title}</p>
           <h3 className="mt-1 text-xl font-semibold text-[var(--gs-primary)]">{example.position}</h3>
           <p className="mt-1 text-sm text-[var(--gs-muted)]">{example.difficultyFactor}</p>
@@ -112,16 +112,16 @@ function ExampleCard({ example }: { example: ExampleCase }) {
         <LevelBadge levelKey={example.level} />
       </div>
 
-      <p className="mt-4 text-sm text-[var(--gs-muted)]">{example.prompt}</p>
+      <p className="mt-4 min-h-[3.5rem] text-sm text-[var(--gs-muted)]">{example.prompt}</p>
 
-      <div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
+      <div className="mt-4 grid auto-rows-fr gap-2 sm:grid-cols-2 lg:grid-cols-5">
         {example.dimensions.map((dimension) => (
           <div
             key={dimension.name}
-            className={`rounded-xl border px-3 py-3 ${styles.soft} ${styles.border}`}
+            className={`flex h-full flex-col rounded-xl border px-3 py-3 ${styles.soft} ${styles.border}`}
           >
-            <p className="text-xs font-medium text-[var(--gs-muted)]">{dimension.name}</p>
-            <div className="mt-2 h-2 rounded-full bg-white/80">
+            <p className="min-h-[3rem] text-xs font-medium text-[var(--gs-muted)]">{dimension.name}</p>
+            <div className="mt-auto h-2 rounded-full bg-white/80">
               <div
                 className={`h-2 rounded-full bg-current ${styles.text}`}
                 style={{ width: scoreWidths[dimension.score] }}
@@ -132,22 +132,22 @@ function ExampleCard({ example }: { example: ExampleCase }) {
         ))}
       </div>
 
-      <div className="mt-4 grid gap-3 md:grid-cols-3">
-        <div className="rounded-xl border border-[var(--gs-line)] bg-[rgba(15,109,140,0.04)] p-3">
+      <div className="mt-4 grid auto-rows-fr gap-3 md:grid-cols-3">
+        <div className="flex h-full flex-col rounded-xl border border-[var(--gs-line)] bg-[rgba(15,109,140,0.04)] p-3">
           <p className="text-xs font-semibold uppercase tracking-wide text-[var(--gs-primary)]">五维总分</p>
-          <p className="mt-1 text-lg font-semibold text-[var(--gs-primary)]">{example.baseScore}</p>
+          <p className="mt-auto pt-2 text-lg font-semibold text-[var(--gs-primary)]">{example.baseScore}</p>
         </div>
-        <div className="rounded-xl border border-[var(--gs-line)] bg-[rgba(15,109,140,0.04)] p-3">
+        <div className="flex h-full flex-col rounded-xl border border-[var(--gs-line)] bg-[rgba(15,109,140,0.04)] p-3">
           <p className="text-xs font-semibold uppercase tracking-wide text-[var(--gs-primary)]">题型修正</p>
-          <p className="mt-1 text-sm text-[var(--gs-muted)]">{example.typeAdjustment}</p>
+          <p className="mt-auto pt-2 text-sm text-[var(--gs-muted)]">{example.typeAdjustment}</p>
         </div>
-        <div className="rounded-xl border border-[var(--gs-line)] bg-[rgba(15,109,140,0.04)] p-3">
+        <div className="flex h-full flex-col rounded-xl border border-[var(--gs-line)] bg-[rgba(15,109,140,0.04)] p-3">
           <p className="text-xs font-semibold uppercase tracking-wide text-[var(--gs-primary)]">交互修正</p>
-          <p className="mt-1 text-sm text-[var(--gs-muted)]">{example.interactionAdjustment}</p>
+          <p className="mt-auto pt-2 text-sm text-[var(--gs-muted)]">{example.interactionAdjustment}</p>
         </div>
       </div>
 
-      <div className={`mt-4 rounded-2xl border px-4 py-4 ${styles.soft} ${styles.border}`}>
+      <div className={`mt-4 flex flex-1 flex-col rounded-2xl border px-4 py-4 ${styles.soft} ${styles.border}`}>
         <div className="flex flex-wrap items-center justify-between gap-3">
           <p className="text-sm font-medium text-[var(--gs-muted)]">最终定级分</p>
           <div className="flex flex-wrap items-center gap-3">
