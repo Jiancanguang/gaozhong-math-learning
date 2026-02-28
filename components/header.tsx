@@ -18,25 +18,25 @@ export function Header() {
         </Link>
         <nav className="flex items-center gap-4 text-sm text-ink/80">
           <Link href="/courses?grade=10" className="transition hover:text-accent">
-            高一下同步
+            同步课程
           </Link>
           <Link href={gaokaoHref} className="transition hover:text-accent">
-            高三真题
+            真题专区
           </Link>
           <Link href={gaokaoSystemHref} className="transition hover:text-accent">
-            高考提分系统
+            提分专区
           </Link>
           <Link href={roadmapHref} className="transition hover:text-accent">
-            学习路径图
+            学习路径
           </Link>
           <Link href={resourcesHref} className="transition hover:text-accent">
-            教学资源
+            资料库
           </Link>
           <Link href="/courses" className="transition hover:text-accent">
-            课程
+            全部内容
           </Link>
           <Link href={assignmentHref} className="transition hover:text-accent">
-            个性化作业
+            作业方案
           </Link>
           {showAdminEntry ? (
             <Link href={adminVideosHref} className="transition hover:text-accent">
@@ -44,7 +44,7 @@ export function Header() {
             </Link>
           ) : null}
           <Link href="/about" className="transition hover:text-accent">
-            关于与反馈
+            关于我
           </Link>
         </nav>
       </div>
