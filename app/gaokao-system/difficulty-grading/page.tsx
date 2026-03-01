@@ -6,6 +6,7 @@ import {
   capRule,
   dimensionRules,
   exampleCases,
+  gradingNotes,
   hiddenConditionGuides,
   interactionAdjustments,
   levelOrder,
@@ -252,7 +253,15 @@ export default function DifficultyGradingPage() {
             </tbody>
           </table>
         </div>
-        <div className="mt-5 rounded-2xl border border-[var(--gs-line)] bg-[rgba(15,109,140,0.04)] p-4 text-sm text-[var(--gs-muted)]">
+        <div className="mt-5 grid gap-3 lg:grid-cols-2">
+          {gradingNotes.map((note) => (
+            <article key={note.title} className="rounded-2xl border border-[var(--gs-line)] bg-white p-4">
+              <p className="text-sm font-semibold text-[var(--gs-primary)]">{note.title}</p>
+              <p className="mt-2 text-sm text-[var(--gs-muted)]">{note.body}</p>
+            </article>
+          ))}
+        </div>
+        <div className="mt-4 rounded-2xl border border-[var(--gs-line)] bg-[rgba(15,109,140,0.04)] p-4 text-sm text-[var(--gs-muted)]">
           题目难度的本质，是这道题能被多大比例的考生稳定做对。这里的分层参考，综合了广东录取数据、模考均分和一线教学经验，用来帮助你判断题目门槛，而不是替代真实考试评价。
         </div>
       </section>

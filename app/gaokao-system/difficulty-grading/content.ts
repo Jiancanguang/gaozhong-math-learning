@@ -43,6 +43,11 @@ export type ExampleCase = {
   }>;
 };
 
+export type GradingNote = {
+  title: string;
+  body: string;
+};
+
 export const anchors = [
   { id: 'why-grade', label: '为什么这样分级' },
   { id: 'five-dimensions', label: '五维模型' },
@@ -66,7 +71,7 @@ export const levelReferences: Record<LevelKey, LevelReference> = {
     label: '本科线',
     scoreRange: '45-60 / 150',
     ratio: '30%-40%',
-    meaning: '只需掌握基础题即可达到。选填前几题 + 解答第一问。',
+    meaning: '只需掌握基础题即可达到。单选前几题 + 填空基础题；多选以争取部分分为主；解答第一问。',
     motto: '一看就会，一做就对'
   },
   erben: {
@@ -74,7 +79,7 @@ export const levelReferences: Record<LevelKey, LevelReference> = {
     label: '二本线',
     scoreRange: '60-85 / 150',
     ratio: '40%-57%',
-    meaning: '基础题基本拿稳，中档题能做出大部分。选填偶有失误，解答题能写前两问。',
+    meaning: '基础题基本拿住 + 中档题大部分。单选中前段较稳，填空前两题争取得分；多选通常能拿部分分，偶尔可做对 1 题；解答能写前两问。',
     motto: '知道方向，需要拐弯'
   },
   tekong: {
@@ -82,7 +87,7 @@ export const levelReferences: Record<LevelKey, LevelReference> = {
     label: '特控线',
     scoreRange: '85-110 / 150',
     ratio: '57%-73%',
-    meaning: '基础和中档题要稳定，难题也要拿到部分分。选填通常只错 1 到 2 题。',
+    meaning: '基础 + 中档大体稳住，难题能拿步骤分。单选基本稳，填空前两题较稳；多选通常至少 1 题接近全对或全对，另外题目能拿部分分；解答题前段较完整。',
     motto: '路径多条，需要选择'
   },
   '985': {
@@ -90,10 +95,21 @@ export const levelReferences: Record<LevelKey, LevelReference> = {
     label: '985/211',
     scoreRange: '110-130+ / 150',
     ratio: '73%-87%+',
-    meaning: '基础与中档题几乎零失误，压轴题需要接近完整解答。',
+    meaning: '基础中档基本不失分，较难题也能持续得分。单选填空整体稳定；多选整体得分高，但不以三题全对为常态，通常有 1-2 题全对、其余题拿部分分；解答题主体完成度高，压轴题能做出关键问，上沿学生可接近完整。',
     motto: '没有套路，需要创造'
   }
 };
+
+export const gradingNotes: GradingNote[] = [
+  {
+    title: '口径校准',
+    body: '110-130 分段更贴近“压轴题能突破、能拿较多步骤分”，而不是“压轴题普遍完整解答、解答题接近满分”。后者通常更接近 130+ 乃至更高分段。'
+  },
+  {
+    title: '多选题口径',
+    body: '新高考 I 卷的多选题更适合按“有效得分”而非“全对题数”判断。特控线看的是能否稳定拿部分分并做对其中较难的 1 题；985/211 看的是整体高得分，但三道多选全部做对并不是常态要求。'
+  }
+] as const;
 
 export const dimensionRules: DimensionRule[] = [
   {
