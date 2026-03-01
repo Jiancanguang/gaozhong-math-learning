@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
-import { getCourseContent, getRelatedCourses, mapChapterName, toEmbedVideoUrl } from '@/lib/courses';
+import { getCourseContent, getRelatedCourses, mapChapterName, toBilibiliWatchUrl, toEmbedVideoUrl } from '@/lib/courses';
 
 type CourseDetailPageProps = {
   params: {
@@ -18,6 +18,7 @@ export default async function CourseDetailPage({ params }: CourseDetailPageProps
   const { meta, content } = result;
   const related = getRelatedCourses(meta, 3);
   const embedUrl = toEmbedVideoUrl(meta.videoUrl);
+  const watchUrl = toBilibiliWatchUrl(meta.videoUrl);
 
   return (
     <div className="mx-auto w-full max-w-6xl px-4 pb-12 pt-8 sm:px-6 lg:px-8">
@@ -46,10 +47,23 @@ export default async function CourseDetailPage({ params }: CourseDetailPageProps
           </div>
         ) : (
           <div className="flex aspect-video w-full items-center justify-center px-6 text-center text-sm text-white/80">
-            当前课程暂未配置视频。请在课程 MDX 的 frontmatter 中填写 videoUrl（支持 B 站视频链接、BV 号、av 号）。
+            当前视频不可用。请在课程内容或视频后台中改为可嵌入的 B 站链接、BV 号或 av 号。
           </div>
         )}
       </section>
+
+      {watchUrl ? (
+        <div className="mt-3 flex justify-end">
+          <a
+            href={watchUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="rounded-lg border border-tide/15 bg-white/90 px-4 py-2 text-sm font-medium text-tide transition hover:border-accent/40 hover:text-accent"
+          >
+            去 B 站原链接观看
+          </a>
+        </div>
+      ) : null}
 
       <section className="mt-6 rounded-2xl border border-tide/10 bg-white/90 p-6">
         <h2 className="text-xl font-semibold text-tide">课程讲义</h2>

@@ -22,6 +22,12 @@ export type Course = {
   summary: string;
 };
 
+export type VideoEmbedHint = {
+  embedUrl: string;
+  tone: 'muted' | 'emerald' | 'amber';
+  message: string;
+};
+
 type Frontmatter = Course;
 
 function collectMdxFiles(dir: string): string[] {
@@ -50,7 +56,6 @@ function parseCourseFile(filePath: string): { meta: Course; content: string } {
     'title',
     'grade',
     'chapter',
-    'videoUrl',
     'order',
     'summary',
     'duration',
@@ -70,7 +75,7 @@ function parseCourseFile(filePath: string): { meta: Course; content: string } {
       grade: String(frontmatter.grade) as Grade,
       chapter: String(frontmatter.chapter),
       tags: Array.isArray(frontmatter.tags) ? frontmatter.tags.map(String) : [],
-      videoUrl: String(frontmatter.videoUrl),
+      videoUrl: String(frontmatter.videoUrl ?? ''),
       duration: String(frontmatter.duration),
       updatedAt: String(frontmatter.updatedAt),
       order: Number(frontmatter.order),
@@ -164,16 +169,6 @@ export function toEmbedVideoUrl(url: string): string {
     const parsed = new URL(raw);
     const host = parsed.hostname.toLowerCase();
 
-    if (host.includes('youtube.com') && parsed.pathname === '/watch') {
-      const videoId = parsed.searchParams.get('v');
-      if (videoId) return `https://www.youtube.com/embed/${videoId}`;
-    }
-
-    if (host === 'youtu.be') {
-      const videoId = parsed.pathname.split('/').filter(Boolean)[0];
-      if (videoId) return `https://www.youtube.com/embed/${videoId}`;
-    }
-
     if (host === 'player.bilibili.com' && parsed.pathname.includes('/player.html')) {
       return parsed.toString();
     }
@@ -201,8 +196,88 @@ export function toEmbedVideoUrl(url: string): string {
       }
     }
   } catch {
-    // Keep raw value fallback for unsupported formats.
+    // Unsupported URL formats fall through to an empty embed URL.
   }
 
-  return raw;
+  return '';
+}
+
+export function toBilibiliWatchUrl(url: string): string {
+  const raw = url.trim();
+  if (!raw) return '';
+
+  const bvMatch = raw.match(/(BV[0-9A-Za-z]{10})/);
+  if (bvMatch?.[1]) {
+    return `https://www.bilibili.com/video/${bvMatch[1]}`;
+  }
+
+  const avMatch = raw.match(/(?:^|[^0-9])(av\d{1,12})(?:$|[^0-9])/i);
+  if (avMatch?.[1]) {
+    return `https://www.bilibili.com/video/${avMatch[1].toLowerCase()}`;
+  }
+
+  try {
+    const parsed = new URL(raw);
+    const host = parsed.hostname.toLowerCase();
+
+    if (host === 'player.bilibili.com' && parsed.pathname.includes('/player.html')) {
+      const bvid = parsed.searchParams.get('bvid');
+      if (bvid) return `https://www.bilibili.com/video/${bvid}`;
+
+      const aid = parsed.searchParams.get('aid');
+      if (aid) return `https://www.bilibili.com/video/av${aid}`;
+    }
+
+    if (host.includes('bilibili.com')) {
+      const pathBv = parsed.pathname.match(/\/video\/(BV[0-9A-Za-z]{10})/i)?.[1];
+      if (pathBv) return `https://www.bilibili.com/video/${pathBv}`;
+
+      const pathAv = parsed.pathname.match(/\/video\/av(\d{1,12})/i)?.[1];
+      if (pathAv) return `https://www.bilibili.com/video/av${pathAv}`;
+
+      const bvid = parsed.searchParams.get('bvid');
+      if (bvid) return `https://www.bilibili.com/video/${bvid}`;
+
+      const aid = parsed.searchParams.get('aid');
+      if (aid) return `https://www.bilibili.com/video/av${aid}`;
+    }
+  } catch {
+    // Unsupported URL formats fall through to an empty watch URL.
+  }
+
+  return '';
+}
+
+export function getVideoEmbedHint(url: string): VideoEmbedHint {
+  const raw = url.trim();
+  if (!raw) {
+    return {
+      embedUrl: '',
+      tone: 'muted',
+      message: '未配置视频链接。'
+    };
+  }
+
+  const embedUrl = toEmbedVideoUrl(raw);
+  if (!embedUrl) {
+    return {
+      embedUrl: '',
+      tone: 'amber',
+      message: '无法解析为可嵌入地址；目前仅支持 B 站链接、BV 号或 av 号。'
+    };
+  }
+
+  if (raw.includes('player.bilibili.com/player.html')) {
+    return {
+      embedUrl,
+      tone: 'emerald',
+      message: '已使用 B 站播放器直链。'
+    };
+  }
+
+  return {
+    embedUrl,
+    tone: 'amber',
+    message: '已解析为 B 站播放器地址，但实际能否嵌入仍取决于视频版权、登录和外链限制。'
+  };
 }
