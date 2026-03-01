@@ -1,27 +1,52 @@
 const updateLogs = [
   {
-    date: '2026-03-01',
-    title: '成绩追踪系统与后台管理上线',
-    summary: '站内补齐了成绩追踪页面和配套后台，开始支持围绕学生考试数据做记录、查看和维护。',
-    details: ['新增成绩追踪页，方便按阶段回看分数变化', '新增后台入口，可管理学生资料、考试记录和趋势展示']
+    date: '2026-02-25',
+    badge: '建站起点',
+    title: '网站第一版完成，可部署主框架正式建立',
+    summary: '这是网站建立的起点。主站第一版已经具备首页、同步课程、课程详情、作业方案、学习路径和关于页等核心结构。',
+    details: ['完成主站框架、课程内容读取和基础页面搭建', '必修二学习路径图上线，项目进入可部署状态']
   },
   {
-    date: '2026-02-28',
-    title: '提分专区新增难度分级页面',
-    summary: '提分专区补上了难度分级模块，把训练内容按层次拆开，帮助学生更清楚地判断当前训练重点。',
-    details: ['新增难度分级页面内容', '导航栏加入入口，示例卡片版式同步整理']
+    date: '2026-02-25',
+    badge: '栏目上线',
+    title: '真题专区加入主站，首页导航第一次扩展',
+    summary: '网站在最初的同步课程和学习路径之外，补上了高考真题专区，让主站开始形成更完整的栏目结构。',
+    details: ['新增真题专区页面', '首页与导航同步加入对应入口']
   },
   {
-    date: '2026-02-28',
-    title: '首页、导航和关于页文案统一',
-    summary: '首页表达、站点导航和关于页说明做了一轮统一整理，让栏目定位更清楚，首次访问时更容易看懂整站结构。',
-    details: ['首页文案重新收束，重点更明确', '导航与关于页同步调整，整体品牌表达更一致']
+    date: '2026-02-25',
+    badge: '功能补强',
+    title: '课程视频后台接入，课程页开始支持视频覆盖',
+    summary: '为了让课程内容更容易维护，网站增加了课程视频后台，可以对课程视频链接做集中管理。',
+    details: ['新增视频后台页面与 Supabase 覆盖逻辑', '课程详情页开始支持视频展示与后续维护']
+  },
+  {
+    date: '2026-02-25',
+    badge: '专题扩展',
+    title: '提分专区独立成型，补上方法、诊断与工具页',
+    summary: '在真题内容之外，网站新增独立的提分专区，开始系统化整理诊断、框架、方法和执行工具。',
+    details: ['新增高考系统专题首页和独立主题布局', '加入错题卡、时间块、复习计划等执行工具页面']
   },
   {
     date: '2026-02-26',
-    title: '学习路径页完成排版修正',
-    summary: '学习路径页面对信息卡片和连接关系做了重新调整，解决了重叠与间距不均的问题，阅读体验更顺。',
-    details: ['优化路径图卡片布局和视觉平衡', '修正卡片重叠与连接线间距问题']
+    badge: '内容扩充',
+    title: '学习路径改成平面向量路线图，并补上资料库',
+    summary: '网站开始从基础页面进入内容细化阶段，学习路径页多次迭代，最终改成平面向量路线图，同时加入资料库页面。',
+    details: ['学习路径图重新排版，修正重叠与间距问题', '新增资料库和三角函数练习 HTML 文件']
+  },
+  {
+    date: '2026-02-28',
+    badge: '结构完善',
+    title: '首页表达统一，难度分级页面加入提分专区',
+    summary: '这一天主要做了整站表达和结构整理，同时把难度分级正式加入提分专区和主导航。',
+    details: ['统一首页、导航、品牌和关于页文案', '新增难度分级页面，并调整示例卡片展示']
+  },
+  {
+    date: '2026-03-01',
+    badge: '最近同步',
+    title: '成绩追踪系统上线，并补充课程资料同步',
+    summary: '网站开始支持成绩追踪与后台管理，同时补充了课程视频解析、讲义同步和学习资料整理。',
+    details: ['新增成绩追踪页与后台管理入口', '更新课程视频跳转逻辑，并整理上传学习笔记与提取文本']
   }
 ];
 
@@ -37,9 +62,9 @@ export default function AboutPage() {
         <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <h2 className="text-xl font-semibold text-tide">更新进度</h2>
-            <p className="mt-2 text-sm text-ink/80">这里按时间倒序记录网站最近完成的更新，后续每补一个模块都会继续记在这里。</p>
+            <p className="mt-2 text-sm text-ink/80">这里按建站时间顺序记录网站的发展过程，从 2026-02-25 建站开始，一直到最近一次更新。</p>
           </div>
-          <span className="inline-flex w-fit rounded-full border border-accent/15 bg-accent/10 px-3 py-1 text-xs font-medium text-accent">持续更新中</span>
+          <span className="inline-flex w-fit rounded-full border border-accent/15 bg-accent/10 px-3 py-1 text-xs font-medium text-accent">建站记录</span>
         </div>
 
         <div className="relative mt-6 pl-6 before:absolute before:bottom-3 before:left-[0.7rem] before:top-3 before:w-px before:bg-gradient-to-b before:from-sky/60 before:via-tide/25 before:to-accent/45 sm:pl-8 sm:before:left-[0.95rem]">
@@ -53,7 +78,7 @@ export default function AboutPage() {
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                   <div>
                     <span className="inline-flex rounded-full bg-tide/8 px-2.5 py-1 text-[11px] font-semibold tracking-[0.16em] text-tide">
-                      最近更新
+                      {log.badge}
                     </span>
                     <h3 className="mt-3 text-base font-semibold text-tide">{log.title}</h3>
                   </div>
