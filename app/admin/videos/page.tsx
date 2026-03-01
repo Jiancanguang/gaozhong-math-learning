@@ -1,52 +1,15 @@
 import { revalidatePath } from 'next/cache';
-import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
-import { getAllCourses, mapChapterName, toEmbedVideoUrl } from '@/lib/courses';
+import { AdminLoginPanel, AdminLogoutButton, AdminSupabaseUnavailablePanel, AdminTokenUnavailablePanel } from '@/components/admin-auth-panels';
+import { getAllCourses, getVideoEmbedHint, mapChapterName } from '@/lib/courses';
+import { isAdminAuthorized, isAdminTokenConfigured } from '@/lib/admin-auth';
 import { deleteVideoOverride, isVideoOverrideStoreEnabled, listVideoOverrides, upsertVideoOverride } from '@/lib/video-overrides';
-
-const ADMIN_COOKIE_NAME = 'course_admin_token';
-
-function getAdminToken() {
-  return process.env.COURSE_ADMIN_TOKEN?.trim() ?? '';
-}
-
-function isAuthorized() {
-  const token = getAdminToken();
-  if (!token) return false;
-  return cookies().get(ADMIN_COOKIE_NAME)?.value === token;
-}
-
-async function loginAction(formData: FormData) {
-  'use server';
-
-  const expected = getAdminToken();
-  const input = String(formData.get('token') ?? '').trim();
-
-  if (!expected || !input || input !== expected) {
-    redirect('/admin/videos?error=invalid-token');
-  }
-
-  cookies().set(ADMIN_COOKIE_NAME, input, {
-    httpOnly: true,
-    sameSite: 'lax',
-    secure: process.env.NODE_ENV === 'production',
-    path: '/',
-    maxAge: 60 * 60 * 24 * 7
-  });
-
-  redirect('/admin/videos');
-}
-
-async function logoutAction() {
-  'use server';
-  cookies().delete(ADMIN_COOKIE_NAME);
-}
 
 async function saveVideoAction(formData: FormData) {
   'use server';
 
-  if (!isAuthorized()) return;
+  if (!isAdminAuthorized()) return;
 
   const courseId = String(formData.get('courseId') ?? '').trim();
   const videoUrl = String(formData.get('videoUrl') ?? '').trim();
@@ -84,56 +47,26 @@ type AdminVideosPageProps = {
 
 export default async function AdminVideosPage({ searchParams }: AdminVideosPageProps) {
   const storeEnabled = isVideoOverrideStoreEnabled();
-  const configuredToken = Boolean(getAdminToken());
+  const configuredToken = isAdminTokenConfigured();
 
   if (!storeEnabled) {
-    return (
-      <div className="mx-auto w-full max-w-3xl px-4 pb-12 pt-8 sm:px-6 lg:px-8">
-        <h1 className="text-3xl font-semibold text-tide">视频管理后台</h1>
-        <p className="mt-3 rounded-xl border border-amber-300/60 bg-amber-50 p-4 text-sm text-amber-900">
-          未检测到 Supabase 配置。请先在环境变量中设置 `SUPABASE_URL` 与 `SUPABASE_SERVICE_ROLE_KEY`，再刷新本页。
-        </p>
-      </div>
-    );
+    return <AdminSupabaseUnavailablePanel title="视频管理后台" />;
   }
 
   if (!configuredToken) {
-    return (
-      <div className="mx-auto w-full max-w-3xl px-4 pb-12 pt-8 sm:px-6 lg:px-8">
-        <h1 className="text-3xl font-semibold text-tide">视频管理后台</h1>
-        <p className="mt-3 rounded-xl border border-amber-300/60 bg-amber-50 p-4 text-sm text-amber-900">
-          未设置 `COURSE_ADMIN_TOKEN`，后台已禁用。请先配置后台口令环境变量。
-        </p>
-      </div>
-    );
+    return <AdminTokenUnavailablePanel title="视频管理后台" />;
   }
 
-  const authed = isAuthorized();
+  const authed = isAdminAuthorized();
 
   if (!authed) {
     return (
-      <div className="mx-auto w-full max-w-md px-4 pb-12 pt-8 sm:px-6 lg:px-8">
-        <h1 className="text-3xl font-semibold text-tide">视频管理后台登录</h1>
-        <p className="mt-3 text-sm text-ink/70">输入后台口令后，即可在网页里设置每节课的 B 站视频链接。</p>
-        {searchParams?.error === 'invalid-token' ? (
-          <p className="mt-3 rounded-lg border border-rose-300/70 bg-rose-50 px-3 py-2 text-sm text-rose-700">口令不正确，请重新输入。</p>
-        ) : null}
-        <form action={loginAction} className="mt-6 rounded-2xl border border-tide/10 bg-white/90 p-5 shadow-card">
-          <label htmlFor="token" className="text-sm font-medium text-ink">
-            后台口令
-          </label>
-          <input
-            id="token"
-            name="token"
-            type="password"
-            required
-            className="mt-2 w-full rounded-lg border border-tide/20 bg-white px-3 py-2 text-sm outline-none focus:border-accent"
-          />
-          <button type="submit" className="mt-4 w-full rounded-lg bg-tide px-4 py-2 text-sm font-medium text-white transition hover:bg-tide/90">
-            登录
-          </button>
-        </form>
-      </div>
+      <AdminLoginPanel
+        title="视频管理后台登录"
+        description="输入后台口令后，即可在网页里设置每节课的 B 站视频链接。"
+        successPath="/admin/videos"
+        error={searchParams?.error}
+      />
     );
   }
 
@@ -146,6 +79,7 @@ export default async function AdminVideosPage({ searchParams }: AdminVideosPageP
         <div>
           <h1 className="text-3xl font-semibold text-tide">视频管理后台</h1>
           <p className="mt-2 text-sm text-ink/70">只改数据库里的视频链接，不改课程 MDX 内容文件。</p>
+          <p className="mt-2 text-xs text-ink/55">提示中的“已解析”仅表示链接格式可转换成 B 站播放器，不代表该视频一定允许站外嵌入。</p>
           {searchParams?.saved === '1' ? <p className="mt-2 text-sm text-emerald-700">已保存。</p> : null}
           {searchParams?.error === 'missing-table' ? (
             <p className="mt-2 rounded-lg border border-rose-300/70 bg-rose-50 px-3 py-2 text-sm text-rose-700">
@@ -156,11 +90,7 @@ export default async function AdminVideosPage({ searchParams }: AdminVideosPageP
             <p className="mt-2 rounded-lg border border-rose-300/70 bg-rose-50 px-3 py-2 text-sm text-rose-700">保存失败，请稍后重试。</p>
           ) : null}
         </div>
-        <form action={logoutAction}>
-          <button type="submit" className="rounded-lg border border-tide/20 bg-white px-4 py-2 text-sm text-ink transition hover:border-accent/40">
-            退出登录
-          </button>
-        </form>
+        <AdminLogoutButton redirectPath="/admin/videos" />
       </div>
 
       <div className="mt-6 overflow-x-auto rounded-2xl border border-tide/10 bg-white/90 shadow-card">
@@ -177,7 +107,20 @@ export default async function AdminVideosPage({ searchParams }: AdminVideosPageP
             {courses.map((course) => {
               const overrideUrl = overrides[course.id] ?? '';
               const effectiveUrl = overrideUrl || course.videoUrl;
-              const embedPreview = toEmbedVideoUrl(effectiveUrl);
+              const effectiveHint = getVideoEmbedHint(effectiveUrl);
+              const overrideHint = getVideoEmbedHint(overrideUrl);
+              const hintClassName =
+                effectiveHint.tone === 'emerald'
+                  ? 'text-emerald-700'
+                  : effectiveHint.tone === 'amber'
+                    ? 'text-amber-700'
+                    : 'text-ink/50';
+              const overrideHintClassName =
+                overrideHint.tone === 'emerald'
+                  ? 'text-emerald-700'
+                  : overrideHint.tone === 'amber'
+                    ? 'text-amber-700'
+                    : 'text-ink/50';
               return (
                 <tr key={course.id} className="border-b border-tide/10 align-top last:border-b-0">
                   <td className="px-4 py-4">
@@ -188,7 +131,8 @@ export default async function AdminVideosPage({ searchParams }: AdminVideosPageP
                   </td>
                   <td className="px-4 py-4">
                     <p className="max-w-xs break-all text-xs text-ink/75">{effectiveUrl}</p>
-                    <p className="mt-1 max-w-xs break-all text-[11px] text-ink/50">{embedPreview || '未解析到可嵌入地址'}</p>
+                    <p className={`mt-1 max-w-xs text-[11px] ${hintClassName}`}>{effectiveHint.message}</p>
+                    {effectiveHint.embedUrl ? <p className="mt-1 max-w-xs break-all text-[11px] text-ink/50">{effectiveHint.embedUrl}</p> : null}
                   </td>
                   <td className="px-4 py-4">
                     <form action={saveVideoAction} className="min-w-[360px]">
@@ -200,6 +144,10 @@ export default async function AdminVideosPage({ searchParams }: AdminVideosPageP
                         placeholder="可填 B站链接 / BV号 / av号"
                         className="w-full rounded-lg border border-tide/20 bg-white px-3 py-2 text-sm outline-none focus:border-accent"
                       />
+                      <p className={`mt-2 max-w-md text-[11px] ${overrideHintClassName}`}>
+                        {overrideUrl ? overrideHint.message : '留空时将回退到 MDX 默认值。'}
+                      </p>
+                      {overrideHint.embedUrl ? <p className="mt-1 max-w-md break-all text-[11px] text-ink/50">{overrideHint.embedUrl}</p> : null}
                       <div className="mt-2 flex items-center gap-2">
                         <button
                           type="submit"

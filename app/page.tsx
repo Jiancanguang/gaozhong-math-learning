@@ -16,6 +16,12 @@ const focusTracks = [
     description: '按年份和题型拆真题，抓思路、得分点和高频失分环节。',
     timeline: '持续更新中',
     href: '/gaokao' as Route
+  },
+  {
+    title: '学生成绩追踪系统',
+    description: '为老师持续记录学生多次考试的总分、单科分和班排年排变化。',
+    timeline: '支持长期追踪',
+    href: '/score-tracker' as Route
   }
 ];
 
@@ -38,6 +44,7 @@ export default function HomePage() {
   const gaokaoSystemHref = '/gaokao-system' as Route;
   const roadmapHref = '/roadmap' as Route;
   const resourcesHref = '/resources' as Route;
+  const scoreTrackerHref = '/score-tracker' as Route;
   const latestCourses = getLatestCourses(6);
   const latestChapters = Array.from(new Set(latestCourses.map((course) => course.chapter))).map((chapter) => mapChapterName(chapter));
 
@@ -66,6 +73,9 @@ export default function HomePage() {
           <Link href={gaokaoSystemHref} className="rounded-xl bg-white px-5 py-3 text-sm font-medium text-tide ring-1 ring-tide/20 transition hover:bg-tide/5">
             进入提分专区
           </Link>
+          <Link href={scoreTrackerHref} className="rounded-xl bg-white px-5 py-3 text-sm font-medium text-tide ring-1 ring-tide/20 transition hover:bg-tide/5">
+            打开成绩追踪
+          </Link>
           <Link href={roadmapHref} className="rounded-xl bg-white px-5 py-3 text-sm font-medium text-tide ring-1 ring-tide/20 transition hover:bg-tide/5">
             查看学习路径
           </Link>
@@ -81,7 +91,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="mt-10 grid gap-4 md:grid-cols-2">
+      <section className="mt-10 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {focusTracks.map((track) => (
           <article key={track.title} className="rounded-2xl border border-tide/10 bg-white/80 p-5">
             <h2 className="text-xl font-semibold text-tide">{track.title}</h2>

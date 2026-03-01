@@ -1,3 +1,7 @@
+import 'server-only';
+
+import { buildTablePath, isSupabaseAdminEnabled, supabaseAdminRequest } from '@/lib/supabase-admin';
+
 type VideoOverrideRecord = {
   course_id: string;
   video_url: string;
@@ -5,51 +9,8 @@ type VideoOverrideRecord = {
 
 const TABLE_NAME = 'course_video_overrides';
 
-function getSupabaseConfig() {
-  const url = process.env.SUPABASE_URL?.trim();
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim();
-
-  if (!url || !serviceRoleKey) return null;
-
-  return {
-    restBaseUrl: `${url.replace(/\/$/, '')}/rest/v1`,
-    serviceRoleKey
-  };
-}
-
-function isTableNameSafe(tableName: string) {
-  return /^[a-z_][a-z0-9_]*$/.test(tableName);
-}
-
-async function supabaseRequest(path: string, init: RequestInit = {}) {
-  const config = getSupabaseConfig();
-  if (!config) return null;
-
-  if (!isTableNameSafe(TABLE_NAME)) {
-    throw new Error(`Unsafe table name: ${TABLE_NAME}`);
-  }
-
-  const response = await fetch(`${config.restBaseUrl}/${path}`, {
-    ...init,
-    cache: 'no-store',
-    headers: {
-      apikey: config.serviceRoleKey,
-      Authorization: `Bearer ${config.serviceRoleKey}`,
-      'Content-Type': 'application/json',
-      ...init.headers
-    }
-  });
-
-  if (!response.ok) {
-    const reason = await response.text();
-    throw new Error(`Supabase request failed (${response.status}): ${reason}`);
-  }
-
-  return response;
-}
-
 export function isVideoOverrideStoreEnabled() {
-  return Boolean(getSupabaseConfig());
+  return isSupabaseAdminEnabled();
 }
 
 export async function getVideoOverrideByCourseId(courseId: string): Promise<string | null> {
@@ -61,7 +22,7 @@ export async function getVideoOverrideByCourseId(courseId: string): Promise<stri
       course_id: `eq.${courseId}`,
       limit: '1'
     });
-    const response = await supabaseRequest(`${TABLE_NAME}?${params.toString()}`);
+    const response = await supabaseAdminRequest(buildTablePath(TABLE_NAME, params.toString()));
     if (!response) return null;
 
     const rows = (await response.json()) as Array<{ video_url?: string }>;
@@ -78,7 +39,7 @@ export async function listVideoOverrides(): Promise<Record<string, string>> {
     const params = new URLSearchParams({
       select: 'course_id,video_url'
     });
-    const response = await supabaseRequest(`${TABLE_NAME}?${params.toString()}`);
+    const response = await supabaseAdminRequest(buildTablePath(TABLE_NAME, params.toString()));
     if (!response) return {};
 
     const rows = (await response.json()) as VideoOverrideRecord[];
@@ -101,7 +62,7 @@ export async function upsertVideoOverride(courseId: string, videoUrl: string): P
   const url = videoUrl.trim();
   if (!id || !url) throw new Error('courseId and videoUrl are required.');
 
-  const response = await supabaseRequest(`${TABLE_NAME}`, {
+  const response = await supabaseAdminRequest(buildTablePath(TABLE_NAME), {
     method: 'POST',
     headers: {
       Prefer: 'resolution=merge-duplicates,return=minimal'
@@ -121,7 +82,7 @@ export async function deleteVideoOverride(courseId: string): Promise<void> {
   const id = courseId.trim();
   if (!id) return;
 
-  const response = await supabaseRequest(`${TABLE_NAME}?course_id=eq.${encodeURIComponent(id)}`, {
+  const response = await supabaseAdminRequest(buildTablePath(TABLE_NAME, `course_id=eq.${encodeURIComponent(id)}`), {
     method: 'DELETE',
     headers: {
       Prefer: 'return=minimal'
