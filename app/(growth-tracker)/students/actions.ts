@@ -42,9 +42,13 @@ export async function createStudentAction(formData: FormData) {
     });
     revalidatePath('/students');
     redirect(`/students/${student.id}?saved=student` as never);
-  } catch (error) {
-    console.error('createStudentAction error:', error);
-    redirect('/students/new?error=save-failed' as never);
+  } catch (error: unknown) {
+    // redirect() throws a special error that should not be caught
+    if (error instanceof Error && error.message === 'NEXT_REDIRECT') throw error;
+    if (typeof error === 'object' && error !== null && 'digest' in error) throw error;
+    const message = error instanceof Error ? error.message : 'unknown';
+    console.error('createStudentAction error:', message);
+    redirect(`/students/new?error=${encodeURIComponent(message)}` as never);
   }
 }
 

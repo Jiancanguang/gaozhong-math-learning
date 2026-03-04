@@ -27,7 +27,7 @@ export default async function NewStudentPage({ searchParams }: Props) {
 
       {error ? (
         <p className="mt-4 rounded-lg border border-rose-300/70 bg-rose-50 px-3 py-2 text-sm text-rose-700">
-          {error === 'validation' ? '请填写必填字段。' : '保存失败，请重试。'}
+          {error === 'validation' ? '请填写必填字段。' : `保存失败：${error}`}
         </p>
       ) : null}
 
