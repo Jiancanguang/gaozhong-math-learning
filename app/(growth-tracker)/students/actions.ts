@@ -75,8 +75,12 @@ export async function updateStudentAction(studentId: string, formData: FormData)
     });
     revalidatePath('/students');
     redirect(`/students/${studentId}?saved=student` as never);
-  } catch (error) {
-    console.error('updateStudentAction error:', error);
+  } catch (error: unknown) {
+    // redirect() throws a special error that should not be caught
+    if (error instanceof Error && error.message === 'NEXT_REDIRECT') throw error;
+    if (typeof error === 'object' && error !== null && 'digest' in error) throw error;
+    const message = error instanceof Error ? error.message : 'unknown';
+    console.error('updateStudentAction error:', message);
     redirect(`/students/${studentId}/edit?error=save-failed` as never);
   }
 }
@@ -97,7 +101,9 @@ export async function archiveStudentAction(studentId: string) {
       status: 'archived'
     });
     revalidatePath('/students');
-  } catch (error) {
+  } catch (error: unknown) {
+    if (error instanceof Error && error.message === 'NEXT_REDIRECT') throw error;
+    if (typeof error === 'object' && error !== null && 'digest' in error) throw error;
     console.error('archiveStudentAction error:', error);
   }
 }
