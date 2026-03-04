@@ -294,7 +294,7 @@ export async function getStudentByParentToken(token: string): Promise<Student | 
   if (!token?.trim()) return null;
 
   const query = new URLSearchParams({
-    select: 'id,name,grade,class_name,head_teacher,is_active,notes,group_name,parent_token,status,created_at,updated_at',
+    select: 'id,name,grade,class_name,head_teacher,notes,group_name,parent_token,status,created_at,updated_at',
     parent_token: `eq.${token.trim()}`,
     status: 'eq.active',
     limit: '1'
@@ -305,7 +305,7 @@ export async function getStudentByParentToken(token: string): Promise<Student | 
 
   const rows = (await response.json()) as Array<{
     id: string; name: string; grade: Grade; class_name: string;
-    head_teacher?: string | null; is_active?: boolean | null; notes: string;
+    head_teacher?: string | null; notes: string;
     group_name?: string | null; parent_token?: string | null; status?: string | null;
     created_at: string; updated_at: string;
   }>;
