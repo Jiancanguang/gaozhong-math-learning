@@ -16,18 +16,33 @@ export default async function StudentsPage({ searchParams }: Props) {
   const statusFilter = (searchParams.status ?? 'active') as 'all' | 'active' | 'archived';
   const nameFilter = searchParams.q ?? '';
 
-  const students = await listStudents({
-    q: nameFilter,
-    groupName: groupFilter || undefined,
-    status: statusFilter === 'all' ? undefined : statusFilter,
-    isActive: statusFilter === 'active' ? 'active' : statusFilter === 'archived' ? 'inactive' : 'all'
-  });
+  let students: Awaited<ReturnType<typeof listStudents>> = [];
+  let groupNames: string[] = [];
+  let dataError = '';
 
-  const groupNames = await getDistinctGroupNames();
+  try {
+    students = await listStudents({
+      q: nameFilter,
+      groupName: groupFilter || undefined,
+      status: statusFilter === 'all' ? undefined : statusFilter,
+      isActive: statusFilter === 'active' ? 'active' : statusFilter === 'archived' ? 'inactive' : 'all'
+    });
+    groupNames = await getDistinctGroupNames();
+  } catch (error) {
+    dataError = error instanceof Error ? error.message : '未知错误';
+    console.error('Students page error:', dataError);
+  }
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? '';
 
   return (
     <div>
+      {dataError ? (
+        <div className="mb-4 rounded-lg border border-rose-300/70 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+          <p className="font-medium">数据加载出错</p>
+          <p className="mt-1 text-xs">{dataError}</p>
+        </div>
+      ) : null}
+
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold text-gt-primary">学生管理</h1>
         <Link

@@ -7,11 +7,27 @@ export const metadata: Metadata = {
 };
 
 export default async function DashboardPage() {
-  const stats = await getDashboardStats();
-  const recentLessons = (await listLessons()).slice(0, 8);
+  let stats = { totalStudents: 0, totalLessons: 0, avgEntryScore: null as number | null, avgExitScore: null as number | null };
+  let recentLessons: Awaited<ReturnType<typeof listLessons>> = [];
+  let dataError = '';
+
+  try {
+    stats = await getDashboardStats();
+    recentLessons = (await listLessons()).slice(0, 8);
+  } catch (error) {
+    dataError = error instanceof Error ? error.message : '未知错误';
+    console.error('Dashboard data error:', dataError);
+  }
 
   return (
     <div>
+      {dataError ? (
+        <div className="mb-4 rounded-lg border border-rose-300/70 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+          <p className="font-medium">数据加载出错</p>
+          <p className="mt-1 text-xs">{dataError}</p>
+        </div>
+      ) : null}
+
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold text-gt-primary">数据总览</h1>
         <Link
