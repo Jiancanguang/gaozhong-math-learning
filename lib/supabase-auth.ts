@@ -40,11 +40,16 @@ export function createSupabaseServerClient() {
 }
 
 export async function getAuthUser() {
-  const supabase = createSupabaseServerClient();
-  if (!supabase) return null;
+  try {
+    const supabase = createSupabaseServerClient();
+    if (!supabase) return null;
 
-  const { data: { user } } = await supabase.auth.getUser();
-  return user;
+    const { data: { user } } = await supabase.auth.getUser();
+    return user;
+  } catch (error) {
+    console.error('getAuthUser error:', error);
+    return null;
+  }
 }
 
 export async function isTeacherAuthorized(): Promise<boolean> {
