@@ -352,7 +352,7 @@ export function isScoreTrackerTableMissingError(error: unknown) {
 
 export async function listStudents(params: ListStudentsParams = {}): Promise<StudentListItem[]> {
   const query = new URLSearchParams({
-    select: 'id,name,grade,class_name,head_teacher,is_active,notes,group_name,parent_token,status,created_at,updated_at',
+    select: 'id,name,grade,class_name,head_teacher,notes,group_name,parent_token,status,created_at,updated_at',
     order: 'grade.asc,class_name.asc,name.asc'
   });
 
@@ -373,11 +373,11 @@ export async function listStudents(params: ListStudentsParams = {}): Promise<Stu
   }
 
   if (params.isActive === 'active') {
-    query.set('is_active', 'eq.true');
+    query.set('status', 'eq.active');
   }
 
   if (params.isActive === 'inactive') {
-    query.set('is_active', 'eq.false');
+    query.set('status', 'eq.archived');
   }
 
   if (params.groupName?.trim()) {
@@ -446,7 +446,7 @@ export async function getStudentById(studentId: string): Promise<Student | null>
   if (!studentId) return null;
 
   const params = new URLSearchParams({
-    select: 'id,name,grade,class_name,head_teacher,is_active,notes,group_name,parent_token,status,created_at,updated_at',
+    select: 'id,name,grade,class_name,head_teacher,notes,group_name,parent_token,status,created_at,updated_at',
     id: `eq.${studentId}`,
     limit: '1'
   });
@@ -467,11 +467,10 @@ export async function createStudent(input: CreateStudentInput): Promise<Student>
       grade: input.grade,
       class_name: input.className.trim(),
       head_teacher: input.headTeacher?.trim() ?? '',
-      is_active: input.isActive ?? true,
       notes: input.notes?.trim() ?? '',
       group_name: input.groupName?.trim() ?? '',
       parent_token: input.parentToken ?? '',
-      status: input.status ?? (input.isActive === false ? 'archived' : 'active')
+      status: input.status ?? 'active'
     })
   });
 
@@ -498,11 +497,10 @@ export async function updateStudent(studentId: string, input: UpdateStudentInput
       grade: input.grade,
       class_name: input.className.trim(),
       head_teacher: input.headTeacher?.trim() ?? '',
-      is_active: input.isActive ?? true,
       notes: input.notes?.trim() ?? '',
       group_name: input.groupName?.trim() ?? '',
       parent_token: input.parentToken ?? undefined,
-      status: input.status ?? (input.isActive === false ? 'archived' : 'active')
+      status: input.status ?? 'active'
     })
   });
 
