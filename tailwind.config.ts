@@ -13,7 +13,12 @@ const config: Config = {
         paper: '#fef9f2',
         accent: '#ff6b35',
         tide: '#0d3b66',
-        sky: '#79c7ff'
+        sky: '#79c7ff',
+        'gt-primary': '#1a365d',
+        'gt-accent': '#c0582c',
+        'gt-green': '#1d7a4c',
+        'gt-gold': '#b8912b',
+        'gt-red': '#c44040'
       },
       boxShadow: {
         card: '0 12px 30px rgba(13, 59, 102, 0.14)'
