@@ -4,7 +4,7 @@ import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'Growth V2',
-  description: '成长追踪 V2 的公开说明与后台骨架入口。'
+  description: '成长追踪 V2 的公开说明与老师后台入口。'
 };
 
 export default function GrowthV2Layout({

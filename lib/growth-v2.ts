@@ -53,7 +53,7 @@ export const GROWTH_V2_MASTERY_OPTIONS = [
 ] as const;
 
 export const GROWTH_V2_NEXT_STEPS = [
-  '补课堂 / 考试删除前的二次确认和更细的操作日志。',
+  '补更细的操作日志和关键操作审计。',
   '补更细的家长报告图表和阶段性总结。',
   '最后再把旧成长追踪入口切到 Growth V2。'
 ] as const;

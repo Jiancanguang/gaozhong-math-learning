@@ -13,7 +13,7 @@ export function renderGrowthV2AdminGate({
   successPath,
   searchError,
   title = 'Growth V2 后台登录',
-  description = '输入后台口令后，即可进入 Growth V2 的老师后台骨架。'
+  description = '输入后台口令后，即可进入 Growth V2 的老师后台。'
 }: GrowthV2AdminGateOptions) {
   if (!isSupabaseAdminEnabled()) {
     return <AdminSupabaseUnavailablePanel title="Growth V2 后台" />;

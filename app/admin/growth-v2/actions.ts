@@ -62,6 +62,10 @@ function getErrorRedirect(path: string, error: unknown) {
     return `${path}?error=missing-table`;
   }
 
+  if (error instanceof Error && error.message.includes('delete-confirm')) {
+    return `${path}?error=delete-confirm`;
+  }
+
   if (error instanceof Error && error.message.includes(':validation')) {
     return `${path}?error=validation`;
   }
@@ -71,6 +75,14 @@ function getErrorRedirect(path: string, error: unknown) {
   }
 
   return `${path}?error=save-failed`;
+}
+
+function parseDeleteConfirmation(formData: FormData, expectedValue: string) {
+  const confirmationText = getTrimmedString(formData, 'confirmationText');
+
+  if (!confirmationText || confirmationText !== expectedValue.trim()) {
+    throw new Error('delete-confirm');
+  }
 }
 
 function parseGrowthGroupPayload(formData: FormData): CreateGrowthGroupInput {
@@ -413,16 +425,17 @@ export async function updateGrowthLessonAction(lessonId: string, formData: FormD
   redirect(targetPath);
 }
 
-export async function deleteGrowthLessonAction(lessonId: string) {
+export async function deleteGrowthLessonAction(lessonId: string, lessonTopic: string, formData: FormData) {
   requireAdminAccess();
 
-  let targetPath = '/admin/growth-v2/lessons';
+  let targetPath = `/admin/growth-v2/lessons/${lessonId}/delete`;
 
   try {
+    parseDeleteConfirmation(formData, lessonTopic);
     await deleteGrowthLesson(lessonId);
     targetPath = '/admin/growth-v2/lessons?deleted=1';
   } catch (error) {
-    targetPath = getErrorRedirect(`/admin/growth-v2/lessons/${lessonId}`, error);
+    targetPath = getErrorRedirect(`/admin/growth-v2/lessons/${lessonId}/delete`, error);
   }
 
   redirect(targetPath);
@@ -462,16 +475,17 @@ export async function updateGrowthExamAction(examId: string, formData: FormData)
   redirect(targetPath);
 }
 
-export async function deleteGrowthExamAction(examId: string) {
+export async function deleteGrowthExamAction(examId: string, examName: string, formData: FormData) {
   requireAdminAccess();
 
-  let targetPath = '/admin/growth-v2/exams';
+  let targetPath = `/admin/growth-v2/exams/${examId}/delete`;
 
   try {
+    parseDeleteConfirmation(formData, examName);
     await deleteGrowthExam(examId);
     targetPath = '/admin/growth-v2/exams?deleted=1';
   } catch (error) {
-    targetPath = getErrorRedirect(`/admin/growth-v2/exams/${examId}`, error);
+    targetPath = getErrorRedirect(`/admin/growth-v2/exams/${examId}/delete`, error);
   }
 
   redirect(targetPath);

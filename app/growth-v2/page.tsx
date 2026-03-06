@@ -12,7 +12,7 @@ const migrationStatus = [
   { title: '页面连通', detail: '已完成：学生、课堂、考试后台页和家长报告页都已接上真实读取。' },
   { title: '学生维护', detail: '已完成第一版：学生新建、编辑、详情和家长页 token 管理都已接好。' },
   { title: '后台录入', detail: '已完成第一版：课堂批量录入、考试批量录入都能直接写入 Supabase。' },
-  { title: '历史维护', detail: '已完成第一版：课堂详情页、考试详情页都支持回看和修改。' }
+  { title: '历史维护', detail: '已完成第一版：课堂详情页、考试详情页都支持回看、修改和二次确认删除。' }
 ];
 
 export default function GrowthV2Page() {

@@ -2,7 +2,7 @@ import type { Route } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
-import { deleteGrowthLessonAction, updateGrowthLessonAction } from '@/app/admin/growth-v2/actions';
+import { updateGrowthLessonAction } from '@/app/admin/growth-v2/actions';
 import { AdminLogoutButton } from '@/components/admin-auth-panels';
 import {
   GrowthV2LessonBatchForm,
@@ -131,7 +131,6 @@ export default async function GrowthV2LessonDetailPage({ params, searchParams }:
   });
   const performanceValues = lesson.records.flatMap((record) => (record.performance === null ? [] : [record.performance]));
   const updateAction = updateGrowthLessonAction.bind(null, lesson.id);
-  const deleteAction = deleteGrowthLessonAction.bind(null, lesson.id);
 
   return (
     <div className="mx-auto w-full max-w-6xl px-4 pb-12 pt-8 sm:px-6 lg:px-8">
@@ -147,11 +146,9 @@ export default async function GrowthV2LessonDetailPage({ params, searchParams }:
           <Link href={'/admin/growth-v2/lessons' as Route} className="rounded-lg border border-tide/20 px-4 py-2 text-sm font-medium text-tide transition hover:bg-tide/5">
             返回课堂列表
           </Link>
-          <form action={deleteAction}>
-            <button type="submit" className="rounded-lg border border-rose-200 px-4 py-2 text-sm font-medium text-rose-700 transition hover:bg-rose-50">
-              删除课堂
-            </button>
-          </form>
+          <Link href={`/admin/growth-v2/lessons/${lesson.id}/delete` as Route} className="rounded-lg border border-rose-200 px-4 py-2 text-sm font-medium text-rose-700 transition hover:bg-rose-50">
+            删除课堂
+          </Link>
           <AdminLogoutButton redirectPath={detailHref} />
         </div>
       </div>

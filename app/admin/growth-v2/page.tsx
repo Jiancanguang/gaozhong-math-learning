@@ -24,7 +24,7 @@ export default async function GrowthV2AdminPage({ searchParams }: GrowthV2AdminP
   const gate = renderGrowthV2AdminGate({
     successPath: '/admin/growth-v2',
     searchError: error,
-    description: '输入后台口令后，即可查看 Growth V2 的老师后台骨架和模块入口。'
+    description: '输入后台口令后，即可进入 Growth V2 的老师后台和各模块入口。'
   });
   if (gate) return gate;
 

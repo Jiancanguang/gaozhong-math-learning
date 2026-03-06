@@ -2,7 +2,7 @@ import type { Route } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
-import { deleteGrowthExamAction, updateGrowthExamAction } from '@/app/admin/growth-v2/actions';
+import { updateGrowthExamAction } from '@/app/admin/growth-v2/actions';
 import { AdminLogoutButton } from '@/components/admin-auth-panels';
 import {
   GrowthV2ExamBatchForm,
@@ -129,7 +129,6 @@ export default async function GrowthV2ExamDetailPage({ params, searchParams }: G
   const scoreValues = exam.scores.map((score) => score.score);
   const scoreRates = exam.scores.map((score) => (exam.totalScore > 0 ? (score.score / exam.totalScore) * 100 : null)).filter((value): value is number => value !== null);
   const updateAction = updateGrowthExamAction.bind(null, exam.id);
-  const deleteAction = deleteGrowthExamAction.bind(null, exam.id);
 
   return (
     <div className="mx-auto w-full max-w-6xl px-4 pb-12 pt-8 sm:px-6 lg:px-8">
@@ -145,11 +144,9 @@ export default async function GrowthV2ExamDetailPage({ params, searchParams }: G
           <Link href={'/admin/growth-v2/exams' as Route} className="rounded-lg border border-tide/20 px-4 py-2 text-sm font-medium text-tide transition hover:bg-tide/5">
             返回考试列表
           </Link>
-          <form action={deleteAction}>
-            <button type="submit" className="rounded-lg border border-rose-200 px-4 py-2 text-sm font-medium text-rose-700 transition hover:bg-rose-50">
-              删除考试
-            </button>
-          </form>
+          <Link href={`/admin/growth-v2/exams/${exam.id}/delete` as Route} className="rounded-lg border border-rose-200 px-4 py-2 text-sm font-medium text-rose-700 transition hover:bg-rose-50">
+            删除考试
+          </Link>
           <AdminLogoutButton redirectPath={detailHref} />
         </div>
       </div>
