@@ -16,6 +16,47 @@ function firstValue(value?: string | string[]) {
   return Array.isArray(value) ? value[0] : value;
 }
 
+const moduleVisualMap: Record<
+  (typeof GROWTH_V2_ADMIN_MODULES)[number]['title'],
+  {
+    eyebrow: string;
+    accentClassName: string;
+    quickPoints: string[];
+  }
+> = {
+  班组管理: {
+    eyebrow: 'Groups',
+    accentClassName: 'bg-sky/15 text-tide',
+    quickPoints: ['班组配置', '老师与年级', '沉淀统计']
+  },
+  标签目录: {
+    eyebrow: 'Tags',
+    accentClassName: 'bg-accent/10 text-accent',
+    quickPoints: ['分类排序', '启停状态', '引用次数']
+  },
+  学生档案: {
+    eyebrow: 'Students',
+    accentClassName: 'bg-emerald-100 text-emerald-700',
+    quickPoints: ['新建编辑', '家长 Token', '学习轨迹']
+  },
+  课堂记录: {
+    eyebrow: 'Lessons',
+    accentClassName: 'bg-tide/10 text-tide',
+    quickPoints: ['批量录入', '历史编辑', '删除确认']
+  },
+  考试管理: {
+    eyebrow: 'Exams',
+    accentClassName: 'bg-paper text-accent ring-1 ring-accent/15',
+    quickPoints: ['成绩录入', '薄弱点标签', '删除确认']
+  }
+};
+
+const operatingHighlights = [
+  '所有数据已经落在 `growth_*` 新表，不会碰旧版成绩追踪表。',
+  '线下版历史数据已经导入，当前看到的是实际班组、学生、课堂和考试数据。',
+  '后台现在可以直接做班组、标签、学生、课堂和考试维护，不只是展示页。'
+] as const;
+
 export const dynamic = 'force-dynamic';
 
 export default async function GrowthV2AdminPage({ searchParams }: GrowthV2AdminPageProps) {
@@ -76,79 +117,150 @@ export default async function GrowthV2AdminPage({ searchParams }: GrowthV2AdminP
 
   return (
     <div className="mx-auto w-full max-w-6xl px-4 pb-12 pt-8 sm:px-6 lg:px-8">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <p className="text-sm font-medium text-accent">Growth Tracking V2</p>
-          <h1 className="mt-2 text-3xl font-semibold text-tide">老师后台</h1>
-          <p className="mt-2 text-sm text-ink/70">Growth V2 现在已经接入真实 Supabase 数据，班组、标签、学生、课堂和考试模块都可以直接维护。</p>
-        </div>
-        <div className="flex flex-wrap gap-3">
-          <Link href={publicHref} className="rounded-lg border border-tide/20 px-4 py-2 text-sm font-medium text-tide transition hover:bg-tide/5">
-            公开概览
-          </Link>
-          <AdminLogoutButton redirectPath="/admin/growth-v2" />
-        </div>
-      </div>
-
-      <div className="mt-5">
+      <div>
         <GrowthV2AdminErrorBanner error={error} />
       </div>
 
-      <section className="mt-8 grid gap-4 md:grid-cols-4">
-        <article className="rounded-2xl border border-tide/10 bg-white/90 p-5 shadow-card">
-          <p className="text-sm text-ink/65">班组数</p>
-          <p className="mt-2 text-3xl font-semibold text-tide">{snapshot.groupCount}</p>
-        </article>
-        <article className="rounded-2xl border border-tide/10 bg-white/90 p-5 shadow-card">
-          <p className="text-sm text-ink/65">学生数</p>
-          <p className="mt-2 text-3xl font-semibold text-tide">{snapshot.studentCount}</p>
-        </article>
-        <article className="rounded-2xl border border-tide/10 bg-white/90 p-5 shadow-card">
-          <p className="text-sm text-ink/65">课堂数</p>
-          <p className="mt-2 text-3xl font-semibold text-tide">{snapshot.lessonCount}</p>
-        </article>
-        <article className="rounded-2xl border border-tide/10 bg-white/90 p-5 shadow-card">
-          <p className="text-sm text-ink/65">考试数</p>
-          <p className="mt-2 text-3xl font-semibold text-tide">{snapshot.examCount}</p>
-        </article>
+      <section className="mt-8 rounded-3xl border border-tide/10 bg-white/80 p-8 shadow-card">
+        <div className="grid gap-8 xl:grid-cols-[1.1fr_0.9fr]">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-accent">Teacher Console</p>
+            <h1 className="mt-3 text-3xl font-semibold text-tide sm:text-4xl">Growth V2 老师后台</h1>
+            <p className="mt-4 max-w-3xl text-base text-ink/80">
+              这一套后台已经不是临时原型了。班组、标签、学生、课堂和考试都在用真实 Supabase 数据，你现在可以直接在线维护整套成长追踪流程。
+            </p>
+            <div className="mt-6 flex flex-wrap gap-3 text-sm">
+              {operatingHighlights.map((item) => (
+                <span key={item} className="rounded-full bg-tide/10 px-3 py-1 font-medium text-tide">
+                  {item}
+                </span>
+              ))}
+            </div>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Link href={publicHref} className="rounded-xl bg-tide px-5 py-3 text-sm font-medium text-white transition hover:bg-tide/90">
+                返回公开概览
+              </Link>
+              <Link href={'/admin/growth-v2/students' as Route} className="rounded-xl bg-accent px-5 py-3 text-sm font-medium text-white transition hover:bg-accent/90">
+                先看学生档案
+              </Link>
+              <Link href={'/score-tracker' as Route} className="rounded-xl border border-tide/20 px-5 py-3 text-sm font-medium text-tide transition hover:bg-tide/5">
+                查看旧版迁移页
+              </Link>
+              <AdminLogoutButton redirectPath="/admin/growth-v2" />
+            </div>
+          </div>
+
+          <div className="rounded-3xl border border-tide/10 bg-paper/70 p-6">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-accent">Live Snapshot</p>
+                <h2 className="mt-2 text-2xl font-semibold text-tide">当前线上数据规模</h2>
+              </div>
+              <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700">已连真实数据</span>
+            </div>
+            <div className="mt-6 grid gap-3 sm:grid-cols-2">
+              <article className="rounded-2xl border border-tide/10 bg-white/90 p-4">
+                <p className="text-sm text-ink/60">班组数</p>
+                <p className="mt-2 text-3xl font-semibold text-tide">{snapshot.groupCount}</p>
+              </article>
+              <article className="rounded-2xl border border-tide/10 bg-white/90 p-4">
+                <p className="text-sm text-ink/60">学生数</p>
+                <p className="mt-2 text-3xl font-semibold text-tide">{snapshot.studentCount}</p>
+              </article>
+              <article className="rounded-2xl border border-tide/10 bg-white/90 p-4">
+                <p className="text-sm text-ink/60">课堂数</p>
+                <p className="mt-2 text-3xl font-semibold text-tide">{snapshot.lessonCount}</p>
+              </article>
+              <article className="rounded-2xl border border-tide/10 bg-white/90 p-4">
+                <p className="text-sm text-ink/60">考试数</p>
+                <p className="mt-2 text-3xl font-semibold text-tide">{snapshot.examCount}</p>
+              </article>
+            </div>
+            <div className="mt-5 rounded-2xl border border-tide/10 bg-white/80 p-4 text-sm text-ink/75">
+              这四个数字直接来自线上 `growth_groups`、`growth_students`、`growth_lessons`、`growth_exams`，不是写死展示。
+            </div>
+          </div>
+        </div>
       </section>
 
-      <section className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+      <section className="mt-10">
+        <div className="flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <h2 className="text-2xl font-semibold text-tide">现在可以直接用的模块</h2>
+            <p className="mt-2 text-sm text-ink/75">不再是窄卡片入口，而是按实际后台工作流整理成更清晰的模块卡。</p>
+          </div>
+          <Link href={'/admin/growth-v2/exams' as Route} className="text-sm font-medium text-accent hover:underline">
+            去考试管理
+          </Link>
+        </div>
+
+        <div className="mt-5 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
         {GROWTH_V2_ADMIN_MODULES.map((module) => (
-          <article key={module.href} className="rounded-2xl border border-tide/10 bg-white/90 p-5 shadow-card">
-            <h2 className="text-xl font-semibold text-tide">{module.title}</h2>
-            <p className="mt-2 text-sm text-ink/75">{module.summary}</p>
+          <article key={module.href} className="rounded-2xl border border-tide/10 bg-white/85 p-6 shadow-card transition hover:-translate-y-1 hover:shadow-xl">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent">{moduleVisualMap[module.title].eyebrow}</p>
+                <h3 className="mt-2 text-2xl font-semibold text-tide">{module.title}</h3>
+              </div>
+              <span className={`rounded-full px-3 py-1 text-xs font-semibold ${moduleVisualMap[module.title].accentClassName}`}>已就位</span>
+            </div>
+            <p className="mt-4 text-sm leading-7 text-ink/75">{module.summary}</p>
+            <div className="mt-5 flex flex-wrap gap-2 text-xs">
+              {moduleVisualMap[module.title].quickPoints.map((point) => (
+                <span key={point} className="rounded-full bg-paper px-3 py-1 font-medium text-tide ring-1 ring-tide/10">
+                  {point}
+                </span>
+              ))}
+            </div>
             <Link
               href={module.href as Route}
-              className="mt-4 inline-flex rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white transition hover:bg-accent/90"
+              className="mt-6 inline-flex rounded-xl bg-accent px-5 py-3 text-sm font-medium text-white transition hover:bg-accent/90"
             >
               进入模块
             </Link>
           </article>
         ))}
+        </div>
       </section>
 
-      <section className="mt-8 grid gap-4 lg:grid-cols-[1.05fr_0.95fr]">
-        <article className="rounded-2xl border border-tide/10 bg-white/90 p-6 shadow-card">
-          <h2 className="text-2xl font-semibold text-tide">当前已就位的基础设施</h2>
-          <ol className="mt-4 grid gap-3 text-sm text-ink/80">
-            <li className="rounded-xl border border-tide/10 bg-paper/60 p-4">新表 schema 已独立到 `growth_*`，不会直接撞旧版成绩追踪表。</li>
-            <li className="rounded-xl border border-tide/10 bg-paper/60 p-4">`scripts/growth-v2/export-indexeddb.js` 可从原浏览器导出离线版数据。</li>
-            <li className="rounded-xl border border-tide/10 bg-paper/60 p-4">`scripts/growth-v2/import-json-to-supabase.mjs` 可把 JSON 导入 Supabase。</li>
-            <li className="rounded-xl border border-tide/10 bg-paper/60 p-4">班组 / 标签 / 学生 / 课堂 / 考试 5 个后台模块都已经有真实读写入口。</li>
+      <section className="mt-10 grid gap-5 lg:grid-cols-[1.05fr_0.95fr]">
+        <article className="rounded-2xl border border-tide/10 bg-white/85 p-6 shadow-card">
+          <div className="flex items-end justify-between gap-3">
+            <div>
+              <h2 className="text-2xl font-semibold text-tide">当前数据流</h2>
+              <p className="mt-2 text-sm text-ink/75">这部分保留迁移背景，但不再堆砌脚本说明。</p>
+            </div>
+            <span className="rounded-full bg-tide/10 px-3 py-1 text-xs font-semibold text-tide">并行上线中</span>
+          </div>
+          <ol className="mt-5 grid gap-3">
+            <li className="rounded-2xl border border-tide/10 bg-paper/60 p-4 text-sm text-ink/80">
+              `growth_*` 新表已经独立落库，旧版成绩追踪仍然保留，切换风险可控。
+            </li>
+            <li className="rounded-2xl border border-tide/10 bg-paper/60 p-4 text-sm text-ink/80">
+              线下 IndexedDB 数据已经迁移完成，当前后台里的数字和列表都是真实数据，不是演示。
+            </li>
+            <li className="rounded-2xl border border-tide/10 bg-paper/60 p-4 text-sm text-ink/80">
+              课堂和考试现在都支持历史编辑、标签维护，以及二次确认删除，已经能承担日常后台工作。
+            </li>
           </ol>
         </article>
 
-        <article className="rounded-2xl border border-tide/10 bg-white/90 p-6 shadow-card">
-          <h2 className="text-2xl font-semibold text-tide">Growth V2 表</h2>
-          <div className="mt-4 space-y-2">
+        <article className="rounded-2xl border border-tide/10 bg-white/85 p-6 shadow-card">
+          <div className="flex items-end justify-between gap-3">
+            <div>
+              <h2 className="text-2xl font-semibold text-tide">Growth V2 表</h2>
+              <p className="mt-2 text-sm text-ink/75">把表清单做成一眼能扫完的结构，而不是长段说明。</p>
+            </div>
+            <span className="rounded-full bg-accent/10 px-3 py-1 text-xs font-semibold text-accent">{GROWTH_V2_TABLES.length} 张表</span>
+          </div>
+          <div className="mt-5 grid gap-3 sm:grid-cols-2">
             {GROWTH_V2_TABLES.map((tableName) => (
-              <p key={tableName} className="rounded-lg border border-tide/10 bg-paper/60 px-3 py-2 font-mono text-xs text-tide">
+              <p key={tableName} className="rounded-xl border border-tide/10 bg-paper/60 px-4 py-3 font-mono text-sm text-tide">
                 {tableName}
               </p>
             ))}
           </div>
-          <p className="mt-4 text-sm text-ink/70">执行 SQL 后，再导入历史 JSON，后续每个模块就可以开始接真实查询和保存动作。</p>
+          <p className="mt-5 text-sm text-ink/70">这里保留的是你后面维护数据结构时最常用的一层索引，不再把整段 migration 说明直接摊在首页。</p>
         </article>
       </section>
     </div>
