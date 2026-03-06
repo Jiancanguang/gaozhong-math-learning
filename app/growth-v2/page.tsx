@@ -1,0 +1,80 @@
+import type { Route } from 'next';
+import Link from 'next/link';
+
+import { GROWTH_V2_NEXT_STEPS, GROWTH_V2_PUBLIC_HIGHLIGHTS, GROWTH_V2_TABLES } from '@/lib/growth-v2';
+
+const migrationStatus = [
+  { title: '结构方案', detail: '已完成：功能清单、表设计、迁移映射。' },
+  { title: '数据库草案', detail: '已完成：growth-v2 schema SQL 已写入仓库。' },
+  { title: '数据工具', detail: '已完成：IndexedDB 导出脚本与 JSON 导入脚本已补齐。' },
+  { title: '页面骨架', detail: '已完成：公开页、后台页、模块占位页已建。' }
+];
+
+export default function GrowthV2Page() {
+  const adminHref = '/admin/growth-v2' as Route;
+  const demoParentHref = '/growth-v2/parent/demo-token' as Route;
+
+  return (
+    <div className="space-y-8">
+      <section className="grid gap-4 md:grid-cols-2">
+        <article className="rounded-2xl border border-tide/10 bg-white/85 p-6">
+          <h2 className="text-2xl font-semibold text-tide">这一版会替换什么</h2>
+          <p className="mt-2 text-sm text-ink/75">Growth V2 不再只追踪总分和排名，而是把线下成熟版里真正有用的成长记录能力迁到线上。</p>
+          <div className="mt-4 flex flex-wrap gap-2">
+            {GROWTH_V2_PUBLIC_HIGHLIGHTS.map((item) => (
+              <span key={item} className="rounded-full bg-tide/10 px-3 py-1 text-xs font-medium text-tide">
+                {item}
+              </span>
+            ))}
+          </div>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <Link href={adminHref} className="rounded-lg bg-tide px-4 py-2 text-sm font-medium text-white transition hover:bg-tide/90">
+              打开后台骨架
+            </Link>
+            <Link href={demoParentHref} className="rounded-lg border border-tide/20 px-4 py-2 text-sm font-medium text-tide transition hover:bg-tide/5">
+              查看家长页占位
+            </Link>
+          </div>
+        </article>
+
+        <article className="rounded-2xl border border-tide/10 bg-white/85 p-6">
+          <h2 className="text-2xl font-semibold text-tide">当前状态</h2>
+          <div className="mt-4 space-y-3">
+            {migrationStatus.map((item) => (
+              <div key={item.title} className="rounded-xl border border-tide/10 bg-paper/60 p-4">
+                <p className="text-sm font-semibold text-tide">{item.title}</p>
+                <p className="mt-1 text-sm text-ink/75">{item.detail}</p>
+              </div>
+            ))}
+          </div>
+        </article>
+      </section>
+
+      <section className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
+        <article className="rounded-2xl border border-tide/10 bg-white/85 p-6">
+          <h2 className="text-2xl font-semibold text-tide">下一步实施顺序</h2>
+          <ol className="mt-4 grid gap-3 md:grid-cols-2">
+            {GROWTH_V2_NEXT_STEPS.map((item, index) => (
+              <li key={item} className="rounded-xl border border-tide/10 bg-paper/50 p-4 text-sm text-ink/80">
+                <span className="mr-2 inline-flex h-6 w-6 items-center justify-center rounded-full bg-tide text-xs text-white">{index + 1}</span>
+                {item}
+              </li>
+            ))}
+          </ol>
+        </article>
+
+        <article className="rounded-2xl border border-tide/10 bg-white/85 p-6">
+          <h2 className="text-2xl font-semibold text-tide">V2 表清单</h2>
+          <div className="mt-4 space-y-2">
+            {GROWTH_V2_TABLES.map((tableName) => (
+              <p key={tableName} className="rounded-lg border border-tide/10 bg-paper/60 px-3 py-2 font-mono text-xs text-tide">
+                {tableName}
+              </p>
+            ))}
+          </div>
+          <p className="mt-4 text-sm text-ink/70">SQL 草案在仓库的 `docs/growth-v2-schema.sql`，页面和脚本骨架已就位，后面可以直接开始接真实数据。</p>
+        </article>
+      </section>
+    </div>
+  );
+}

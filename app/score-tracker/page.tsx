@@ -1,3 +1,4 @@
+import type { Route } from 'next';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
@@ -20,6 +21,11 @@ const fields = [
 ];
 
 export default function ScoreTrackerPage() {
+  const adminHref = '/admin/score-tracker' as Route;
+  const growthV2Href = '/growth-v2' as Route;
+  const growthV2AdminHref = '/admin/growth-v2' as Route;
+  const homeHref = '/' as Route;
+
   return (
     <div className="mx-auto w-full max-w-6xl px-4 pb-12 pt-8 sm:px-6 lg:px-8">
       <section className="rounded-3xl border border-tide/10 bg-white/80 p-8 shadow-card">
@@ -29,11 +35,26 @@ export default function ScoreTrackerPage() {
           这不是只看一次考试结果的分数记录表，而是一套面向老师的持续追踪工具。系统把每次考试的总分、单科分和排名沉淀下来，让你看到学生到底是在进步、波动，还是原地打转。
         </p>
         <div className="mt-8 flex flex-wrap gap-3">
-          <Link href="/admin/score-tracker" className="rounded-xl bg-tide px-5 py-3 text-sm font-medium text-white transition hover:bg-tide/90">
+          <Link href={adminHref} className="rounded-xl bg-tide px-5 py-3 text-sm font-medium text-white transition hover:bg-tide/90">
             打开老师后台
           </Link>
-          <Link href="/" className="rounded-xl border border-tide/20 px-5 py-3 text-sm font-medium text-tide transition hover:bg-tide/5">
+          <Link href={growthV2Href} className="rounded-xl bg-accent px-5 py-3 text-sm font-medium text-white transition hover:bg-accent/90">
+            查看 Growth V2
+          </Link>
+          <Link href={homeHref} className="rounded-xl border border-tide/20 px-5 py-3 text-sm font-medium text-tide transition hover:bg-tide/5">
             返回首页
+          </Link>
+        </div>
+      </section>
+
+      <section className="mt-10 rounded-2xl border border-tide/10 bg-white/80 p-6">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <h2 className="text-2xl font-semibold text-tide">Growth V2 迁移中</h2>
+            <p className="mt-2 text-sm text-ink/75">新版本会把线下成熟版里的课堂记录、掌握度、薄弱点和家长报告能力迁到线上，旧版系统暂时继续保留。</p>
+          </div>
+          <Link href={growthV2AdminHref} className="rounded-lg border border-tide/20 px-4 py-2 text-sm font-medium text-tide transition hover:bg-tide/5">
+            打开 V2 后台骨架
           </Link>
         </div>
       </section>
