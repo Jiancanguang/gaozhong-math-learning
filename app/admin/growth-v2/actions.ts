@@ -7,6 +7,7 @@ import { redirect } from 'next/navigation';
 import { isAdminAuthorized } from '@/lib/admin-auth';
 import { normalizeGrowthV2Mastery } from '@/lib/growth-v2';
 import {
+  createGrowthGroup,
   createGrowthStudent,
   createGrowthExam,
   createGrowthLesson,
@@ -16,9 +17,11 @@ import {
   isGrowthV2TableMissingError,
   replaceGrowthExamScores,
   replaceGrowthLessonRecords,
+  updateGrowthGroup,
   updateGrowthStudent,
   updateGrowthExam,
   updateGrowthLesson,
+  type CreateGrowthGroupInput,
   type CreateGrowthStudentInput,
   type SaveGrowthExamScoreInput,
   type SaveGrowthLessonRecordInput
@@ -60,7 +63,33 @@ function getErrorRedirect(path: string, error: unknown) {
     return `${path}?error=validation`;
   }
 
+  if (error instanceof Error && error.message.includes('duplicate key value')) {
+    return `${path}?error=duplicate`;
+  }
+
   return `${path}?error=save-failed`;
+}
+
+function parseGrowthGroupPayload(formData: FormData): CreateGrowthGroupInput {
+  const name = getTrimmedString(formData, 'name');
+  const statusRaw = getTrimmedString(formData, 'status');
+
+  if (!name) {
+    throw new Error('group:validation');
+  }
+
+  if (statusRaw !== 'active' && statusRaw !== 'archived') {
+    throw new Error('status:validation');
+  }
+
+  return {
+    name,
+    subject: 'math',
+    teacherName: getTrimmedString(formData, 'teacherName'),
+    gradeLabel: getTrimmedString(formData, 'gradeLabel'),
+    status: statusRaw,
+    notes: getTrimmedString(formData, 'notes')
+  };
 }
 
 function parseGrowthStudentPayload(formData: FormData): Omit<CreateGrowthStudentInput, 'parentAccessToken'> {
@@ -198,6 +227,38 @@ function generateGrowthParentAccessToken() {
 function isParentTokenConflict(error: unknown) {
   const message = error instanceof Error ? error.message : String(error);
   return message.includes('parent_access_token') && message.includes('duplicate');
+}
+
+export async function createGrowthGroupAction(formData: FormData) {
+  requireAdminAccess();
+
+  let targetPath = '/admin/growth-v2/groups/new';
+
+  try {
+    const payload = parseGrowthGroupPayload(formData);
+    const group = await createGrowthGroup(payload);
+    targetPath = `/admin/growth-v2/groups?saved=${group.id}`;
+  } catch (error) {
+    targetPath = getErrorRedirect('/admin/growth-v2/groups/new', error);
+  }
+
+  redirect(targetPath);
+}
+
+export async function updateGrowthGroupAction(groupId: string, formData: FormData) {
+  requireAdminAccess();
+
+  let targetPath = `/admin/growth-v2/groups/${groupId}/edit`;
+
+  try {
+    const payload = parseGrowthGroupPayload(formData);
+    await updateGrowthGroup(groupId, payload);
+    targetPath = `/admin/growth-v2/groups?saved=${groupId}`;
+  } catch (error) {
+    targetPath = getErrorRedirect(`/admin/growth-v2/groups/${groupId}/edit`, error);
+  }
+
+  redirect(targetPath);
 }
 
 export async function createGrowthStudentAction(formData: FormData) {

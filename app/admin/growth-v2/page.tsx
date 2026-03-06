@@ -113,7 +113,7 @@ export default async function GrowthV2AdminPage({ searchParams }: GrowthV2AdminP
         </article>
       </section>
 
-      <section className="mt-8 grid gap-4 md:grid-cols-3">
+      <section className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         {GROWTH_V2_ADMIN_MODULES.map((module) => (
           <article key={module.href} className="rounded-2xl border border-tide/10 bg-white/90 p-5 shadow-card">
             <h2 className="text-xl font-semibold text-tide">{module.title}</h2>
@@ -135,7 +135,7 @@ export default async function GrowthV2AdminPage({ searchParams }: GrowthV2AdminP
             <li className="rounded-xl border border-tide/10 bg-paper/60 p-4">新表 schema 已独立到 `growth_*`，不会直接撞旧版成绩追踪表。</li>
             <li className="rounded-xl border border-tide/10 bg-paper/60 p-4">`scripts/growth-v2/export-indexeddb.js` 可从原浏览器导出离线版数据。</li>
             <li className="rounded-xl border border-tide/10 bg-paper/60 p-4">`scripts/growth-v2/import-json-to-supabase.mjs` 可把 JSON 导入 Supabase。</li>
-            <li className="rounded-xl border border-tide/10 bg-paper/60 p-4">学生 / 课堂 / 考试 3 个后台模块已预留路由。</li>
+            <li className="rounded-xl border border-tide/10 bg-paper/60 p-4">班组 / 学生 / 课堂 / 考试 4 个后台模块都已经有真实读写入口。</li>
           </ol>
         </article>
 

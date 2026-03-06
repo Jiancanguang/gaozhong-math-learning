@@ -183,6 +183,15 @@ export type GrowthParentReport = {
   recentExams: GrowthParentExamItem[];
 };
 
+export type CreateGrowthGroupInput = {
+  name: string;
+  subject?: string;
+  teacherName?: string;
+  gradeLabel?: string;
+  status?: GrowthGroupStatus;
+  notes?: string;
+};
+
 export type CreateGrowthStudentInput = {
   name: string;
   gradeLabel: string;
@@ -584,6 +593,70 @@ export async function listGrowthGroups(params: { status?: 'all' | GrowthGroupSta
 
   const rows = await readRows<GrowthGroupRow>(buildTablePath(GROWTH_GROUPS_TABLE, query.toString()));
   return rows.map(mapGrowthGroup);
+}
+
+export async function getGrowthGroupById(groupId: string): Promise<GrowthGroup | null> {
+  const normalizedGroupId = groupId.trim();
+  if (!normalizedGroupId) return null;
+
+  const rows = await readRows<GrowthGroupRow>(
+    buildTablePath(
+      GROWTH_GROUPS_TABLE,
+      new URLSearchParams({
+        select: 'id,name,subject,teacher_name,grade_label,status,notes,created_at,updated_at',
+        id: `eq.${normalizedGroupId}`,
+        limit: '1'
+      }).toString()
+    )
+  );
+
+  if (rows.length === 0) return null;
+  return mapGrowthGroup(rows[0]);
+}
+
+export async function createGrowthGroup(input: CreateGrowthGroupInput): Promise<GrowthGroup> {
+  const response = await supabaseAdminRequest(buildTablePath(GROWTH_GROUPS_TABLE), {
+    method: 'POST',
+    headers: { Prefer: 'return=representation' },
+    body: JSON.stringify({
+      name: input.name.trim(),
+      subject: input.subject?.trim() || 'math',
+      teacher_name: input.teacherName?.trim() ?? '',
+      grade_label: input.gradeLabel?.trim() ?? '',
+      status: input.status ?? 'active',
+      notes: input.notes?.trim() ?? ''
+    })
+  });
+
+  if (!response) {
+    throw new Error('Supabase admin is not configured.');
+  }
+
+  const rows = (await response.json()) as GrowthGroupRow[];
+  return mapGrowthGroup(rows[0]);
+}
+
+export async function updateGrowthGroup(groupId: string, input: CreateGrowthGroupInput): Promise<GrowthGroup> {
+  const query = new URLSearchParams({ id: `eq.${groupId}` });
+  const response = await supabaseAdminRequest(buildTablePath(GROWTH_GROUPS_TABLE, query.toString()), {
+    method: 'PATCH',
+    headers: { Prefer: 'return=representation' },
+    body: JSON.stringify({
+      name: input.name.trim(),
+      subject: input.subject?.trim() || 'math',
+      teacher_name: input.teacherName?.trim() ?? '',
+      grade_label: input.gradeLabel?.trim() ?? '',
+      status: input.status ?? 'active',
+      notes: input.notes?.trim() ?? ''
+    })
+  });
+
+  if (!response) {
+    throw new Error('Supabase admin is not configured.');
+  }
+
+  const rows = (await response.json()) as GrowthGroupRow[];
+  return mapGrowthGroup(rows[0]);
 }
 
 export async function listGrowthStudents(params: ListGrowthStudentsParams = {}): Promise<GrowthStudentListItem[]> {

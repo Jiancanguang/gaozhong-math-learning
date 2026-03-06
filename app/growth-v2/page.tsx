@@ -7,6 +7,7 @@ const migrationStatus = [
   { title: '结构方案', detail: '已完成：功能清单、表设计、迁移映射。' },
   { title: '数据库结构', detail: '已完成：growth-v2 schema 已执行到 Supabase。' },
   { title: '历史数据', detail: '已完成：离线版 IndexedDB 数据已导入 growth_* 新表。' },
+  { title: '班组管理', detail: '已完成第一版：班组列表、新建编辑、状态维护和沉淀统计都已接好。' },
   { title: '页面连通', detail: '已完成：学生、课堂、考试后台页和家长报告页都已接上真实读取。' },
   { title: '学生维护', detail: '已完成第一版：学生新建、编辑、详情和家长页 token 管理都已接好。' },
   { title: '后台录入', detail: '已完成第一版：课堂批量录入、考试批量录入都能直接写入 Supabase。' },
