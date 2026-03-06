@@ -25,8 +25,22 @@ How to export:
 Run the SQL from:
 
 - `docs/growth-v2-schema.sql`
+- or the migration file under `supabase/migrations/20260306143000_growth_v2_schema.sql`
 
 This creates the new `growth_*` tables without touching the old score tracker tables.
+
+If you want to apply it through the Supabase Management API instead of the dashboard SQL editor:
+
+```bash
+export SUPABASE_ACCESS_TOKEN="your-personal-access-token"
+npm run growth:v2:db:apply -- --yes
+```
+
+Notes:
+
+- This requires a Supabase personal access token, not the service role key.
+- The script derives the project ref from `SUPABASE_URL`.
+- The token can be provided via shell env or `.env.local`.
 
 ## 3. Import the exported JSON into Supabase
 
@@ -60,5 +74,12 @@ Notes:
 - Normalizes legacy mastery values:
   - `mastered -> lvtk`
   - `partial -> lvbk`
-  - `weak -> lvzk`
+- `weak -> lvzk`
 
+## 5. Recommended order
+
+1. Apply the migration
+2. Export IndexedDB JSON from the original browser
+3. Dry-run the importer
+4. Run the real import
+5. Open `/admin/growth-v2` and `/admin/growth-v2/students`

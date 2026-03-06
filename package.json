@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "growth:v2:import": "node ./scripts/growth-v2/import-json-to-supabase.mjs"
+    "growth:v2:import": "node ./scripts/growth-v2/import-json-to-supabase.mjs",
+    "growth:v2:db:apply": "node ./scripts/growth-v2/apply-supabase-migration.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.9.0",
