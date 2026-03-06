@@ -9,6 +9,7 @@ import { normalizeGrowthV2Mastery } from '@/lib/growth-v2';
 import {
   createGrowthGroup,
   createGrowthStudent,
+  createGrowthTagCatalogItem,
   createGrowthExam,
   createGrowthLesson,
   deleteGrowthExam,
@@ -19,10 +20,12 @@ import {
   replaceGrowthLessonRecords,
   updateGrowthGroup,
   updateGrowthStudent,
+  updateGrowthTagCatalogItem,
   updateGrowthExam,
   updateGrowthLesson,
   type CreateGrowthGroupInput,
   type CreateGrowthStudentInput,
+  type CreateGrowthTagCatalogInput,
   type SaveGrowthExamScoreInput,
   type SaveGrowthLessonRecordInput
 } from '@/lib/growth-v2-store';
@@ -89,6 +92,33 @@ function parseGrowthGroupPayload(formData: FormData): CreateGrowthGroupInput {
     gradeLabel: getTrimmedString(formData, 'gradeLabel'),
     status: statusRaw,
     notes: getTrimmedString(formData, 'notes')
+  };
+}
+
+function parseGrowthTagCatalogPayload(formData: FormData): CreateGrowthTagCatalogInput {
+  const category = getTrimmedString(formData, 'category');
+  const tagName = getTrimmedString(formData, 'tagName');
+  const sortOrder = parseOptionalInteger(formData, 'sortOrder');
+  const isActiveRaw = getTrimmedString(formData, 'isActive');
+
+  if (!category || !tagName) {
+    throw new Error('tag:validation');
+  }
+
+  if (sortOrder !== null && sortOrder < 0) {
+    throw new Error('sortOrder:validation');
+  }
+
+  if (isActiveRaw !== 'true' && isActiveRaw !== 'false') {
+    throw new Error('isActive:validation');
+  }
+
+  return {
+    scope: 'exam',
+    category,
+    tagName,
+    sortOrder: sortOrder ?? 0,
+    isActive: isActiveRaw === 'true'
   };
 }
 
@@ -245,6 +275,22 @@ export async function createGrowthGroupAction(formData: FormData) {
   redirect(targetPath);
 }
 
+export async function createGrowthTagCatalogAction(formData: FormData) {
+  requireAdminAccess();
+
+  let targetPath = '/admin/growth-v2/tags/new';
+
+  try {
+    const payload = parseGrowthTagCatalogPayload(formData);
+    const tag = await createGrowthTagCatalogItem(payload);
+    targetPath = `/admin/growth-v2/tags?saved=${tag.id}`;
+  } catch (error) {
+    targetPath = getErrorRedirect('/admin/growth-v2/tags/new', error);
+  }
+
+  redirect(targetPath);
+}
+
 export async function updateGrowthGroupAction(groupId: string, formData: FormData) {
   requireAdminAccess();
 
@@ -256,6 +302,22 @@ export async function updateGrowthGroupAction(groupId: string, formData: FormDat
     targetPath = `/admin/growth-v2/groups?saved=${groupId}`;
   } catch (error) {
     targetPath = getErrorRedirect(`/admin/growth-v2/groups/${groupId}/edit`, error);
+  }
+
+  redirect(targetPath);
+}
+
+export async function updateGrowthTagCatalogAction(tagId: string, formData: FormData) {
+  requireAdminAccess();
+
+  let targetPath = `/admin/growth-v2/tags/${tagId}/edit`;
+
+  try {
+    const payload = parseGrowthTagCatalogPayload(formData);
+    await updateGrowthTagCatalogItem(tagId, payload);
+    targetPath = `/admin/growth-v2/tags?saved=${tagId}`;
+  } catch (error) {
+    targetPath = getErrorRedirect(`/admin/growth-v2/tags/${tagId}/edit`, error);
   }
 
   redirect(targetPath);

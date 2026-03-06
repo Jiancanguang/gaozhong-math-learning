@@ -44,7 +44,7 @@ export default async function GrowthV2AdminPage({ searchParams }: GrowthV2AdminP
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
               <p className="text-sm font-medium text-accent">Growth Tracking V2</p>
-              <h1 className="mt-2 text-3xl font-semibold text-tide">老师后台骨架</h1>
+              <h1 className="mt-2 text-3xl font-semibold text-tide">老师后台</h1>
               <p className="mt-2 text-sm text-ink/70">Growth V2 页面已就位，但数据库 schema 还没有同步到 Supabase。</p>
             </div>
             <div className="flex flex-wrap gap-3">
@@ -79,8 +79,8 @@ export default async function GrowthV2AdminPage({ searchParams }: GrowthV2AdminP
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <p className="text-sm font-medium text-accent">Growth Tracking V2</p>
-          <h1 className="mt-2 text-3xl font-semibold text-tide">老师后台骨架</h1>
-          <p className="mt-2 text-sm text-ink/70">这里先把 V2 的后台结构和入口立起来，后续逐页接真实 Supabase 数据。</p>
+          <h1 className="mt-2 text-3xl font-semibold text-tide">老师后台</h1>
+          <p className="mt-2 text-sm text-ink/70">Growth V2 现在已经接入真实 Supabase 数据，班组、标签、学生、课堂和考试模块都可以直接维护。</p>
         </div>
         <div className="flex flex-wrap gap-3">
           <Link href={publicHref} className="rounded-lg border border-tide/20 px-4 py-2 text-sm font-medium text-tide transition hover:bg-tide/5">
@@ -113,7 +113,7 @@ export default async function GrowthV2AdminPage({ searchParams }: GrowthV2AdminP
         </article>
       </section>
 
-      <section className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <section className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-5">
         {GROWTH_V2_ADMIN_MODULES.map((module) => (
           <article key={module.href} className="rounded-2xl border border-tide/10 bg-white/90 p-5 shadow-card">
             <h2 className="text-xl font-semibold text-tide">{module.title}</h2>
@@ -135,7 +135,7 @@ export default async function GrowthV2AdminPage({ searchParams }: GrowthV2AdminP
             <li className="rounded-xl border border-tide/10 bg-paper/60 p-4">新表 schema 已独立到 `growth_*`，不会直接撞旧版成绩追踪表。</li>
             <li className="rounded-xl border border-tide/10 bg-paper/60 p-4">`scripts/growth-v2/export-indexeddb.js` 可从原浏览器导出离线版数据。</li>
             <li className="rounded-xl border border-tide/10 bg-paper/60 p-4">`scripts/growth-v2/import-json-to-supabase.mjs` 可把 JSON 导入 Supabase。</li>
-            <li className="rounded-xl border border-tide/10 bg-paper/60 p-4">班组 / 学生 / 课堂 / 考试 4 个后台模块都已经有真实读写入口。</li>
+            <li className="rounded-xl border border-tide/10 bg-paper/60 p-4">班组 / 标签 / 学生 / 课堂 / 考试 5 个后台模块都已经有真实读写入口。</li>
           </ol>
         </article>
 

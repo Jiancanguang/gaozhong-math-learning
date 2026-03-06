@@ -243,6 +243,18 @@ export type GrowthTagCatalogItem = {
   createdAt: string;
 };
 
+export type GrowthTagCatalogSummaryItem = GrowthTagCatalogItem & {
+  usageCount: number;
+};
+
+export type CreateGrowthTagCatalogInput = {
+  scope?: 'exam';
+  category: string;
+  tagName: string;
+  sortOrder?: number | null;
+  isActive?: boolean;
+};
+
 export type CreateGrowthExamInput = {
   groupId: string;
   name: string;
@@ -926,19 +938,112 @@ export async function replaceGrowthLessonRecords(lessonId: string, records: Save
 }
 
 export async function listGrowthTagCatalog(): Promise<GrowthTagCatalogItem[]> {
+  return listGrowthTagCatalogItems();
+}
+
+export async function listGrowthTagCatalogItems(params: { includeInactive?: boolean } = {}): Promise<GrowthTagCatalogItem[]> {
+  const query = new URLSearchParams({
+    select: 'id,scope,category,tag_name,sort_order,is_active,created_at',
+    scope: 'eq.exam',
+    order: 'category.asc,sort_order.asc,tag_name.asc'
+  });
+
+  if (!params.includeInactive) {
+    query.set('is_active', 'eq.true');
+  }
+
+  const rows = await readRows<GrowthTagCatalogRow>(
+    buildTablePath(GROWTH_TAG_CATALOG_TABLE, query.toString())
+  );
+
+  return rows.map(mapGrowthTagCatalog);
+}
+
+export async function listGrowthTagCatalogSummary(params: { includeInactive?: boolean } = {}): Promise<GrowthTagCatalogSummaryItem[]> {
+  const [catalog, usageRows] = await Promise.all([
+    listGrowthTagCatalogItems(params),
+    readRows<GrowthExamScoreTagRow>(
+      buildTablePath(
+        GROWTH_EXAM_SCORE_TAGS_TABLE,
+        new URLSearchParams({
+          select: 'id,exam_score_id,category,tag_name,sort_order,created_at'
+        }).toString()
+      )
+    )
+  ]);
+
+  const usageMap = new Map<string, number>();
+
+  for (const row of usageRows) {
+    const key = `${row.category ?? ''}::${row.tag_name}`;
+    usageMap.set(key, (usageMap.get(key) ?? 0) + 1);
+  }
+
+  return catalog.map((item) => ({
+    ...item,
+    usageCount: usageMap.get(`${item.category}::${item.tagName}`) ?? 0
+  }));
+}
+
+export async function getGrowthTagCatalogItemById(tagId: string): Promise<GrowthTagCatalogItem | null> {
+  const normalizedTagId = tagId.trim();
+  if (!normalizedTagId) return null;
+
   const rows = await readRows<GrowthTagCatalogRow>(
     buildTablePath(
       GROWTH_TAG_CATALOG_TABLE,
       new URLSearchParams({
         select: 'id,scope,category,tag_name,sort_order,is_active,created_at',
-        scope: 'eq.exam',
-        is_active: 'eq.true',
-        order: 'category.asc,sort_order.asc,tag_name.asc'
+        id: `eq.${normalizedTagId}`,
+        limit: '1'
       }).toString()
     )
   );
 
-  return rows.map(mapGrowthTagCatalog);
+  if (rows.length === 0) return null;
+  return mapGrowthTagCatalog(rows[0]);
+}
+
+export async function createGrowthTagCatalogItem(input: CreateGrowthTagCatalogInput): Promise<GrowthTagCatalogItem> {
+  const response = await supabaseAdminRequest(buildTablePath(GROWTH_TAG_CATALOG_TABLE), {
+    method: 'POST',
+    headers: { Prefer: 'return=representation' },
+    body: JSON.stringify({
+      scope: input.scope ?? 'exam',
+      category: input.category.trim(),
+      tag_name: input.tagName.trim(),
+      sort_order: input.sortOrder ?? 0,
+      is_active: input.isActive ?? true
+    })
+  });
+
+  if (!response) {
+    throw new Error('Supabase admin is not configured.');
+  }
+
+  const rows = (await response.json()) as GrowthTagCatalogRow[];
+  return mapGrowthTagCatalog(rows[0]);
+}
+
+export async function updateGrowthTagCatalogItem(tagId: string, input: CreateGrowthTagCatalogInput): Promise<GrowthTagCatalogItem> {
+  const response = await supabaseAdminRequest(buildTablePath(GROWTH_TAG_CATALOG_TABLE, new URLSearchParams({ id: `eq.${tagId}` }).toString()), {
+    method: 'PATCH',
+    headers: { Prefer: 'return=representation' },
+    body: JSON.stringify({
+      scope: input.scope ?? 'exam',
+      category: input.category.trim(),
+      tag_name: input.tagName.trim(),
+      sort_order: input.sortOrder ?? 0,
+      is_active: input.isActive ?? true
+    })
+  });
+
+  if (!response) {
+    throw new Error('Supabase admin is not configured.');
+  }
+
+  const rows = (await response.json()) as GrowthTagCatalogRow[];
+  return mapGrowthTagCatalog(rows[0]);
 }
 
 export async function createGrowthExam(input: CreateGrowthExamInput): Promise<GrowthExam> {

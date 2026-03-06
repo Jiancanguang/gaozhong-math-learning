@@ -5,6 +5,11 @@ export const GROWTH_V2_ADMIN_MODULES = [
     summary: '班组列表、新建编辑、老师与年级配置，以及学生 / 课堂 / 考试沉淀统计。'
   },
   {
+    title: '标签目录',
+    href: '/admin/growth-v2/tags',
+    summary: '考试薄弱点标签的分类、排序、启停状态，以及实际使用次数统计。'
+  },
+  {
     title: '学生档案',
     href: '/admin/growth-v2/students',
     summary: '学生列表、学生详情、新建编辑、班组归属、家长 token、在读状态与基础统计。'
@@ -50,7 +55,6 @@ export const GROWTH_V2_MASTERY_OPTIONS = [
 export const GROWTH_V2_NEXT_STEPS = [
   '补课堂 / 考试删除前的二次确认和更细的操作日志。',
   '补更细的家长报告图表和阶段性总结。',
-  '补标签目录维护页，减少直接改库的场景。',
   '最后再把旧成长追踪入口切到 Growth V2。'
 ] as const;
 

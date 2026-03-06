@@ -121,6 +121,9 @@ export default async function GrowthV2ExamsPage({ searchParams }: GrowthV2ExamsP
           <p className="mt-2 text-sm text-ink/70">这一页现在直接读取 `growth_exams`、`growth_exam_scores` 和 `growth_exam_score_tags`。</p>
         </div>
         <div className="flex flex-wrap gap-3">
+          <Link href={'/admin/growth-v2/tags' as Route} className="rounded-lg border border-tide/20 px-4 py-2 text-sm font-medium text-tide transition hover:bg-tide/5">
+            管理标签目录
+          </Link>
           <Link href={adminHref} className="rounded-lg border border-tide/20 px-4 py-2 text-sm font-medium text-tide transition hover:bg-tide/5">
             返回后台
           </Link>
