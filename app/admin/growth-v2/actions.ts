@@ -1,10 +1,13 @@
 'use server';
 
+import { randomUUID } from 'node:crypto';
+
 import { redirect } from 'next/navigation';
 
 import { isAdminAuthorized } from '@/lib/admin-auth';
 import { normalizeGrowthV2Mastery } from '@/lib/growth-v2';
 import {
+  createGrowthStudent,
   createGrowthExam,
   createGrowthLesson,
   deleteGrowthExam,
@@ -13,8 +16,10 @@ import {
   isGrowthV2TableMissingError,
   replaceGrowthExamScores,
   replaceGrowthLessonRecords,
+  updateGrowthStudent,
   updateGrowthExam,
   updateGrowthLesson,
+  type CreateGrowthStudentInput,
   type SaveGrowthExamScoreInput,
   type SaveGrowthLessonRecordInput
 } from '@/lib/growth-v2-store';
@@ -56,6 +61,28 @@ function getErrorRedirect(path: string, error: unknown) {
   }
 
   return `${path}?error=save-failed`;
+}
+
+function parseGrowthStudentPayload(formData: FormData): Omit<CreateGrowthStudentInput, 'parentAccessToken'> {
+  const name = getTrimmedString(formData, 'name');
+  const gradeLabel = getTrimmedString(formData, 'gradeLabel');
+  const statusRaw = getTrimmedString(formData, 'status');
+
+  if (!name || !gradeLabel) {
+    throw new Error('student:validation');
+  }
+
+  if (statusRaw !== 'active' && statusRaw !== 'archived') {
+    throw new Error('status:validation');
+  }
+
+  return {
+    name,
+    gradeLabel,
+    homeGroupId: getTrimmedString(formData, 'homeGroupId') || null,
+    status: statusRaw,
+    notes: getTrimmedString(formData, 'notes')
+  };
 }
 
 function parseGrowthLessonPayload(formData: FormData) {
@@ -162,6 +189,71 @@ function parseGrowthExamPayload(formData: FormData) {
     },
     scores
   };
+}
+
+function generateGrowthParentAccessToken() {
+  return `gv2_${randomUUID().replace(/-/g, '')}`;
+}
+
+function isParentTokenConflict(error: unknown) {
+  const message = error instanceof Error ? error.message : String(error);
+  return message.includes('parent_access_token') && message.includes('duplicate');
+}
+
+export async function createGrowthStudentAction(formData: FormData) {
+  requireAdminAccess();
+
+  let targetPath = '/admin/growth-v2/students/new';
+
+  try {
+    const payload = parseGrowthStudentPayload(formData);
+
+    let student = null;
+    let attempts = 0;
+
+    while (!student && attempts < 3) {
+      attempts += 1;
+
+      try {
+        student = await createGrowthStudent({
+          ...payload,
+          parentAccessToken: generateGrowthParentAccessToken()
+        });
+      } catch (error) {
+        if (attempts < 3 && isParentTokenConflict(error)) {
+          continue;
+        }
+
+        throw error;
+      }
+    }
+
+    if (!student) {
+      throw new Error('student:save-failed');
+    }
+
+    targetPath = `/admin/growth-v2/students/${student.id}?saved=student`;
+  } catch (error) {
+    targetPath = getErrorRedirect('/admin/growth-v2/students/new', error);
+  }
+
+  redirect(targetPath);
+}
+
+export async function updateGrowthStudentAction(studentId: string, formData: FormData) {
+  requireAdminAccess();
+
+  let targetPath = `/admin/growth-v2/students/${studentId}/edit`;
+
+  try {
+    const payload = parseGrowthStudentPayload(formData);
+    await updateGrowthStudent(studentId, payload);
+    targetPath = `/admin/growth-v2/students/${studentId}?saved=student`;
+  } catch (error) {
+    targetPath = getErrorRedirect(`/admin/growth-v2/students/${studentId}/edit`, error);
+  }
+
+  redirect(targetPath);
 }
 
 export async function createGrowthLessonAction(formData: FormData) {

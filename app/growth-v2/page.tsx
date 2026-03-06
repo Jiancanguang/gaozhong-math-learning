@@ -8,6 +8,7 @@ const migrationStatus = [
   { title: '数据库结构', detail: '已完成：growth-v2 schema 已执行到 Supabase。' },
   { title: '历史数据', detail: '已完成：离线版 IndexedDB 数据已导入 growth_* 新表。' },
   { title: '页面连通', detail: '已完成：学生、课堂、考试后台页和家长报告页都已接上真实读取。' },
+  { title: '学生维护', detail: '已完成第一版：学生新建、编辑、详情和家长页 token 管理都已接好。' },
   { title: '后台录入', detail: '已完成第一版：课堂批量录入、考试批量录入都能直接写入 Supabase。' },
   { title: '历史维护', detail: '已完成第一版：课堂详情页、考试详情页都支持回看和修改。' }
 ];
@@ -31,10 +32,10 @@ export default function GrowthV2Page() {
           </div>
           <div className="mt-6 flex flex-wrap gap-3">
             <Link href={adminHref} className="rounded-lg bg-tide px-4 py-2 text-sm font-medium text-white transition hover:bg-tide/90">
-              打开后台骨架
+              打开 Growth V2 后台
             </Link>
             <Link href={demoParentHref} className="rounded-lg border border-tide/20 px-4 py-2 text-sm font-medium text-tide transition hover:bg-tide/5">
-              查看家长页占位
+              查看家长页示例
             </Link>
           </div>
         </article>
@@ -74,8 +75,8 @@ export default function GrowthV2Page() {
               </p>
             ))}
           </div>
-          <p className="mt-4 text-sm text-ink/70">SQL 草案在仓库的 `docs/growth-v2-schema.sql`，页面和脚本骨架已就位，后面可以直接开始接真实数据。</p>
-          <p className="mt-4 text-sm text-ink/70">当前 Growth V2 已经不是纯骨架，真实课堂、考试和家长报告数据都能读到了。</p>
+          <p className="mt-4 text-sm text-ink/70">SQL 草案在仓库的 `docs/growth-v2-schema.sql`，对应 migration 也已经落库。</p>
+          <p className="mt-4 text-sm text-ink/70">当前 Growth V2 已经能读写真实学生、课堂、考试和家长报告数据，不再只是页面骨架。</p>
         </article>
       </section>
     </div>

@@ -13,6 +13,7 @@ type GrowthV2StudentDetailPageProps = {
   };
   searchParams?: {
     error?: string | string[];
+    saved?: string | string[];
   };
 };
 
@@ -51,6 +52,7 @@ export const dynamic = 'force-dynamic';
 
 export default async function GrowthV2StudentDetailPage({ params, searchParams }: GrowthV2StudentDetailPageProps) {
   const error = firstValue(searchParams?.error);
+  const saved = firstValue(searchParams?.saved) === 'student';
   const detailHref = `/admin/growth-v2/students/${params.studentId}`;
   const gate = renderGrowthV2AdminGate({
     successPath: detailHref,
@@ -112,6 +114,9 @@ export default async function GrowthV2StudentDetailPage({ params, searchParams }
           <Link href={'/admin/growth-v2/students' as Route} className="rounded-lg border border-tide/20 px-4 py-2 text-sm font-medium text-tide transition hover:bg-tide/5">
             返回学生列表
           </Link>
+          <Link href={`/admin/growth-v2/students/${report.student.id}/edit` as Route} className="rounded-lg border border-tide/20 px-4 py-2 text-sm font-medium text-tide transition hover:bg-tide/5">
+            编辑学生
+          </Link>
           <Link
             href={`/growth-v2/parent/${report.student.parentAccessToken}` as Route}
             target="_blank"
@@ -126,6 +131,7 @@ export default async function GrowthV2StudentDetailPage({ params, searchParams }
 
       <div className="mt-5">
         <GrowthV2AdminErrorBanner error={error} />
+        {saved ? <p className="mt-3 rounded-lg border border-emerald-300/70 bg-emerald-50 px-3 py-2 text-sm text-emerald-700">学生档案已更新。</p> : null}
       </div>
 
       <section className="mt-6 grid gap-4 md:grid-cols-5">

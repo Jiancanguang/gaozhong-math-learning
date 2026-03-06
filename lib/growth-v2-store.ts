@@ -183,6 +183,23 @@ export type GrowthParentReport = {
   recentExams: GrowthParentExamItem[];
 };
 
+export type CreateGrowthStudentInput = {
+  name: string;
+  gradeLabel: string;
+  homeGroupId?: string | null;
+  parentAccessToken: string;
+  status?: GrowthStudentStatus;
+  notes?: string;
+};
+
+export type UpdateGrowthStudentInput = {
+  name: string;
+  gradeLabel: string;
+  homeGroupId?: string | null;
+  status?: GrowthStudentStatus;
+  notes?: string;
+};
+
 export type CreateGrowthLessonInput = {
   groupId: string;
   lessonDate: string;
@@ -639,6 +656,25 @@ export async function listGrowthStudents(params: ListGrowthStudentsParams = {}):
   }));
 }
 
+export async function getGrowthStudentById(studentId: string): Promise<GrowthStudent | null> {
+  const normalizedStudentId = studentId.trim();
+  if (!normalizedStudentId) return null;
+
+  const rows = await readRows<GrowthStudentRow>(
+    buildTablePath(
+      GROWTH_STUDENTS_TABLE,
+      new URLSearchParams({
+        select: 'id,name,grade_label,home_group_id,parent_access_token,status,notes,created_at,updated_at',
+        id: `eq.${normalizedStudentId}`,
+        limit: '1'
+      }).toString()
+    )
+  );
+
+  if (rows.length === 0) return null;
+  return mapGrowthStudent(rows[0]);
+}
+
 export async function getGrowthV2AdminSnapshot(): Promise<GrowthV2AdminSnapshot> {
   const [groupCount, studentCount, lessonCount, examCount] = await Promise.all([
     readCount(GROWTH_GROUPS_TABLE),
@@ -653,6 +689,50 @@ export async function getGrowthV2AdminSnapshot(): Promise<GrowthV2AdminSnapshot>
     lessonCount,
     examCount
   };
+}
+
+export async function createGrowthStudent(input: CreateGrowthStudentInput): Promise<GrowthStudent> {
+  const response = await supabaseAdminRequest(buildTablePath(GROWTH_STUDENTS_TABLE), {
+    method: 'POST',
+    headers: { Prefer: 'return=representation' },
+    body: JSON.stringify({
+      name: input.name.trim(),
+      grade_label: input.gradeLabel.trim(),
+      home_group_id: input.homeGroupId?.trim() || null,
+      parent_access_token: input.parentAccessToken.trim(),
+      status: input.status ?? 'active',
+      notes: input.notes?.trim() ?? ''
+    })
+  });
+
+  if (!response) {
+    throw new Error('Supabase admin is not configured.');
+  }
+
+  const rows = (await response.json()) as GrowthStudentRow[];
+  return mapGrowthStudent(rows[0]);
+}
+
+export async function updateGrowthStudent(studentId: string, input: UpdateGrowthStudentInput): Promise<GrowthStudent> {
+  const query = new URLSearchParams({ id: `eq.${studentId}` });
+  const response = await supabaseAdminRequest(buildTablePath(GROWTH_STUDENTS_TABLE, query.toString()), {
+    method: 'PATCH',
+    headers: { Prefer: 'return=representation' },
+    body: JSON.stringify({
+      name: input.name.trim(),
+      grade_label: input.gradeLabel.trim(),
+      home_group_id: input.homeGroupId?.trim() || null,
+      status: input.status ?? 'active',
+      notes: input.notes?.trim() ?? ''
+    })
+  });
+
+  if (!response) {
+    throw new Error('Supabase admin is not configured.');
+  }
+
+  const rows = (await response.json()) as GrowthStudentRow[];
+  return mapGrowthStudent(rows[0]);
 }
 
 export async function createGrowthLesson(input: CreateGrowthLessonInput): Promise<GrowthLesson> {

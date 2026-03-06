@@ -90,6 +90,12 @@ export default async function GrowthV2StudentsPage({ searchParams }: GrowthV2Stu
           <p className="mt-2 text-sm text-ink/70">这一页现在直接读取 `growth_students`、`growth_groups`、`growth_lesson_records`、`growth_exam_scores`。</p>
         </div>
         <div className="flex flex-wrap gap-3">
+          <Link
+            href={'/admin/growth-v2/students/new' as Route}
+            className="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white transition hover:bg-accent/90"
+          >
+            新建学生
+          </Link>
           <Link href={adminHref} className="rounded-lg border border-tide/20 px-4 py-2 text-sm font-medium text-tide transition hover:bg-tide/5">
             返回后台
           </Link>
@@ -169,6 +175,14 @@ export default async function GrowthV2StudentsPage({ searchParams }: GrowthV2Stu
                       <Link href={`/admin/growth-v2/students/${student.id}` as Route} className="font-medium text-tide hover:underline">
                         {student.name}
                       </Link>
+                      <div className="mt-2 flex flex-wrap gap-2">
+                        <Link
+                          href={`/admin/growth-v2/students/${student.id}/edit` as Route}
+                          className="inline-flex rounded-lg border border-tide/20 px-2 py-1 text-xs font-medium text-tide transition hover:bg-tide/5"
+                        >
+                          编辑档案
+                        </Link>
+                      </div>
                       {student.notes ? <p className="mt-1 text-xs text-ink/55">{student.notes}</p> : null}
                     </td>
                     <td className="px-4 py-4 text-ink/80">{student.gradeLabel || '--'}</td>
