@@ -173,6 +173,60 @@ export type GrowthParentReport = {
   recentExams: GrowthParentExamItem[];
 };
 
+export type CreateGrowthLessonInput = {
+  groupId: string;
+  lessonDate: string;
+  timeStart?: string | null;
+  timeEnd?: string | null;
+  topic: string;
+  entryTestTopic?: string;
+  exitTestTopic?: string;
+  testTotal?: number | null;
+  homework?: string;
+  keyPoints?: string;
+  notes?: string;
+};
+
+export type SaveGrowthLessonRecordInput = {
+  studentId: string;
+  isGuest?: boolean;
+  entryScore?: number | null;
+  exitScore?: number | null;
+  performance?: number | null;
+  masteryLevel?: string | null;
+  comment?: string;
+};
+
+export type GrowthTagCatalogItem = {
+  id: string;
+  scope: 'exam';
+  category: string;
+  tagName: string;
+  sortOrder: number;
+  isActive: boolean;
+  createdAt: string;
+};
+
+export type CreateGrowthExamInput = {
+  groupId: string;
+  name: string;
+  examType: 'school' | 'internal' | 'other';
+  examDate: string;
+  subject?: string;
+  totalScore: number;
+  notes?: string;
+};
+
+export type SaveGrowthExamScoreInput = {
+  studentId: string;
+  score?: number | null;
+  classRank?: number | null;
+  gradeRank?: number | null;
+  masteryLevel?: string | null;
+  note?: string;
+  tagNames?: string[];
+};
+
 type GrowthGroupRow = {
   id: string;
   name: string;
@@ -271,6 +325,16 @@ type GrowthExamScoreTagRow = {
   created_at: string;
 };
 
+type GrowthTagCatalogRow = {
+  id: string;
+  scope: 'exam';
+  category: string;
+  tag_name: string;
+  sort_order: number | string | null;
+  is_active: boolean;
+  created_at: string;
+};
+
 type ExamOnlyRow = {
   exam_id: string;
 };
@@ -286,6 +350,8 @@ const GROWTH_LESSON_RECORDS_TABLE = 'growth_lesson_records';
 const GROWTH_EXAMS_TABLE = 'growth_exams';
 const GROWTH_EXAM_SCORES_TABLE = 'growth_exam_scores';
 const GROWTH_EXAM_SCORE_TAGS_TABLE = 'growth_exam_score_tags';
+const GROWTH_TAG_CATALOG_TABLE = 'growth_tag_catalog';
+const GROWTH_MASTERY_LEVELS = ['lv985', 'lvtk', 'lveb', 'lvbk', 'lvzk'] as const;
 
 function toNumber(value: number | string | null | undefined) {
   if (value === null || value === undefined || value === '') return null;
@@ -402,6 +468,18 @@ function mapGrowthExamScoreTag(row: GrowthExamScoreTagRow): GrowthExamScoreTag {
   };
 }
 
+function mapGrowthTagCatalog(row: GrowthTagCatalogRow): GrowthTagCatalogItem {
+  return {
+    id: row.id,
+    scope: row.scope,
+    category: row.category,
+    tagName: row.tag_name,
+    sortOrder: toInteger(row.sort_order) ?? 0,
+    isActive: row.is_active,
+    createdAt: row.created_at
+  };
+}
+
 async function readRows<T>(path: string) {
   const response = await supabaseAdminRequest(path);
   if (!response) return [] as T[];
@@ -419,6 +497,10 @@ function buildInFilter(ids: string[]) {
 
 function compareDateDesc(left: string, right: string) {
   return new Date(right).getTime() - new Date(left).getTime();
+}
+
+export function isGrowthV2MasteryLevel(value: string | null | undefined): value is (typeof GROWTH_MASTERY_LEVELS)[number] {
+  return (GROWTH_MASTERY_LEVELS as readonly string[]).includes(value ?? '');
 }
 
 export function isGrowthV2StoreEnabled() {
@@ -543,6 +625,205 @@ export async function getGrowthV2AdminSnapshot(): Promise<GrowthV2AdminSnapshot>
     lessonCount,
     examCount
   };
+}
+
+export async function createGrowthLesson(input: CreateGrowthLessonInput): Promise<GrowthLesson> {
+  const response = await supabaseAdminRequest(buildTablePath(GROWTH_LESSONS_TABLE), {
+    method: 'POST',
+    headers: { Prefer: 'return=representation' },
+    body: JSON.stringify({
+      group_id: input.groupId,
+      lesson_date: input.lessonDate,
+      time_start: input.timeStart?.trim() || null,
+      time_end: input.timeEnd?.trim() || null,
+      topic: input.topic.trim(),
+      entry_test_topic: input.entryTestTopic?.trim() ?? '',
+      exit_test_topic: input.exitTestTopic?.trim() ?? '',
+      test_total: input.testTotal ?? null,
+      homework: input.homework?.trim() ?? '',
+      key_points: input.keyPoints?.trim() ?? '',
+      notes: input.notes?.trim() ?? ''
+    })
+  });
+
+  if (!response) {
+    throw new Error('Supabase admin is not configured.');
+  }
+
+  const rows = (await response.json()) as GrowthLessonRow[];
+  return mapGrowthLesson(rows[0]);
+}
+
+export async function replaceGrowthLessonRecords(lessonId: string, records: SaveGrowthLessonRecordInput[]): Promise<void> {
+  if (!lessonId) {
+    throw new Error('lessonId is required.');
+  }
+
+  const deleteQuery = new URLSearchParams({ lesson_id: `eq.${lessonId}` });
+  const deleteResponse = await supabaseAdminRequest(buildTablePath(GROWTH_LESSON_RECORDS_TABLE, deleteQuery.toString()), {
+    method: 'DELETE',
+    headers: { Prefer: 'return=minimal' }
+  });
+
+  if (!deleteResponse) {
+    throw new Error('Supabase admin is not configured.');
+  }
+
+  const validRecords = records.filter((record) => {
+    return (
+      record.entryScore !== null && record.entryScore !== undefined ||
+      record.exitScore !== null && record.exitScore !== undefined ||
+      record.performance !== null && record.performance !== undefined ||
+      Boolean(record.masteryLevel) ||
+      Boolean(record.comment?.trim())
+    );
+  });
+
+  if (validRecords.length === 0) {
+    return;
+  }
+
+  const response = await supabaseAdminRequest(buildTablePath(GROWTH_LESSON_RECORDS_TABLE), {
+    method: 'POST',
+    headers: { Prefer: 'return=minimal' },
+    body: JSON.stringify(
+      validRecords.map((record) => ({
+        lesson_id: lessonId,
+        student_id: record.studentId,
+        is_guest: Boolean(record.isGuest),
+        entry_score: record.entryScore ?? null,
+        exit_score: record.exitScore ?? null,
+        performance: record.performance ?? null,
+        mastery_level: record.masteryLevel ?? null,
+        comment: record.comment?.trim() ?? ''
+      }))
+    )
+  });
+
+  if (!response) {
+    throw new Error('Supabase admin is not configured.');
+  }
+}
+
+export async function listGrowthTagCatalog(): Promise<GrowthTagCatalogItem[]> {
+  const rows = await readRows<GrowthTagCatalogRow>(
+    buildTablePath(
+      GROWTH_TAG_CATALOG_TABLE,
+      new URLSearchParams({
+        select: 'id,scope,category,tag_name,sort_order,is_active,created_at',
+        scope: 'eq.exam',
+        is_active: 'eq.true',
+        order: 'category.asc,sort_order.asc,tag_name.asc'
+      }).toString()
+    )
+  );
+
+  return rows.map(mapGrowthTagCatalog);
+}
+
+export async function createGrowthExam(input: CreateGrowthExamInput): Promise<GrowthExam> {
+  const response = await supabaseAdminRequest(buildTablePath(GROWTH_EXAMS_TABLE), {
+    method: 'POST',
+    headers: { Prefer: 'return=representation' },
+    body: JSON.stringify({
+      group_id: input.groupId,
+      name: input.name.trim(),
+      exam_type: input.examType,
+      exam_date: input.examDate,
+      subject: input.subject?.trim() || '数学',
+      total_score: input.totalScore,
+      notes: input.notes?.trim() ?? ''
+    })
+  });
+
+  if (!response) {
+    throw new Error('Supabase admin is not configured.');
+  }
+
+  const rows = (await response.json()) as GrowthExamRow[];
+  return mapGrowthExam(rows[0]);
+}
+
+export async function replaceGrowthExamScores(examId: string, scores: SaveGrowthExamScoreInput[]): Promise<void> {
+  if (!examId) {
+    throw new Error('examId is required.');
+  }
+
+  const deleteQuery = new URLSearchParams({ exam_id: `eq.${examId}` });
+  const deleteResponse = await supabaseAdminRequest(buildTablePath(GROWTH_EXAM_SCORES_TABLE, deleteQuery.toString()), {
+    method: 'DELETE',
+    headers: { Prefer: 'return=minimal' }
+  });
+
+  if (!deleteResponse) {
+    throw new Error('Supabase admin is not configured.');
+  }
+
+  const validScores = scores
+    .map((score) => ({
+      ...score,
+      tagNames: [...new Set((score.tagNames ?? []).map((tagName) => tagName.trim()).filter(Boolean))]
+    }))
+    .filter((score) => score.score !== null && score.score !== undefined);
+
+  if (validScores.length === 0) {
+    return;
+  }
+
+  const scoreResponse = await supabaseAdminRequest(buildTablePath(GROWTH_EXAM_SCORES_TABLE), {
+    method: 'POST',
+    headers: { Prefer: 'return=representation' },
+    body: JSON.stringify(
+      validScores.map((score) => ({
+        exam_id: examId,
+        student_id: score.studentId,
+        score: score.score,
+        class_rank: score.classRank ?? null,
+        grade_rank: score.gradeRank ?? null,
+        mastery_level: score.masteryLevel ?? null,
+        note: score.note?.trim() ?? ''
+      }))
+    )
+  });
+
+  if (!scoreResponse) {
+    throw new Error('Supabase admin is not configured.');
+  }
+
+  const createdScoreRows = (await scoreResponse.json()) as GrowthExamScoreRow[];
+  const createdScores = createdScoreRows.map(mapGrowthExamScore);
+  const tagCatalog = await listGrowthTagCatalog();
+  const tagCatalogMap = new Map(tagCatalog.map((tag) => [tag.tagName, tag]));
+  const scoreIdByStudentId = new Map(createdScores.map((score) => [score.studentId, score.id]));
+
+  const tagPayload = validScores.flatMap((score) => {
+    const examScoreId = scoreIdByStudentId.get(score.studentId);
+    if (!examScoreId) return [];
+
+    return (score.tagNames ?? []).map((tagName, index) => {
+      const catalogItem = tagCatalogMap.get(tagName);
+      return {
+        exam_score_id: examScoreId,
+        category: catalogItem?.category ?? '',
+        tag_name: tagName,
+        sort_order: catalogItem?.sortOrder ?? (index + 1) * 10
+      };
+    });
+  });
+
+  if (tagPayload.length === 0) {
+    return;
+  }
+
+  const tagResponse = await supabaseAdminRequest(buildTablePath(GROWTH_EXAM_SCORE_TAGS_TABLE), {
+    method: 'POST',
+    headers: { Prefer: 'return=minimal' },
+    body: JSON.stringify(tagPayload)
+  });
+
+  if (!tagResponse) {
+    throw new Error('Supabase admin is not configured.');
+  }
 }
 
 export async function listGrowthLessons(params: ListGrowthLessonsParams = {}): Promise<GrowthLessonListItem[]> {

@@ -43,9 +43,9 @@ export const GROWTH_V2_MASTERY_OPTIONS = [
 ] as const;
 
 export const GROWTH_V2_NEXT_STEPS = [
-  '补课堂记录录入页，替代离线版的单节课批量登记。',
-  '补考试录入页，支持批量成绩、掌握度和薄弱点标签写入。',
   '给学生模块加详情页，串起课堂、考试和家长报告入口。',
+  '补课堂 / 考试历史编辑能力，支持修改已录入记录。',
+  '补更细的家长报告图表和阶段性总结。',
   '最后再把旧成长追踪入口切到 Growth V2。'
 ] as const;
 

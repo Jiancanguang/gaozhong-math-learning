@@ -1,10 +1,12 @@
 import type { Route } from 'next';
 import Link from 'next/link';
 
+import { createGrowthExamAction } from '@/app/admin/growth-v2/actions';
 import { AdminLogoutButton } from '@/components/admin-auth-panels';
+import { GrowthV2ExamBatchForm, type GrowthV2ExamFormGroup, type GrowthV2ExamFormStudent } from '@/components/growth-v2/exam-batch-form';
 import { GrowthV2AdminErrorBanner, renderGrowthV2AdminGate } from '@/components/growth-v2/admin-access';
-import type { GrowthExamListItem, GrowthGroup } from '@/lib/growth-v2-store';
-import { isGrowthV2TableMissingError, listGrowthExams, listGrowthGroups } from '@/lib/growth-v2-store';
+import type { GrowthExamListItem, GrowthGroup, GrowthStudentListItem, GrowthTagCatalogItem } from '@/lib/growth-v2-store';
+import { isGrowthV2TableMissingError, listGrowthExams, listGrowthGroups, listGrowthStudents, listGrowthTagCatalog } from '@/lib/growth-v2-store';
 
 type GrowthV2ExamsPageProps = {
   searchParams?: {
@@ -12,6 +14,7 @@ type GrowthV2ExamsPageProps = {
     q?: string | string[];
     groupId?: string | string[];
     examType?: string | string[];
+    saved?: string | string[];
   };
 };
 
@@ -41,6 +44,7 @@ export default async function GrowthV2ExamsPage({ searchParams }: GrowthV2ExamsP
   const groupId = firstValue(searchParams?.groupId)?.trim() ?? '';
   const examTypeValue = firstValue(searchParams?.examType)?.trim() ?? 'all';
   const examType = examTypeValue === 'school' || examTypeValue === 'internal' || examTypeValue === 'other' ? examTypeValue : 'all';
+  const saved = firstValue(searchParams?.saved) === '1';
   const adminHref = '/admin/growth-v2' as Route;
   const gate = renderGrowthV2AdminGate({
     successPath: '/admin/growth-v2/exams',
@@ -50,11 +54,15 @@ export default async function GrowthV2ExamsPage({ searchParams }: GrowthV2ExamsP
 
   let groups: GrowthGroup[] = [];
   let exams: GrowthExamListItem[] = [];
+  let students: GrowthStudentListItem[] = [];
+  let tagCatalog: GrowthTagCatalogItem[] = [];
 
   try {
-    [groups, exams] = await Promise.all([
+    [groups, exams, students, tagCatalog] = await Promise.all([
       listGrowthGroups({ status: 'all' }),
-      listGrowthExams({ q, groupId, examType })
+      listGrowthExams({ q, groupId, examType }),
+      listGrowthStudents({ status: 'active' }),
+      listGrowthTagCatalog()
     ]);
   } catch (fetchError) {
     if (isGrowthV2TableMissingError(fetchError)) {
@@ -88,6 +96,19 @@ export default async function GrowthV2ExamsPage({ searchParams }: GrowthV2ExamsP
   const avgScoreRateValues = exams.flatMap((exam) => (exam.avgScoreRate === null ? [] : [exam.avgScoreRate]));
   const overallScoreRate = avgScoreRateValues.length ? avgScoreRateValues.reduce((sum, value) => sum + value, 0) / avgScoreRateValues.length : null;
   const totalTaggedHotspots = exams.reduce((sum, exam) => sum + exam.topTags.length, 0);
+  const activeGroups: GrowthV2ExamFormGroup[] = groups
+    .filter((group) => group.status === 'active')
+    .map((group) => ({
+      id: group.id,
+      name: group.name,
+      gradeLabel: group.gradeLabel
+    }));
+  const activeStudents: GrowthV2ExamFormStudent[] = students.map((student) => ({
+    id: student.id,
+    name: student.name,
+    gradeLabel: student.gradeLabel,
+    homeGroupId: student.homeGroupId
+  }));
 
   return (
     <div className="mx-auto w-full max-w-6xl px-4 pb-12 pt-8 sm:px-6 lg:px-8">
@@ -107,7 +128,17 @@ export default async function GrowthV2ExamsPage({ searchParams }: GrowthV2ExamsP
 
       <div className="mt-5">
         <GrowthV2AdminErrorBanner error={error} />
+        {error === 'validation' ? (
+          <p className="mt-3 rounded-lg border border-amber-300/70 bg-amber-50 px-3 py-2 text-sm text-amber-800">
+            请至少填写班组、考试名称、考试日期、类型和满分；数字字段也要保证合法。
+          </p>
+        ) : null}
+        {saved ? <p className="mt-3 rounded-lg border border-emerald-300/70 bg-emerald-50 px-3 py-2 text-sm text-emerald-700">考试记录已保存。</p> : null}
       </div>
+
+      <section className="mt-8">
+        <GrowthV2ExamBatchForm groups={activeGroups} students={activeStudents} tagCatalog={tagCatalog} action={createGrowthExamAction} />
+      </section>
 
       <section className="mt-8 grid gap-4 md:grid-cols-4">
         <article className="rounded-2xl border border-tide/10 bg-white/90 p-5 shadow-card">

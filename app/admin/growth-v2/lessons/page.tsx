@@ -1,16 +1,19 @@
 import type { Route } from 'next';
 import Link from 'next/link';
 
+import { createGrowthLessonAction } from '@/app/admin/growth-v2/actions';
 import { AdminLogoutButton } from '@/components/admin-auth-panels';
+import { GrowthV2LessonBatchForm, type GrowthV2LessonFormGroup, type GrowthV2LessonFormStudent } from '@/components/growth-v2/lesson-batch-form';
 import { GrowthV2AdminErrorBanner, renderGrowthV2AdminGate } from '@/components/growth-v2/admin-access';
-import type { GrowthGroup, GrowthLessonListItem } from '@/lib/growth-v2-store';
-import { isGrowthV2TableMissingError, listGrowthGroups, listGrowthLessons } from '@/lib/growth-v2-store';
+import type { GrowthGroup, GrowthLessonListItem, GrowthStudentListItem } from '@/lib/growth-v2-store';
+import { isGrowthV2TableMissingError, listGrowthGroups, listGrowthLessons, listGrowthStudents } from '@/lib/growth-v2-store';
 
 type GrowthV2LessonsPageProps = {
   searchParams?: {
     error?: string | string[];
     q?: string | string[];
     groupId?: string | string[];
+    saved?: string | string[];
   };
 };
 
@@ -38,6 +41,7 @@ export default async function GrowthV2LessonsPage({ searchParams }: GrowthV2Less
   const error = firstValue(searchParams?.error);
   const q = firstValue(searchParams?.q)?.trim() ?? '';
   const groupId = firstValue(searchParams?.groupId)?.trim() ?? '';
+  const saved = firstValue(searchParams?.saved) === '1';
   const adminHref = '/admin/growth-v2' as Route;
   const gate = renderGrowthV2AdminGate({
     successPath: '/admin/growth-v2/lessons',
@@ -47,11 +51,13 @@ export default async function GrowthV2LessonsPage({ searchParams }: GrowthV2Less
 
   let groups: GrowthGroup[] = [];
   let lessons: GrowthLessonListItem[] = [];
+  let students: GrowthStudentListItem[] = [];
 
   try {
-    [groups, lessons] = await Promise.all([
+    [groups, lessons, students] = await Promise.all([
       listGrowthGroups({ status: 'all' }),
-      listGrowthLessons({ q, groupId })
+      listGrowthLessons({ q, groupId }),
+      listGrowthStudents({ status: 'active' })
     ]);
   } catch (fetchError) {
     if (isGrowthV2TableMissingError(fetchError)) {
@@ -86,6 +92,20 @@ export default async function GrowthV2LessonsPage({ searchParams }: GrowthV2Less
   const avgPerformanceValues = lessons.flatMap((lesson) => (lesson.avgPerformance === null ? [] : [lesson.avgPerformance]));
   const overallExitRate = avgExitRateValues.length ? avgExitRateValues.reduce((sum, value) => sum + value, 0) / avgExitRateValues.length : null;
   const overallPerformance = avgPerformanceValues.length ? avgPerformanceValues.reduce((sum, value) => sum + value, 0) / avgPerformanceValues.length : null;
+  const activeGroups: GrowthV2LessonFormGroup[] = groups
+    .filter((group) => group.status === 'active')
+    .map((group) => ({
+      id: group.id,
+      name: group.name,
+      gradeLabel: group.gradeLabel
+    }));
+  const activeStudents: GrowthV2LessonFormStudent[] = students.map((student) => ({
+    id: student.id,
+    name: student.name,
+    gradeLabel: student.gradeLabel,
+    homeGroupId: student.homeGroupId,
+    homeGroupName: student.homeGroup?.name ?? null
+  }));
 
   return (
     <div className="mx-auto w-full max-w-6xl px-4 pb-12 pt-8 sm:px-6 lg:px-8">
@@ -105,7 +125,17 @@ export default async function GrowthV2LessonsPage({ searchParams }: GrowthV2Less
 
       <div className="mt-5">
         <GrowthV2AdminErrorBanner error={error} />
+        {error === 'validation' ? (
+          <p className="mt-3 rounded-lg border border-amber-300/70 bg-amber-50 px-3 py-2 text-sm text-amber-800">
+            请至少填写班组、上课日期和课堂主题；数字字段也要保证是合法数值。
+          </p>
+        ) : null}
+        {saved ? <p className="mt-3 rounded-lg border border-emerald-300/70 bg-emerald-50 px-3 py-2 text-sm text-emerald-700">课堂记录已保存。</p> : null}
       </div>
+
+      <section className="mt-8">
+        <GrowthV2LessonBatchForm groups={activeGroups} students={activeStudents} action={createGrowthLessonAction} />
+      </section>
 
       <section className="mt-8 grid gap-4 md:grid-cols-4">
         <article className="rounded-2xl border border-tide/10 bg-white/90 p-5 shadow-card">
