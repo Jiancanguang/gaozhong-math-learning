@@ -43,10 +43,10 @@ export const GROWTH_V2_MASTERY_OPTIONS = [
 ] as const;
 
 export const GROWTH_V2_NEXT_STEPS = [
-  '先在 Supabase 执行 growth-v2 schema。',
-  '从原浏览器导出 IndexedDB 的 students / lessons / records / exams / exam_scores。',
-  '用导入脚本把 JSON 打进 growth_* 新表。',
-  '先完成学生、课堂、考试 3 个老师端页面，再做家长报告页。'
+  '补课堂记录录入页，替代离线版的单节课批量登记。',
+  '补考试录入页，支持批量成绩、掌握度和薄弱点标签写入。',
+  '给学生模块加详情页，串起课堂、考试和家长报告入口。',
+  '最后再把旧成长追踪入口切到 Growth V2。'
 ] as const;
 
 export function normalizeGrowthV2Mastery(value: string | null | undefined) {
@@ -61,4 +61,3 @@ export function normalizeGrowthV2Mastery(value: string | null | undefined) {
 
   return legacyMap[normalized] ?? normalized;
 }
-

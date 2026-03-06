@@ -3,6 +3,7 @@ import Link from 'next/link';
 
 import { AdminLogoutButton } from '@/components/admin-auth-panels';
 import { GrowthV2AdminErrorBanner, renderGrowthV2AdminGate } from '@/components/growth-v2/admin-access';
+import type { GrowthGroup, GrowthStudentListItem } from '@/lib/growth-v2-store';
 import { isGrowthV2TableMissingError, listGrowthGroups, listGrowthStudents } from '@/lib/growth-v2-store';
 
 type GrowthV2StudentsPageProps = {
@@ -35,8 +36,8 @@ export default async function GrowthV2StudentsPage({ searchParams }: GrowthV2Stu
   });
   if (gate) return gate;
 
-  let groups = [];
-  let students = [];
+  let groups: GrowthGroup[] = [];
+  let students: GrowthStudentListItem[] = [];
 
   try {
     [groups, students] = await Promise.all([
@@ -86,7 +87,7 @@ export default async function GrowthV2StudentsPage({ searchParams }: GrowthV2Stu
         <div>
           <p className="text-sm font-medium text-accent">Growth V2</p>
           <h1 className="mt-2 text-3xl font-semibold text-tide">学生档案模块</h1>
-          <p className="mt-2 text-sm text-ink/70">这一页后面会对应 `growth_students` 和 `growth_groups` 两张核心表。</p>
+          <p className="mt-2 text-sm text-ink/70">这一页现在直接读取 `growth_students`、`growth_groups`、`growth_lesson_records`、`growth_exam_scores`。</p>
         </div>
         <div className="flex flex-wrap gap-3">
           <Link href={adminHref} className="rounded-lg border border-tide/20 px-4 py-2 text-sm font-medium text-tide transition hover:bg-tide/5">
@@ -184,7 +185,17 @@ export default async function GrowthV2StudentsPage({ searchParams }: GrowthV2Stu
                     <td className="px-4 py-4 text-ink/80">{student.lessonCount}</td>
                     <td className="px-4 py-4 text-ink/80">{student.examCount}</td>
                     <td className="px-4 py-4">
-                      <code className="rounded bg-paper px-2 py-1 text-xs text-tide">{student.parentAccessToken}</code>
+                      <div className="space-y-2">
+                        <code className="block rounded bg-paper px-2 py-1 text-xs text-tide">{student.parentAccessToken}</code>
+                        <Link
+                          href={`/growth-v2/parent/${student.parentAccessToken}` as Route}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex rounded-lg border border-tide/20 px-3 py-1 text-xs font-medium text-tide transition hover:bg-tide/5"
+                        >
+                          打开家长页
+                        </Link>
+                      </div>
                     </td>
                   </tr>
                 ))

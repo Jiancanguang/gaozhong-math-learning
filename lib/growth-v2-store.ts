@@ -147,6 +147,32 @@ export type ListGrowthExamsParams = {
   examType?: 'all' | 'school' | 'internal' | 'other';
 };
 
+export type GrowthParentLessonItem = GrowthLessonRecord & {
+  lesson: GrowthLesson;
+  group: GrowthGroup | null;
+  exitScoreRate: number | null;
+};
+
+export type GrowthParentExamItem = GrowthExamScore & {
+  exam: GrowthExam;
+  group: GrowthGroup | null;
+  scoreRate: number | null;
+  tags: GrowthExamScoreTag[];
+};
+
+export type GrowthParentReport = {
+  student: GrowthStudent;
+  homeGroup: GrowthGroup | null;
+  lessonCount: number;
+  examCount: number;
+  avgExitScoreRate: number | null;
+  avgPerformance: number | null;
+  avgExamScoreRate: number | null;
+  topWeakTags: Array<{ tagName: string; count: number }>;
+  recentLessons: GrowthParentLessonItem[];
+  recentExams: GrowthParentExamItem[];
+};
+
 type GrowthGroupRow = {
   id: string;
   name: string;
@@ -389,6 +415,10 @@ async function readCount(tableName: string) {
 
 function buildInFilter(ids: string[]) {
   return `in.(${ids.join(',')})`;
+}
+
+function compareDateDesc(left: string, right: string) {
+  return new Date(right).getTime() - new Date(left).getTime();
 }
 
 export function isGrowthV2StoreEnabled() {
@@ -684,4 +714,172 @@ export async function listGrowthExams(params: ListGrowthExamsParams = {}): Promi
       topTags
     };
   });
+}
+
+export async function getGrowthParentReportByToken(token: string): Promise<GrowthParentReport | null> {
+  const normalizedToken = token.trim();
+  if (!normalizedToken) return null;
+
+  const studentRows = await readRows<GrowthStudentRow>(
+    buildTablePath(
+      GROWTH_STUDENTS_TABLE,
+      new URLSearchParams({
+        select: 'id,name,grade_label,home_group_id,parent_access_token,status,notes,created_at,updated_at',
+        parent_access_token: `eq.${normalizedToken}`,
+        limit: '1'
+      }).toString()
+    )
+  );
+
+  if (studentRows.length === 0) return null;
+
+  const student = mapGrowthStudent(studentRows[0]);
+  const [groups, lessonRecordRows, examScoreRows] = await Promise.all([
+    listGrowthGroups({ status: 'all' }),
+    readRows<GrowthLessonRecordRow>(
+      buildTablePath(
+        GROWTH_LESSON_RECORDS_TABLE,
+        new URLSearchParams({
+          select: 'id,lesson_id,student_id,is_guest,entry_score,exit_score,performance,mastery_level,comment,created_at,updated_at',
+          student_id: `eq.${student.id}`,
+          order: 'created_at.desc'
+        }).toString()
+      )
+    ),
+    readRows<GrowthExamScoreRow>(
+      buildTablePath(
+        GROWTH_EXAM_SCORES_TABLE,
+        new URLSearchParams({
+          select: 'id,exam_id,student_id,score,class_rank,grade_rank,mastery_level,note,created_at,updated_at',
+          student_id: `eq.${student.id}`,
+          order: 'created_at.desc'
+        }).toString()
+      )
+    )
+  ]);
+
+  const groupMap = new Map(groups.map((group) => [group.id, group]));
+  const lessonRecords = lessonRecordRows.map(mapGrowthLessonRecord);
+  const examScores = examScoreRows.map(mapGrowthExamScore);
+  const lessonIds = [...new Set(lessonRecords.map((record) => record.lessonId))];
+  const examIds = [...new Set(examScores.map((score) => score.examId))];
+  const examScoreIds = examScores.map((score) => score.id);
+
+  const [lessonRows, examRows, tagRows] = await Promise.all([
+    lessonIds.length > 0
+      ? readRows<GrowthLessonRow>(
+          buildTablePath(
+            GROWTH_LESSONS_TABLE,
+            new URLSearchParams({
+              select: 'id,group_id,lesson_date,time_start,time_end,topic,entry_test_topic,exit_test_topic,test_total,homework,key_points,notes,created_at,updated_at',
+              id: buildInFilter(lessonIds)
+            }).toString()
+          )
+        )
+      : Promise.resolve([] as GrowthLessonRow[]),
+    examIds.length > 0
+      ? readRows<GrowthExamRow>(
+          buildTablePath(
+            GROWTH_EXAMS_TABLE,
+            new URLSearchParams({
+              select: 'id,group_id,name,exam_type,exam_date,subject,total_score,notes,created_at,updated_at',
+              id: buildInFilter(examIds)
+            }).toString()
+          )
+        )
+      : Promise.resolve([] as GrowthExamRow[]),
+    examScoreIds.length > 0
+      ? readRows<GrowthExamScoreTagRow>(
+          buildTablePath(
+            GROWTH_EXAM_SCORE_TAGS_TABLE,
+            new URLSearchParams({
+              select: 'id,exam_score_id,category,tag_name,sort_order,created_at',
+              exam_score_id: buildInFilter(examScoreIds)
+            }).toString()
+          )
+        )
+      : Promise.resolve([] as GrowthExamScoreTagRow[])
+  ]);
+
+  const lessonMap = new Map(lessonRows.map(mapGrowthLesson).map((lesson) => [lesson.id, lesson]));
+  const examMap = new Map(examRows.map(mapGrowthExam).map((exam) => [exam.id, exam]));
+  const tagMap = new Map<string, GrowthExamScoreTag[]>();
+
+  for (const row of tagRows) {
+    const tag = mapGrowthExamScoreTag(row);
+    const current = tagMap.get(tag.examScoreId) ?? [];
+    current.push(tag);
+    tagMap.set(tag.examScoreId, current);
+  }
+
+  const recentLessons = lessonRecords
+    .flatMap((record) => {
+      const lesson = lessonMap.get(record.lessonId);
+      if (!lesson) return [];
+
+      return [
+        {
+          ...record,
+          lesson,
+          group: groupMap.get(lesson.groupId) ?? null,
+          exitScoreRate: record.exitScore !== null && lesson.testTotal !== null && lesson.testTotal > 0 ? (record.exitScore / lesson.testTotal) * 100 : null
+        }
+      ];
+    })
+    .sort((left, right) => {
+      const byLessonDate = compareDateDesc(left.lesson.lessonDate, right.lesson.lessonDate);
+      if (byLessonDate !== 0) return byLessonDate;
+      return compareDateDesc(left.createdAt, right.createdAt);
+    });
+
+  const recentExams = examScores
+    .flatMap((score) => {
+      const exam = examMap.get(score.examId);
+      if (!exam) return [];
+
+      return [
+        {
+          ...score,
+          exam,
+          group: groupMap.get(exam.groupId) ?? null,
+          scoreRate: exam.totalScore > 0 ? (score.score / exam.totalScore) * 100 : null,
+          tags: tagMap.get(score.id) ?? []
+        }
+      ];
+    })
+    .sort((left, right) => {
+      const byExamDate = compareDateDesc(left.exam.examDate, right.exam.examDate);
+      if (byExamDate !== 0) return byExamDate;
+      return compareDateDesc(left.createdAt, right.createdAt);
+    });
+
+  const exitRateValues = recentLessons.flatMap((item) => (item.exitScoreRate === null ? [] : [item.exitScoreRate]));
+  const performanceValues = recentLessons.flatMap((item) => (item.performance === null ? [] : [item.performance]));
+  const examRateValues = recentExams.flatMap((item) => (item.scoreRate === null ? [] : [item.scoreRate]));
+  const tagCounts = new Map<string, number>();
+
+  for (const item of recentExams) {
+    for (const tag of item.tags) {
+      tagCounts.set(tag.tagName, (tagCounts.get(tag.tagName) ?? 0) + 1);
+    }
+  }
+
+  return {
+    student,
+    homeGroup: student.homeGroupId ? groupMap.get(student.homeGroupId) ?? null : null,
+    lessonCount: recentLessons.length,
+    examCount: recentExams.length,
+    avgExitScoreRate: exitRateValues.length ? exitRateValues.reduce((sum, value) => sum + value, 0) / exitRateValues.length : null,
+    avgPerformance: performanceValues.length ? performanceValues.reduce((sum, value) => sum + value, 0) / performanceValues.length : null,
+    avgExamScoreRate: examRateValues.length ? examRateValues.reduce((sum, value) => sum + value, 0) / examRateValues.length : null,
+    topWeakTags: [...tagCounts.entries()]
+      .sort((left, right) => {
+        if (right[1] !== left[1]) return right[1] - left[1];
+        return left[0].localeCompare(right[0], 'zh-CN');
+      })
+      .slice(0, 8)
+      .map(([tagName, count]) => ({ tagName, count })),
+    recentLessons,
+    recentExams
+  };
 }

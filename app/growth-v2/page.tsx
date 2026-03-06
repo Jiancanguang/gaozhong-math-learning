@@ -5,9 +5,9 @@ import { GROWTH_V2_NEXT_STEPS, GROWTH_V2_PUBLIC_HIGHLIGHTS, GROWTH_V2_TABLES } f
 
 const migrationStatus = [
   { title: '结构方案', detail: '已完成：功能清单、表设计、迁移映射。' },
-  { title: '数据库草案', detail: '已完成：growth-v2 schema SQL 已写入仓库。' },
-  { title: '数据工具', detail: '已完成：IndexedDB 导出脚本与 JSON 导入脚本已补齐。' },
-  { title: '页面骨架', detail: '已完成：公开页、后台页、模块占位页已建。' }
+  { title: '数据库结构', detail: '已完成：growth-v2 schema 已执行到 Supabase。' },
+  { title: '历史数据', detail: '已完成：离线版 IndexedDB 数据已导入 growth_* 新表。' },
+  { title: '页面连通', detail: '已完成：学生、课堂、考试后台页和家长报告页都已接上真实读取。' }
 ];
 
 export default function GrowthV2Page() {
@@ -73,6 +73,7 @@ export default function GrowthV2Page() {
             ))}
           </div>
           <p className="mt-4 text-sm text-ink/70">SQL 草案在仓库的 `docs/growth-v2-schema.sql`，页面和脚本骨架已就位，后面可以直接开始接真实数据。</p>
+          <p className="mt-4 text-sm text-ink/70">当前 Growth V2 已经不是纯骨架，真实课堂、考试和家长报告数据都能读到了。</p>
         </article>
       </section>
     </div>
