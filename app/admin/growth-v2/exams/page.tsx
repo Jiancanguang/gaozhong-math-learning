@@ -15,6 +15,7 @@ type GrowthV2ExamsPageProps = {
     groupId?: string | string[];
     examType?: string | string[];
     saved?: string | string[];
+    deleted?: string | string[];
   };
 };
 
@@ -45,6 +46,7 @@ export default async function GrowthV2ExamsPage({ searchParams }: GrowthV2ExamsP
   const examTypeValue = firstValue(searchParams?.examType)?.trim() ?? 'all';
   const examType = examTypeValue === 'school' || examTypeValue === 'internal' || examTypeValue === 'other' ? examTypeValue : 'all';
   const saved = firstValue(searchParams?.saved) === '1';
+  const deleted = firstValue(searchParams?.deleted) === '1';
   const adminHref = '/admin/growth-v2' as Route;
   const gate = renderGrowthV2AdminGate({
     successPath: '/admin/growth-v2/exams',
@@ -134,6 +136,7 @@ export default async function GrowthV2ExamsPage({ searchParams }: GrowthV2ExamsP
           </p>
         ) : null}
         {saved ? <p className="mt-3 rounded-lg border border-emerald-300/70 bg-emerald-50 px-3 py-2 text-sm text-emerald-700">考试记录已保存。</p> : null}
+        {deleted ? <p className="mt-3 rounded-lg border border-amber-300/70 bg-amber-50 px-3 py-2 text-sm text-amber-700">考试记录已删除。</p> : null}
       </div>
 
       <section className="mt-8">
@@ -208,6 +211,7 @@ export default async function GrowthV2ExamsPage({ searchParams }: GrowthV2ExamsP
                 <th className="px-4 py-3 font-medium">平均分</th>
                 <th className="px-4 py-3 font-medium">平均得分率</th>
                 <th className="px-4 py-3 font-medium">高频薄弱点</th>
+                <th className="px-4 py-3 font-medium">操作</th>
               </tr>
             </thead>
             <tbody>
@@ -241,11 +245,16 @@ export default async function GrowthV2ExamsPage({ searchParams }: GrowthV2ExamsP
                         <span className="text-ink/55">--</span>
                       )}
                     </td>
+                    <td className="px-4 py-4">
+                      <Link href={`/admin/growth-v2/exams/${exam.id}` as Route} className="text-sm font-medium text-accent hover:underline">
+                        编辑
+                      </Link>
+                    </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan={9} className="px-4 py-10 text-center text-sm text-ink/60">
+                  <td colSpan={10} className="px-4 py-10 text-center text-sm text-ink/60">
                     没有找到符合条件的考试记录。
                   </td>
                 </tr>

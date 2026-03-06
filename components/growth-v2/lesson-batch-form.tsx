@@ -19,6 +19,29 @@ export type GrowthV2LessonFormStudent = {
   homeGroupName: string | null;
 };
 
+export type GrowthV2LessonFormInitialValues = {
+  lessonDate?: string;
+  timeStart?: string;
+  timeEnd?: string;
+  topic?: string;
+  entryTestTopic?: string;
+  exitTestTopic?: string;
+  testTotal?: string;
+  homework?: string;
+  keyPoints?: string;
+  notes?: string;
+};
+
+export type GrowthV2LessonFormInitialEntry = {
+  studentId: string;
+  isGuest?: boolean;
+  entryScore?: string;
+  exitScore?: string;
+  performance?: string;
+  masteryLevel?: string;
+  comment?: string;
+};
+
 type LessonEntry = {
   id: string;
   name: string;
@@ -36,9 +59,15 @@ type GrowthV2LessonBatchFormProps = {
   groups: GrowthV2LessonFormGroup[];
   students: GrowthV2LessonFormStudent[];
   action: (formData: FormData) => void | Promise<void>;
+  title?: string;
+  description?: string;
+  submitLabel?: string;
+  initialGroupId?: string;
+  initialValues?: GrowthV2LessonFormInitialValues;
+  initialEntries?: GrowthV2LessonFormInitialEntry[];
 };
 
-function SubmitButton({ disabled }: { disabled?: boolean }) {
+function SubmitButton({ disabled, label }: { disabled?: boolean; label: string }) {
   const { pending } = useFormStatus();
 
   return (
@@ -47,38 +76,66 @@ function SubmitButton({ disabled }: { disabled?: boolean }) {
       disabled={pending || disabled}
       className="rounded-xl bg-accent px-5 py-3 text-sm font-medium text-white transition hover:bg-accent/90 disabled:cursor-not-allowed disabled:opacity-60"
     >
-      {pending ? '保存中...' : '保存本节课记录'}
+      {pending ? '保存中...' : label}
     </button>
   );
 }
 
-function createEntry(student: GrowthV2LessonFormStudent, isGuest: boolean): LessonEntry {
+function createEntry(student: GrowthV2LessonFormStudent, isGuest: boolean, initial?: GrowthV2LessonFormInitialEntry): LessonEntry {
   return {
     id: student.id,
     name: student.name,
     gradeLabel: student.gradeLabel,
     homeGroupName: student.homeGroupName,
     isGuest,
-    entryScore: '',
-    exitScore: '',
-    performance: '',
-    masteryLevel: '',
-    comment: ''
+    entryScore: initial?.entryScore ?? '',
+    exitScore: initial?.exitScore ?? '',
+    performance: initial?.performance ?? '',
+    masteryLevel: initial?.masteryLevel ?? '',
+    comment: initial?.comment ?? ''
   };
 }
 
-export function GrowthV2LessonBatchForm({ groups, students, action }: GrowthV2LessonBatchFormProps) {
-  const initialGroupId = groups[0]?.id ?? '';
-  const residentEntriesFor = (groupId: string) =>
-    students
+export function GrowthV2LessonBatchForm({
+  groups,
+  students,
+  action,
+  title = '新建课堂记录',
+  description = '先选班组，再按学生逐条填写。留空的学生不会生成课堂记录。',
+  submitLabel = '保存本节课记录',
+  initialGroupId: providedInitialGroupId,
+  initialValues,
+  initialEntries = []
+}: GrowthV2LessonBatchFormProps) {
+  const today = new Date().toISOString().slice(0, 10);
+  const initialGroupId = providedInitialGroupId ?? groups[0]?.id ?? '';
+  const initialEntryMap = new Map(initialEntries.map((entry) => [entry.studentId, entry]));
+
+  const buildEntriesForGroup = (groupId: string) => {
+    const residents = students
       .filter((student) => student.homeGroupId === groupId)
       .sort((left, right) => left.name.localeCompare(right.name, 'zh-CN'))
-      .map((student) => createEntry(student, false));
+      .map((student) => createEntry(student, false, initialEntryMap.get(student.id)));
+
+    if (groupId !== initialGroupId) {
+      return residents;
+    }
+
+    const extraInitialEntries = initialEntries
+      .filter((entry) => !residents.some((resident) => resident.id === entry.studentId))
+      .map((entry) => {
+        const student = students.find((item) => item.id === entry.studentId);
+        if (!student) return null;
+        return createEntry(student, Boolean(entry.isGuest), entry);
+      })
+      .filter((entry): entry is LessonEntry => Boolean(entry));
+
+    return [...residents, ...extraInitialEntries];
+  };
 
   const [selectedGroupId, setSelectedGroupId] = useState(initialGroupId);
-  const [entries, setEntries] = useState<LessonEntry[]>(() => residentEntriesFor(initialGroupId));
+  const [entries, setEntries] = useState<LessonEntry[]>(() => buildEntriesForGroup(initialGroupId));
   const [guestStudentId, setGuestStudentId] = useState('');
-  const today = new Date().toISOString().slice(0, 10);
 
   const currentGroup = groups.find((group) => group.id === selectedGroupId) ?? null;
   const availableGuestStudents = students
@@ -87,7 +144,7 @@ export function GrowthV2LessonBatchForm({ groups, students, action }: GrowthV2Le
 
   function handleGroupChange(groupId: string) {
     setSelectedGroupId(groupId);
-    setEntries(residentEntriesFor(groupId));
+    setEntries(buildEntriesForGroup(groupId));
     setGuestStudentId('');
   }
 
@@ -104,7 +161,7 @@ export function GrowthV2LessonBatchForm({ groups, students, action }: GrowthV2Le
     const student = students.find((item) => item.id === guestStudentId);
     if (!student) return;
 
-    setEntries((previous) => [...previous, createEntry(student, true)]);
+    setEntries((previous) => [...previous, createEntry(student, true, initialEntryMap.get(student.id))]);
     setGuestStudentId('');
   }
 
@@ -117,8 +174,8 @@ export function GrowthV2LessonBatchForm({ groups, students, action }: GrowthV2Le
       <section className="rounded-2xl border border-tide/10 bg-white/90 p-6 shadow-card">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
-            <h2 className="text-xl font-semibold text-tide">新建课堂记录</h2>
-            <p className="mt-2 text-sm text-ink/70">先选班组，再按学生逐条填写。留空的学生不会生成课堂记录。</p>
+            <h2 className="text-xl font-semibold text-tide">{title}</h2>
+            <p className="mt-2 text-sm text-ink/70">{description}</p>
           </div>
           <p className="text-sm text-ink/60">{currentGroup ? `${currentGroup.name} · ${entries.length} 人在表单中` : '先选择班组'}</p>
         </div>
@@ -145,7 +202,7 @@ export function GrowthV2LessonBatchForm({ groups, students, action }: GrowthV2Le
             <input
               name="lessonDate"
               type="date"
-              defaultValue={today}
+              defaultValue={initialValues?.lessonDate ?? today}
               className="mt-1 w-full rounded-lg border border-tide/20 bg-white px-3 py-2 text-sm outline-none focus:border-accent"
             />
           </label>
@@ -154,6 +211,7 @@ export function GrowthV2LessonBatchForm({ groups, students, action }: GrowthV2Le
             <input
               name="topic"
               type="text"
+              defaultValue={initialValues?.topic ?? ''}
               placeholder="例如：导数单调性与极值"
               className="mt-1 w-full rounded-lg border border-tide/20 bg-white px-3 py-2 text-sm outline-none focus:border-accent"
             />
@@ -166,6 +224,7 @@ export function GrowthV2LessonBatchForm({ groups, students, action }: GrowthV2Le
             <input
               name="timeStart"
               type="time"
+              defaultValue={initialValues?.timeStart ?? ''}
               className="mt-1 w-full rounded-lg border border-tide/20 bg-white px-3 py-2 text-sm outline-none focus:border-accent"
             />
           </label>
@@ -174,6 +233,7 @@ export function GrowthV2LessonBatchForm({ groups, students, action }: GrowthV2Le
             <input
               name="timeEnd"
               type="time"
+              defaultValue={initialValues?.timeEnd ?? ''}
               className="mt-1 w-full rounded-lg border border-tide/20 bg-white px-3 py-2 text-sm outline-none focus:border-accent"
             />
           </label>
@@ -182,6 +242,7 @@ export function GrowthV2LessonBatchForm({ groups, students, action }: GrowthV2Le
             <input
               name="entryTestTopic"
               type="text"
+              defaultValue={initialValues?.entryTestTopic ?? ''}
               placeholder="例如：上节课复习"
               className="mt-1 w-full rounded-lg border border-tide/20 bg-white px-3 py-2 text-sm outline-none focus:border-accent"
             />
@@ -191,6 +252,7 @@ export function GrowthV2LessonBatchForm({ groups, students, action }: GrowthV2Le
             <input
               name="exitTestTopic"
               type="text"
+              defaultValue={initialValues?.exitTestTopic ?? ''}
               placeholder="例如：当堂巩固"
               className="mt-1 w-full rounded-lg border border-tide/20 bg-white px-3 py-2 text-sm outline-none focus:border-accent"
             />
@@ -205,6 +267,7 @@ export function GrowthV2LessonBatchForm({ groups, students, action }: GrowthV2Le
               type="number"
               min="0"
               step="0.1"
+              defaultValue={initialValues?.testTotal ?? ''}
               placeholder="例如：50"
               className="mt-1 w-full rounded-lg border border-tide/20 bg-white px-3 py-2 text-sm outline-none focus:border-accent"
             />
@@ -214,6 +277,7 @@ export function GrowthV2LessonBatchForm({ groups, students, action }: GrowthV2Le
             <input
               name="homework"
               type="text"
+              defaultValue={initialValues?.homework ?? ''}
               placeholder="例如：课本 112 页第 3、5、8 题"
               className="mt-1 w-full rounded-lg border border-tide/20 bg-white px-3 py-2 text-sm outline-none focus:border-accent"
             />
@@ -226,6 +290,7 @@ export function GrowthV2LessonBatchForm({ groups, students, action }: GrowthV2Le
             <textarea
               name="keyPoints"
               rows={4}
+              defaultValue={initialValues?.keyPoints ?? ''}
               placeholder="记录本节课覆盖的方法、题型和注意点"
               className="mt-1 w-full rounded-lg border border-tide/20 bg-white px-3 py-2 text-sm outline-none focus:border-accent"
             />
@@ -235,6 +300,7 @@ export function GrowthV2LessonBatchForm({ groups, students, action }: GrowthV2Le
             <textarea
               name="notes"
               rows={4}
+              defaultValue={initialValues?.notes ?? ''}
               placeholder="记录课堂节奏、共性问题或家长需要知道的信息"
               className="mt-1 w-full rounded-lg border border-tide/20 bg-white px-3 py-2 text-sm outline-none focus:border-accent"
             />
@@ -405,7 +471,7 @@ export function GrowthV2LessonBatchForm({ groups, students, action }: GrowthV2Le
 
         <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
           <p className="text-sm text-ink/60">提示：学生行全部留空时，不会写入该生本节课数据。</p>
-          <SubmitButton disabled={!selectedGroupId} />
+          <SubmitButton disabled={!selectedGroupId} label={submitLabel} />
         </div>
       </section>
     </form>

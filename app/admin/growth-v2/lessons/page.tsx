@@ -14,6 +14,7 @@ type GrowthV2LessonsPageProps = {
     q?: string | string[];
     groupId?: string | string[];
     saved?: string | string[];
+    deleted?: string | string[];
   };
 };
 
@@ -42,6 +43,7 @@ export default async function GrowthV2LessonsPage({ searchParams }: GrowthV2Less
   const q = firstValue(searchParams?.q)?.trim() ?? '';
   const groupId = firstValue(searchParams?.groupId)?.trim() ?? '';
   const saved = firstValue(searchParams?.saved) === '1';
+  const deleted = firstValue(searchParams?.deleted) === '1';
   const adminHref = '/admin/growth-v2' as Route;
   const gate = renderGrowthV2AdminGate({
     successPath: '/admin/growth-v2/lessons',
@@ -131,6 +133,7 @@ export default async function GrowthV2LessonsPage({ searchParams }: GrowthV2Less
           </p>
         ) : null}
         {saved ? <p className="mt-3 rounded-lg border border-emerald-300/70 bg-emerald-50 px-3 py-2 text-sm text-emerald-700">课堂记录已保存。</p> : null}
+        {deleted ? <p className="mt-3 rounded-lg border border-amber-300/70 bg-amber-50 px-3 py-2 text-sm text-amber-700">课堂记录已删除。</p> : null}
       </div>
 
       <section className="mt-8">
@@ -199,6 +202,7 @@ export default async function GrowthV2LessonsPage({ searchParams }: GrowthV2Less
                 <th className="px-4 py-3 font-medium">进门考均分</th>
                 <th className="px-4 py-3 font-medium">课后得分率</th>
                 <th className="px-4 py-3 font-medium">掌握度已填</th>
+                <th className="px-4 py-3 font-medium">操作</th>
               </tr>
             </thead>
             <tbody>
@@ -224,11 +228,16 @@ export default async function GrowthV2LessonsPage({ searchParams }: GrowthV2Less
                     <td className="px-4 py-4 text-ink/80">{formatNumber(lesson.avgEntryScore)}</td>
                     <td className="px-4 py-4 text-ink/80">{formatPercent(lesson.avgExitScoreRate)}</td>
                     <td className="px-4 py-4 text-ink/80">{lesson.masteryFilledCount}</td>
+                    <td className="px-4 py-4">
+                      <Link href={`/admin/growth-v2/lessons/${lesson.id}` as Route} className="text-sm font-medium text-accent hover:underline">
+                        编辑
+                      </Link>
+                    </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan={9} className="px-4 py-10 text-center text-sm text-ink/60">
+                  <td colSpan={10} className="px-4 py-10 text-center text-sm text-ink/60">
                     没有找到符合条件的课堂记录。
                   </td>
                 </tr>

@@ -7,12 +7,12 @@ export const GROWTH_V2_ADMIN_MODULES = [
   {
     title: '课堂记录',
     href: '/admin/growth-v2/lessons',
-    summary: '一节课的主题、时间、作业、课堂要点，以及批量成长记录。'
+    summary: '一节课的主题、时间、作业、课堂要点，以及批量录入和历史编辑。'
   },
   {
     title: '考试管理',
     href: '/admin/growth-v2/exams',
-    summary: '考试主表、成绩录入、掌握度和薄弱点标签统计。'
+    summary: '考试主表、成绩录入、薄弱点标签统计，以及历史编辑。'
   }
 ] as const;
 
@@ -43,8 +43,8 @@ export const GROWTH_V2_MASTERY_OPTIONS = [
 ] as const;
 
 export const GROWTH_V2_NEXT_STEPS = [
-  '补课堂 / 考试历史编辑能力，支持修改已录入记录。',
   '补学生档案编辑和新建能力，彻底脱离旧系统里的静态学生来源。',
+  '补课堂 / 考试删除前的二次确认和更细的操作日志。',
   '补更细的家长报告图表和阶段性总结。',
   '最后再把旧成长追踪入口切到 Growth V2。'
 ] as const;

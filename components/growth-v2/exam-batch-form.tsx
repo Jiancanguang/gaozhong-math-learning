@@ -19,6 +19,25 @@ export type GrowthV2ExamFormStudent = {
   homeGroupId: string | null;
 };
 
+export type GrowthV2ExamFormInitialValues = {
+  name?: string;
+  examDate?: string;
+  examType?: 'school' | 'internal' | 'other';
+  subject?: string;
+  totalScore?: string;
+  notes?: string;
+};
+
+export type GrowthV2ExamFormInitialEntry = {
+  studentId: string;
+  score?: string;
+  classRank?: string;
+  gradeRank?: string;
+  masteryLevel?: string;
+  tagNames?: string;
+  note?: string;
+};
+
 type ExamEntry = {
   id: string;
   name: string;
@@ -36,9 +55,15 @@ type GrowthV2ExamBatchFormProps = {
   students: GrowthV2ExamFormStudent[];
   tagCatalog: GrowthTagCatalogItem[];
   action: (formData: FormData) => void | Promise<void>;
+  title?: string;
+  description?: string;
+  submitLabel?: string;
+  initialGroupId?: string;
+  initialValues?: GrowthV2ExamFormInitialValues;
+  initialEntries?: GrowthV2ExamFormInitialEntry[];
 };
 
-function SubmitButton({ disabled }: { disabled?: boolean }) {
+function SubmitButton({ disabled, label }: { disabled?: boolean; label: string }) {
   const { pending } = useFormStatus();
 
   return (
@@ -47,37 +72,67 @@ function SubmitButton({ disabled }: { disabled?: boolean }) {
       disabled={pending || disabled}
       className="rounded-xl bg-accent px-5 py-3 text-sm font-medium text-white transition hover:bg-accent/90 disabled:cursor-not-allowed disabled:opacity-60"
     >
-      {pending ? '保存中...' : '保存本次考试'}
+      {pending ? '保存中...' : label}
     </button>
   );
 }
 
-function createEntry(student: GrowthV2ExamFormStudent): ExamEntry {
+function createEntry(student: GrowthV2ExamFormStudent, initial?: GrowthV2ExamFormInitialEntry): ExamEntry {
   return {
     id: student.id,
     name: student.name,
     gradeLabel: student.gradeLabel,
-    score: '',
-    classRank: '',
-    gradeRank: '',
-    masteryLevel: '',
-    tagNames: '',
-    note: ''
+    score: initial?.score ?? '',
+    classRank: initial?.classRank ?? '',
+    gradeRank: initial?.gradeRank ?? '',
+    masteryLevel: initial?.masteryLevel ?? '',
+    tagNames: initial?.tagNames ?? '',
+    note: initial?.note ?? ''
   };
 }
 
-export function GrowthV2ExamBatchForm({ groups, students, tagCatalog, action }: GrowthV2ExamBatchFormProps) {
-  const initialGroupId = groups[0]?.id ?? '';
-  const entriesForGroup = (groupId: string) =>
-    students
+export function GrowthV2ExamBatchForm({
+  groups,
+  students,
+  tagCatalog,
+  action,
+  title = '新建考试记录',
+  description = '按班组批量录入成绩、排名、掌握度和薄弱点。没有分数的学生不会写入本次考试。',
+  submitLabel = '保存本次考试',
+  initialGroupId: providedInitialGroupId,
+  initialValues,
+  initialEntries = []
+}: GrowthV2ExamBatchFormProps) {
+  const today = new Date().toISOString().slice(0, 10);
+  const initialGroupId = providedInitialGroupId ?? groups[0]?.id ?? '';
+  const initialEntryMap = new Map(initialEntries.map((entry) => [entry.studentId, entry]));
+
+  const buildEntriesForGroup = (groupId: string) =>
+    {
+      const residents = students
       .filter((student) => student.homeGroupId === groupId)
       .sort((left, right) => left.name.localeCompare(right.name, 'zh-CN'))
-      .map((student) => createEntry(student));
+      .map((student) => createEntry(student, initialEntryMap.get(student.id)));
+
+      if (groupId !== initialGroupId) {
+        return residents;
+      }
+
+      const extraInitialEntries = initialEntries
+        .filter((entry) => !residents.some((resident) => resident.id === entry.studentId))
+        .map((entry) => {
+          const student = students.find((item) => item.id === entry.studentId);
+          if (!student) return null;
+          return createEntry(student, entry);
+        })
+        .filter((entry): entry is ExamEntry => Boolean(entry));
+
+      return [...residents, ...extraInitialEntries];
+    };
 
   const [selectedGroupId, setSelectedGroupId] = useState(initialGroupId);
-  const [entries, setEntries] = useState<ExamEntry[]>(() => entriesForGroup(initialGroupId));
+  const [entries, setEntries] = useState<ExamEntry[]>(() => buildEntriesForGroup(initialGroupId));
   const [focusedEntryId, setFocusedEntryId] = useState<string | null>(null);
-  const today = new Date().toISOString().slice(0, 10);
 
   const currentGroup = groups.find((group) => group.id === selectedGroupId) ?? null;
   const groupedTags = tagCatalog.reduce<Record<string, GrowthTagCatalogItem[]>>((accumulator, item) => {
@@ -90,7 +145,7 @@ export function GrowthV2ExamBatchForm({ groups, students, tagCatalog, action }: 
 
   function handleGroupChange(groupId: string) {
     setSelectedGroupId(groupId);
-    setEntries(entriesForGroup(groupId));
+    setEntries(buildEntriesForGroup(groupId));
     setFocusedEntryId(null);
   }
 
@@ -131,8 +186,8 @@ export function GrowthV2ExamBatchForm({ groups, students, tagCatalog, action }: 
       <section className="rounded-2xl border border-tide/10 bg-white/90 p-6 shadow-card">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
-            <h2 className="text-xl font-semibold text-tide">新建考试记录</h2>
-            <p className="mt-2 text-sm text-ink/70">按班组批量录入成绩、排名、掌握度和薄弱点。没有分数的学生不会写入本次考试。</p>
+            <h2 className="text-xl font-semibold text-tide">{title}</h2>
+            <p className="mt-2 text-sm text-ink/70">{description}</p>
           </div>
           <p className="text-sm text-ink/60">{currentGroup ? `${currentGroup.name} · ${entries.length} 人在表单中` : '先选择班组'}</p>
         </div>
@@ -159,6 +214,7 @@ export function GrowthV2ExamBatchForm({ groups, students, tagCatalog, action }: 
             <input
               name="name"
               type="text"
+              defaultValue={initialValues?.name ?? ''}
               placeholder="例如：3 月月考"
               className="mt-1 w-full rounded-lg border border-tide/20 bg-white px-3 py-2 text-sm outline-none focus:border-accent"
             />
@@ -168,13 +224,17 @@ export function GrowthV2ExamBatchForm({ groups, students, tagCatalog, action }: 
             <input
               name="examDate"
               type="date"
-              defaultValue={today}
+              defaultValue={initialValues?.examDate ?? today}
               className="mt-1 w-full rounded-lg border border-tide/20 bg-white px-3 py-2 text-sm outline-none focus:border-accent"
             />
           </label>
           <label className="text-sm text-ink/80">
             <span className="font-medium">考试类型</span>
-            <select name="examType" defaultValue="internal" className="mt-1 w-full rounded-lg border border-tide/20 bg-white px-3 py-2 text-sm outline-none focus:border-accent">
+            <select
+              name="examType"
+              defaultValue={initialValues?.examType ?? 'internal'}
+              className="mt-1 w-full rounded-lg border border-tide/20 bg-white px-3 py-2 text-sm outline-none focus:border-accent"
+            >
               <option value="internal">工作室测验</option>
               <option value="school">学校考试</option>
               <option value="other">其他</option>
@@ -188,7 +248,7 @@ export function GrowthV2ExamBatchForm({ groups, students, tagCatalog, action }: 
             <input
               name="subject"
               type="text"
-              defaultValue="数学"
+              defaultValue={initialValues?.subject ?? '数学'}
               className="mt-1 w-full rounded-lg border border-tide/20 bg-white px-3 py-2 text-sm outline-none focus:border-accent"
             />
           </label>
@@ -199,6 +259,7 @@ export function GrowthV2ExamBatchForm({ groups, students, tagCatalog, action }: 
               type="number"
               min="0"
               step="0.1"
+              defaultValue={initialValues?.totalScore ?? ''}
               placeholder="例如：150"
               className="mt-1 w-full rounded-lg border border-tide/20 bg-white px-3 py-2 text-sm outline-none focus:border-accent"
             />
@@ -208,6 +269,7 @@ export function GrowthV2ExamBatchForm({ groups, students, tagCatalog, action }: 
             <input
               name="notes"
               type="text"
+              defaultValue={initialValues?.notes ?? ''}
               placeholder="例如：压轴题偏难"
               className="mt-1 w-full rounded-lg border border-tide/20 bg-white px-3 py-2 text-sm outline-none focus:border-accent"
             />
@@ -359,7 +421,7 @@ export function GrowthV2ExamBatchForm({ groups, students, tagCatalog, action }: 
 
         <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
           <p className="text-sm text-ink/60">提示：没有分数的学生不会写入本次考试。</p>
-          <SubmitButton disabled={!selectedGroupId} />
+          <SubmitButton disabled={!selectedGroupId} label={submitLabel} />
         </div>
       </section>
     </form>
