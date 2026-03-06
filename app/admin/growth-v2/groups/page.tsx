@@ -112,27 +112,73 @@ export default async function GrowthV2GroupsPage({ searchParams }: GrowthV2Group
   });
 
   const summaries = buildGroupSummaries(filteredGroups, students, lessons, exams);
+  const activeGroupCount = summaries.filter((group) => group.status === 'active').length;
+  const archivedGroupCount = summaries.length - activeGroupCount;
+  const coveredTeacherCount = new Set(summaries.map((group) => group.teacherName).filter(Boolean)).size;
+  const totalStudentCount = summaries.reduce((sum, group) => sum + group.studentCount, 0);
+  const totalLessonCount = summaries.reduce((sum, group) => sum + group.lessonCount, 0);
+  const totalExamCount = summaries.reduce((sum, group) => sum + group.examCount, 0);
 
   return (
     <div className="mx-auto w-full max-w-6xl px-4 pb-12 pt-8 sm:px-6 lg:px-8">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <p className="text-sm font-medium text-accent">Growth V2</p>
-          <h1 className="mt-2 text-3xl font-semibold text-tide">班组管理</h1>
-          <p className="mt-2 text-sm text-ink/70">统一维护 `growth_groups`，并查看每个班组下的学生、课堂和考试沉淀情况。</p>
-        </div>
-        <div className="flex flex-wrap gap-3">
-          <Link href={'/admin/growth-v2/groups/new' as Route} className="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white transition hover:bg-accent/90">
-            新建班组
-          </Link>
-          <Link href={'/admin/growth-v2' as Route} className="rounded-lg border border-tide/20 px-4 py-2 text-sm font-medium text-tide transition hover:bg-tide/5">
-            返回后台
-          </Link>
-          <AdminLogoutButton redirectPath="/admin/growth-v2/groups" />
-        </div>
-      </div>
+      <section className="rounded-3xl border border-tide/10 bg-white/82 p-8 shadow-card">
+        <div className="grid gap-8 xl:grid-cols-[1.1fr_0.9fr]">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-accent">Groups</p>
+            <h1 className="mt-3 text-3xl font-semibold text-tide sm:text-4xl">班组管理</h1>
+            <p className="mt-4 max-w-3xl text-base leading-8 text-ink/80">
+              这里统一维护 `growth_groups`。除了班组本身的信息，你还能直接看到每个班组下沉淀了多少学生、课堂和考试，并一键跳到对应模块继续处理。
+            </p>
+            <div className="mt-6 flex flex-wrap gap-3 text-sm">
+              <span className="rounded-full bg-tide/10 px-3 py-1 font-medium text-tide">年级 / 老师配置已在线维护</span>
+              <span className="rounded-full bg-paper px-3 py-1 font-medium text-tide ring-1 ring-tide/10">支持状态筛选和归档</span>
+              <span className="rounded-full bg-accent/10 px-3 py-1 font-medium text-accent">可直达学生、课堂、考试页面</span>
+            </div>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Link href={'/admin/growth-v2/groups/new' as Route} className="rounded-xl bg-accent px-5 py-3 text-sm font-medium text-white transition hover:bg-accent/90">
+                新建班组
+              </Link>
+              <Link href={'/admin/growth-v2' as Route} className="rounded-xl border border-tide/20 px-5 py-3 text-sm font-medium text-tide transition hover:bg-tide/5">
+                返回后台
+              </Link>
+              <AdminLogoutButton redirectPath="/admin/growth-v2/groups" />
+            </div>
+          </div>
 
-      <div className="mt-5">
+          <div className="rounded-3xl border border-tide/10 bg-paper/70 p-6">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-accent">Live Snapshot</p>
+                <h2 className="mt-2 text-2xl font-semibold text-tide">当前班组结构</h2>
+              </div>
+              <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700">线上数据</span>
+            </div>
+            <div className="mt-6 grid gap-3 sm:grid-cols-2">
+              <article className="rounded-2xl border border-tide/10 bg-white/90 p-4">
+                <p className="text-sm text-ink/60">班组总数</p>
+                <p className="mt-2 text-3xl font-semibold text-tide">{summaries.length}</p>
+              </article>
+              <article className="rounded-2xl border border-tide/10 bg-white/90 p-4">
+                <p className="text-sm text-ink/60">启用中</p>
+                <p className="mt-2 text-3xl font-semibold text-tide">{activeGroupCount}</p>
+              </article>
+              <article className="rounded-2xl border border-tide/10 bg-white/90 p-4">
+                <p className="text-sm text-ink/60">已归档</p>
+                <p className="mt-2 text-3xl font-semibold text-tide">{archivedGroupCount}</p>
+              </article>
+              <article className="rounded-2xl border border-tide/10 bg-white/90 p-4">
+                <p className="text-sm text-ink/60">覆盖老师数</p>
+                <p className="mt-2 text-3xl font-semibold text-tide">{coveredTeacherCount}</p>
+              </article>
+            </div>
+            <div className="mt-5 rounded-2xl border border-tide/10 bg-white/80 p-4 text-sm leading-7 text-ink/75">
+              当前班组一共沉淀了 {totalStudentCount} 名学生、{totalLessonCount} 节课堂和 {totalExamCount} 场考试，列表右侧可以直接跳转到对应结果页。
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div className="mt-6">
         <GrowthV2AdminErrorBanner error={error} />
         {error === 'validation' ? (
           <p className="mt-3 rounded-lg border border-amber-300/70 bg-amber-50 px-3 py-2 text-sm text-amber-800">请至少填写班组名称。</p>
@@ -143,56 +189,44 @@ export default async function GrowthV2GroupsPage({ searchParams }: GrowthV2Group
         {savedGroupId ? <p className="mt-3 rounded-lg border border-emerald-300/70 bg-emerald-50 px-3 py-2 text-sm text-emerald-700">班组信息已保存。</p> : null}
       </div>
 
-      <section className="mt-8 grid gap-4 md:grid-cols-4">
-        <article className="rounded-2xl border border-tide/10 bg-white/90 p-5 shadow-card">
-          <p className="text-sm text-ink/65">班组数</p>
-          <p className="mt-2 text-3xl font-semibold text-tide">{summaries.length}</p>
-        </article>
-        <article className="rounded-2xl border border-tide/10 bg-white/90 p-5 shadow-card">
-          <p className="text-sm text-ink/65">关联学生</p>
-          <p className="mt-2 text-3xl font-semibold text-tide">{summaries.reduce((sum, group) => sum + group.studentCount, 0)}</p>
-        </article>
-        <article className="rounded-2xl border border-tide/10 bg-white/90 p-5 shadow-card">
-          <p className="text-sm text-ink/65">关联课堂</p>
-          <p className="mt-2 text-3xl font-semibold text-tide">{summaries.reduce((sum, group) => sum + group.lessonCount, 0)}</p>
-        </article>
-        <article className="rounded-2xl border border-tide/10 bg-white/90 p-5 shadow-card">
-          <p className="text-sm text-ink/65">关联考试</p>
-          <p className="mt-2 text-3xl font-semibold text-tide">{summaries.reduce((sum, group) => sum + group.examCount, 0)}</p>
-        </article>
-      </section>
-
-      <section className="mt-8 rounded-2xl border border-tide/10 bg-white/90 p-6 shadow-card">
+      <section className="mt-8 rounded-3xl border border-tide/10 bg-white/85 p-6 shadow-card">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
-            <h2 className="text-xl font-semibold text-tide">班组列表</h2>
-            <p className="mt-2 text-sm text-ink/70">支持按名称、老师和状态筛选，并直接跳到对应的学生 / 课堂 / 考试页面。</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent">Directory</p>
+            <h2 className="mt-2 text-2xl font-semibold text-tide">班组列表</h2>
+            <p className="mt-2 text-sm leading-7 text-ink/70">支持按名称、老师和状态筛选，并直接跳到对应的学生、课堂、考试页面。这个页面更偏运营看板，而不是只放一张工具表。</p>
           </div>
-          <p className="text-sm text-ink/65">当前匹配 {summaries.length} 个班组</p>
+          <span className="rounded-full bg-paper px-3 py-1 text-sm font-medium text-tide ring-1 ring-tide/10">当前匹配 {summaries.length} 个班组</span>
         </div>
 
-        <form className="mt-5 grid gap-3 rounded-2xl border border-tide/10 bg-paper/50 p-4 md:grid-cols-[1.3fr_180px_auto]">
-          <input
-            type="text"
-            name="q"
-            defaultValue={q}
-            placeholder="按班组名、老师、备注搜索"
-            className="rounded-lg border border-tide/20 bg-white px-3 py-2 text-sm outline-none focus:border-accent"
-          />
-          <select name="status" defaultValue={status} className="rounded-lg border border-tide/20 bg-white px-3 py-2 text-sm outline-none focus:border-accent">
-            <option value="all">全部状态</option>
-            <option value="active">启用中</option>
-            <option value="archived">已归档</option>
-          </select>
-          <button type="submit" className="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white transition hover:bg-accent/90">
-            筛选
-          </button>
+        <form className="mt-6 rounded-2xl border border-tide/10 bg-paper/60 p-4">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <p className="text-sm font-medium text-tide">筛选条件</p>
+            <p className="text-xs text-ink/60">可按班组名、老师、备注和状态快速收缩结果。</p>
+          </div>
+          <div className="mt-4 grid gap-3 md:grid-cols-[1.3fr_180px_auto]">
+            <input
+              type="text"
+              name="q"
+              defaultValue={q}
+              placeholder="按班组名、老师、备注搜索"
+              className="rounded-xl border border-tide/20 bg-white px-3 py-2 text-sm outline-none transition focus:border-accent"
+            />
+            <select name="status" defaultValue={status} className="rounded-xl border border-tide/20 bg-white px-3 py-2 text-sm outline-none transition focus:border-accent">
+              <option value="all">全部状态</option>
+              <option value="active">启用中</option>
+              <option value="archived">已归档</option>
+            </select>
+            <button type="submit" className="rounded-xl bg-accent px-4 py-2 text-sm font-medium text-white transition hover:bg-accent/90">
+              筛选
+            </button>
+          </div>
         </form>
 
-        <div className="mt-6 overflow-x-auto rounded-2xl border border-tide/10 bg-white">
+        <div className="mt-6 overflow-x-auto rounded-3xl border border-tide/10 bg-white/90">
           <table className="min-w-full border-collapse text-sm">
             <thead>
-              <tr className="border-b border-tide/10 bg-paper/60 text-left text-ink/70">
+              <tr className="border-b border-tide/10 bg-paper/70 text-left text-ink/70">
                 <th className="px-4 py-3 font-medium">班组</th>
                 <th className="px-4 py-3 font-medium">年级</th>
                 <th className="px-4 py-3 font-medium">老师</th>
@@ -206,9 +240,15 @@ export default async function GrowthV2GroupsPage({ searchParams }: GrowthV2Group
             <tbody>
               {summaries.length > 0 ? (
                 summaries.map((group) => (
-                  <tr key={group.id} className="border-b border-tide/10 align-top last:border-b-0">
+                  <tr key={group.id} className="border-b border-tide/10 align-top transition hover:bg-paper/30 last:border-b-0">
                     <td className="px-4 py-4">
-                      <p className="font-medium text-tide">{group.name}</p>
+                      <p className="text-base font-medium text-tide">{group.name}</p>
+                      <div className="mt-2 flex flex-wrap gap-2">
+                        {group.gradeLabel ? (
+                          <span className="rounded-full bg-paper px-3 py-1 text-xs font-medium text-tide ring-1 ring-tide/10">{group.gradeLabel}</span>
+                        ) : null}
+                        {group.teacherName ? <span className="rounded-full bg-tide/10 px-3 py-1 text-xs font-medium text-tide">{group.teacherName}</span> : null}
+                      </div>
                       {group.notes ? <p className="mt-1 text-xs text-ink/55">{group.notes}</p> : null}
                     </td>
                     <td className="px-4 py-4 text-ink/80">{group.gradeLabel || '--'}</td>
