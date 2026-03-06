@@ -166,7 +166,9 @@ export default async function GrowthV2StudentsPage({ searchParams }: GrowthV2Stu
                 students.map((student) => (
                   <tr key={student.id} className="border-b border-tide/10 align-top last:border-b-0">
                     <td className="px-4 py-4">
-                      <p className="font-medium text-tide">{student.name}</p>
+                      <Link href={`/admin/growth-v2/students/${student.id}` as Route} className="font-medium text-tide hover:underline">
+                        {student.name}
+                      </Link>
                       {student.notes ? <p className="mt-1 text-xs text-ink/55">{student.notes}</p> : null}
                     </td>
                     <td className="px-4 py-4 text-ink/80">{student.gradeLabel || '--'}</td>

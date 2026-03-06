@@ -2,7 +2,7 @@ export const GROWTH_V2_ADMIN_MODULES = [
   {
     title: '学生档案',
     href: '/admin/growth-v2/students',
-    summary: '学生列表、班组归属、家长 token、在读状态与基础统计。'
+    summary: '学生列表、学生详情、班组归属、家长 token、在读状态与基础统计。'
   },
   {
     title: '课堂记录',
@@ -43,8 +43,8 @@ export const GROWTH_V2_MASTERY_OPTIONS = [
 ] as const;
 
 export const GROWTH_V2_NEXT_STEPS = [
-  '给学生模块加详情页，串起课堂、考试和家长报告入口。',
   '补课堂 / 考试历史编辑能力，支持修改已录入记录。',
+  '补学生档案编辑和新建能力，彻底脱离旧系统里的静态学生来源。',
   '补更细的家长报告图表和阶段性总结。',
   '最后再把旧成长追踪入口切到 Growth V2。'
 ] as const;

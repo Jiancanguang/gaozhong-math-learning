@@ -997,24 +997,7 @@ export async function listGrowthExams(params: ListGrowthExamsParams = {}): Promi
   });
 }
 
-export async function getGrowthParentReportByToken(token: string): Promise<GrowthParentReport | null> {
-  const normalizedToken = token.trim();
-  if (!normalizedToken) return null;
-
-  const studentRows = await readRows<GrowthStudentRow>(
-    buildTablePath(
-      GROWTH_STUDENTS_TABLE,
-      new URLSearchParams({
-        select: 'id,name,grade_label,home_group_id,parent_access_token,status,notes,created_at,updated_at',
-        parent_access_token: `eq.${normalizedToken}`,
-        limit: '1'
-      }).toString()
-    )
-  );
-
-  if (studentRows.length === 0) return null;
-
-  const student = mapGrowthStudent(studentRows[0]);
+async function buildGrowthStudentReport(student: GrowthStudent): Promise<GrowthParentReport> {
   const [groups, lessonRecordRows, examScoreRows] = await Promise.all([
     listGrowthGroups({ status: 'all' }),
     readRows<GrowthLessonRecordRow>(
@@ -1163,4 +1146,42 @@ export async function getGrowthParentReportByToken(token: string): Promise<Growt
     recentLessons,
     recentExams
   };
+}
+
+export async function getGrowthStudentReportById(studentId: string): Promise<GrowthParentReport | null> {
+  const normalizedStudentId = studentId.trim();
+  if (!normalizedStudentId) return null;
+
+  const studentRows = await readRows<GrowthStudentRow>(
+    buildTablePath(
+      GROWTH_STUDENTS_TABLE,
+      new URLSearchParams({
+        select: 'id,name,grade_label,home_group_id,parent_access_token,status,notes,created_at,updated_at',
+        id: `eq.${normalizedStudentId}`,
+        limit: '1'
+      }).toString()
+    )
+  );
+
+  if (studentRows.length === 0) return null;
+  return buildGrowthStudentReport(mapGrowthStudent(studentRows[0]));
+}
+
+export async function getGrowthParentReportByToken(token: string): Promise<GrowthParentReport | null> {
+  const normalizedToken = token.trim();
+  if (!normalizedToken) return null;
+
+  const studentRows = await readRows<GrowthStudentRow>(
+    buildTablePath(
+      GROWTH_STUDENTS_TABLE,
+      new URLSearchParams({
+        select: 'id,name,grade_label,home_group_id,parent_access_token,status,notes,created_at,updated_at',
+        parent_access_token: `eq.${normalizedToken}`,
+        limit: '1'
+      }).toString()
+    )
+  );
+
+  if (studentRows.length === 0) return null;
+  return buildGrowthStudentReport(mapGrowthStudent(studentRows[0]));
 }
