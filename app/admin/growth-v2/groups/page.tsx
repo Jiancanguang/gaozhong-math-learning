@@ -5,13 +5,13 @@ import { GrowthV2AdminErrorBanner, renderGrowthV2AdminGate } from '@/components/
 import { SectionTitle } from '@/components/growth-v2/ui/section-title';
 import { StatCard } from '@/components/growth-v2/ui/stat-card';
 import { firstValue } from '@/lib/growth-v2-format';
-import type { GrowthExamListItem, GrowthGroup, GrowthLessonListItem, GrowthStudentListItem } from '@/lib/growth-v2-store';
+import type { GrowthGroup, GrowthStudentListItem } from '@/lib/growth-v2-store';
 import { isGrowthV2TableMissingError, listGrowthExams, listGrowthGroups, listGrowthLessons, listGrowthStudents } from '@/lib/growth-v2-store';
 
 type PageProps = { searchParams?: { error?: string | string[]; saved?: string | string[]; status?: string | string[]; q?: string | string[] } };
 type GroupSummary = GrowthGroup & { studentCount: number; lessonCount: number; examCount: number };
 
-function buildSummaries(groups: GrowthGroup[], students: GrowthStudentListItem[], lessons: GrowthLessonListItem[], exams: GrowthExamListItem[]) {
+function buildSummaries(groups: GrowthGroup[], students: GrowthStudentListItem[], lessons: { groupId: string }[], exams: { groupId: string }[]) {
   const sc = new Map<string, number>();
   const lc = new Map<string, number>();
   const ec = new Map<string, number>();
@@ -35,16 +35,20 @@ export default async function GroupsPage({ searchParams }: PageProps) {
 
   let groups: GrowthGroup[] = [];
   let students: GrowthStudentListItem[] = [];
-  let lessons: GrowthLessonListItem[] = [];
-  let exams: GrowthExamListItem[] = [];
+  let lessonItems: { groupId: string }[] = [];
+  let examItems: { groupId: string }[] = [];
 
   try {
-    [groups, students, lessons, exams] = await Promise.all([
+    const [g, s, lr, er] = await Promise.all([
       listGrowthGroups({ status }),
       listGrowthStudents({ status: 'all' }),
-      listGrowthLessons(),
-      listGrowthExams()
+      listGrowthLessons({ pageSize: 100 }),
+      listGrowthExams({ pageSize: 100 })
     ]);
+    groups = g;
+    students = s;
+    lessonItems = lr.items;
+    examItems = er.items;
   } catch (fetchError) {
     if (isGrowthV2TableMissingError(fetchError)) return <GrowthV2AdminErrorBanner error="missing-table" />;
     throw fetchError;
@@ -54,7 +58,7 @@ export default async function GroupsPage({ searchParams }: PageProps) {
     if (!q) return true;
     return [g.name, g.teacherName, g.gradeLabel, g.notes].join('\n').toLowerCase().includes(q.toLowerCase());
   });
-  const summaries = buildSummaries(filtered, students, lessons, exams);
+  const summaries = buildSummaries(filtered, students, lessonItems, examItems);
   const activeCount = summaries.filter((g) => g.status === 'active').length;
 
   return (

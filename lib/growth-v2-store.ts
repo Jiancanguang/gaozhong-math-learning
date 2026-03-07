@@ -98,6 +98,15 @@ export type GrowthLessonDetail = GrowthLesson & {
 export type ListGrowthLessonsParams = {
   q?: string;
   groupId?: string;
+  page?: number;
+  pageSize?: number;
+};
+
+export type PaginatedResult<T> = {
+  items: T[];
+  total: number;
+  page: number;
+  pageSize: number;
 };
 
 export type GrowthExam = {
@@ -155,6 +164,8 @@ export type ListGrowthExamsParams = {
   q?: string;
   groupId?: string;
   examType?: 'all' | 'school' | 'internal' | 'other';
+  page?: number;
+  pageSize?: number;
 };
 
 export type GrowthParentLessonItem = GrowthLessonRecord & {
@@ -532,6 +543,17 @@ async function readRows<T>(path: string) {
   const response = await supabaseAdminRequest(path);
   if (!response) return [] as T[];
   return (await response.json()) as T[];
+}
+
+async function readRowsWithCount<T>(path: string): Promise<{ rows: T[]; total: number }> {
+  const response = await supabaseAdminRequest(path, {
+    headers: { Prefer: 'count=exact' }
+  });
+  if (!response) return { rows: [], total: 0 };
+  const rows = (await response.json()) as T[];
+  const range = response.headers.get('content-range');
+  const total = range ? parseInt(range.split('/')[1] ?? '0', 10) : rows.length;
+  return { rows, total: Number.isFinite(total) ? total : rows.length };
 }
 
 async function readCount(tableName: string) {
@@ -1186,10 +1208,16 @@ export async function replaceGrowthExamScores(examId: string, scores: SaveGrowth
   }
 }
 
-export async function listGrowthLessons(params: ListGrowthLessonsParams = {}): Promise<GrowthLessonListItem[]> {
+export async function listGrowthLessons(params: ListGrowthLessonsParams = {}): Promise<PaginatedResult<GrowthLessonListItem>> {
+  const page = Math.max(1, params.page ?? 1);
+  const pageSize = Math.max(1, Math.min(100, params.pageSize ?? 20));
+  const offset = (page - 1) * pageSize;
+
   const query = new URLSearchParams({
     select: 'id,group_id,lesson_date,time_start,time_end,topic,entry_test_topic,exit_test_topic,test_total,homework,key_points,notes,created_at,updated_at',
-    order: 'lesson_date.desc,created_at.desc'
+    order: 'lesson_date.desc,created_at.desc',
+    limit: String(pageSize),
+    offset: String(offset)
   });
 
   if (params.q?.trim()) {
@@ -1200,8 +1228,8 @@ export async function listGrowthLessons(params: ListGrowthLessonsParams = {}): P
     query.set('group_id', `eq.${params.groupId.trim()}`);
   }
 
-  const lessonRows = await readRows<GrowthLessonRow>(buildTablePath(GROWTH_LESSONS_TABLE, query.toString()));
-  if (lessonRows.length === 0) return [];
+  const { rows: lessonRows, total } = await readRowsWithCount<GrowthLessonRow>(buildTablePath(GROWTH_LESSONS_TABLE, query.toString()));
+  if (lessonRows.length === 0) return { items: [], total, page, pageSize };
 
   const lessons = lessonRows.map(mapGrowthLesson);
   const lessonIds = lessons.map((lesson) => lesson.id);
@@ -1229,7 +1257,7 @@ export async function listGrowthLessons(params: ListGrowthLessonsParams = {}): P
     recordMap.set(record.lessonId, current);
   }
 
-  return lessons.map((lesson) => {
+  const items = lessons.map((lesson) => {
     const records = recordMap.get(lesson.id) ?? [];
     const entryScores = records.flatMap((record) => (record.entryScore === null ? [] : [record.entryScore]));
     const exitRates = records.flatMap((record) => {
@@ -1249,6 +1277,8 @@ export async function listGrowthLessons(params: ListGrowthLessonsParams = {}): P
       masteryFilledCount: records.filter((record) => Boolean(record.masteryLevel)).length
     };
   });
+
+  return { items, total, page, pageSize };
 }
 
 export async function getGrowthLessonDetailById(lessonId: string): Promise<GrowthLessonDetail | null> {
@@ -1298,10 +1328,16 @@ export async function getGrowthLessonDetailById(lessonId: string): Promise<Growt
   };
 }
 
-export async function listGrowthExams(params: ListGrowthExamsParams = {}): Promise<GrowthExamListItem[]> {
+export async function listGrowthExams(params: ListGrowthExamsParams = {}): Promise<PaginatedResult<GrowthExamListItem>> {
+  const page = Math.max(1, params.page ?? 1);
+  const pageSize = Math.max(1, Math.min(100, params.pageSize ?? 20));
+  const offset = (page - 1) * pageSize;
+
   const query = new URLSearchParams({
     select: 'id,group_id,name,exam_type,exam_date,subject,total_score,notes,created_at,updated_at',
-    order: 'exam_date.desc,created_at.desc'
+    order: 'exam_date.desc,created_at.desc',
+    limit: String(pageSize),
+    offset: String(offset)
   });
 
   if (params.q?.trim()) {
@@ -1316,8 +1352,8 @@ export async function listGrowthExams(params: ListGrowthExamsParams = {}): Promi
     query.set('exam_type', `eq.${params.examType}`);
   }
 
-  const examRows = await readRows<GrowthExamRow>(buildTablePath(GROWTH_EXAMS_TABLE, query.toString()));
-  if (examRows.length === 0) return [];
+  const { rows: examRows, total } = await readRowsWithCount<GrowthExamRow>(buildTablePath(GROWTH_EXAMS_TABLE, query.toString()));
+  if (examRows.length === 0) return { items: [], total, page, pageSize };
 
   const exams = examRows.map(mapGrowthExam);
   const examIds = exams.map((exam) => exam.id);
@@ -1371,7 +1407,7 @@ export async function listGrowthExams(params: ListGrowthExamsParams = {}): Promi
     tagMap.set(examId, current);
   }
 
-  return exams.map((exam) => {
+  const items = exams.map((exam) => {
     const scores = scoreMap.get(exam.id) ?? [];
     const tags = tagMap.get(exam.id) ?? [];
     const tagCounts = new Map<string, number>();
@@ -1402,6 +1438,8 @@ export async function listGrowthExams(params: ListGrowthExamsParams = {}): Promi
       topTags
     };
   });
+
+  return { items, total, page, pageSize };
 }
 
 export async function getGrowthExamDetailById(examId: string): Promise<GrowthExamDetail | null> {

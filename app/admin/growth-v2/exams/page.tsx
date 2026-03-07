@@ -2,14 +2,15 @@ import type { Route } from 'next';
 import Link from 'next/link';
 
 import { GrowthV2AdminErrorBanner, renderGrowthV2AdminGate } from '@/components/growth-v2/admin-access';
+import { Pagination } from '@/components/growth-v2/ui/pagination';
 import { SectionTitle } from '@/components/growth-v2/ui/section-title';
 import { StatCard } from '@/components/growth-v2/ui/stat-card';
 import { firstValue, fmt, fmtPct } from '@/lib/growth-v2-format';
-import type { GrowthExamListItem, GrowthGroup, GrowthTagCatalogItem } from '@/lib/growth-v2-store';
+import type { GrowthGroup, GrowthTagCatalogItem } from '@/lib/growth-v2-store';
 import { isGrowthV2TableMissingError, listGrowthExams, listGrowthGroups, listGrowthTagCatalog } from '@/lib/growth-v2-store';
 
 type PageProps = {
-  searchParams?: { error?: string | string[]; q?: string | string[]; groupId?: string | string[]; examType?: string | string[]; saved?: string | string[]; deleted?: string | string[] };
+  searchParams?: { error?: string | string[]; q?: string | string[]; groupId?: string | string[]; examType?: string | string[]; page?: string | string[]; saved?: string | string[]; deleted?: string | string[] };
 };
 
 const examTypeLabels: Record<string, string> = { school: '学校考试', internal: '工作室测验', other: '其他' };
@@ -22,6 +23,7 @@ export default async function ExamsPage({ searchParams }: PageProps) {
   const groupId = firstValue(searchParams?.groupId)?.trim() ?? '';
   const examTypeValue = firstValue(searchParams?.examType)?.trim() ?? 'all';
   const examType = examTypeValue === 'school' || examTypeValue === 'internal' || examTypeValue === 'other' ? examTypeValue : 'all';
+  const page = Math.max(1, parseInt(firstValue(searchParams?.page) ?? '1', 10) || 1);
   const saved = firstValue(searchParams?.saved) === '1';
   const deleted = firstValue(searchParams?.deleted) === '1';
 
@@ -29,13 +31,13 @@ export default async function ExamsPage({ searchParams }: PageProps) {
   if (gate) return gate;
 
   let groups: GrowthGroup[] = [];
-  let exams: GrowthExamListItem[] = [];
+  let examResult = { items: [] as Awaited<ReturnType<typeof listGrowthExams>>['items'], total: 0, page: 1, pageSize: 20 };
   let tagCatalog: GrowthTagCatalogItem[] = [];
 
   try {
-    [groups, exams, tagCatalog] = await Promise.all([
+    [groups, examResult, tagCatalog] = await Promise.all([
       listGrowthGroups({ status: 'all' }),
-      listGrowthExams({ q, groupId, examType }),
+      listGrowthExams({ q, groupId, examType, page }),
       listGrowthTagCatalog()
     ]);
   } catch (fetchError) {
@@ -43,9 +45,20 @@ export default async function ExamsPage({ searchParams }: PageProps) {
     throw fetchError;
   }
 
+  const exams = examResult.items;
   const totalScores = exams.reduce((sum, e) => sum + e.scoreCount, 0);
   const rateValues = exams.flatMap((e) => (e.avgScoreRate === null ? [] : [e.avgScoreRate]));
   const overallRate = rateValues.length ? rateValues.reduce((a, b) => a + b, 0) / rateValues.length : null;
+
+  function buildPageHref(p: number) {
+    const params = new URLSearchParams();
+    if (q) params.set('q', q);
+    if (groupId) params.set('groupId', groupId);
+    if (examType !== 'all') params.set('examType', examType);
+    if (p > 1) params.set('page', String(p));
+    const qs = params.toString();
+    return qs ? `/admin/growth-v2/exams?${qs}` : '/admin/growth-v2/exams';
+  }
 
   return (
     <div>
@@ -66,9 +79,9 @@ export default async function ExamsPage({ searchParams }: PageProps) {
       </div>
 
       <section className="mt-5 grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <StatCard label="考试数" value={String(exams.length)} sub="考试场次" colorClass="bg-stat-blue-soft" valueColorClass="text-stat-blue" />
-        <StatCard label="成绩记录" value={String(totalScores)} sub="学生成绩条数" colorClass="bg-stat-amber-soft" valueColorClass="text-stat-amber" />
-        <StatCard label="平均得分率" value={fmtPct(overallRate)} sub="全部考试" colorClass="bg-stat-emerald-soft" valueColorClass="text-stat-emerald" />
+        <StatCard label="考试总数" value={String(examResult.total)} sub="考试场次" colorClass="bg-stat-blue-soft" valueColorClass="text-stat-blue" />
+        <StatCard label="本页成绩" value={String(totalScores)} sub="学生成绩条数" colorClass="bg-stat-amber-soft" valueColorClass="text-stat-amber" />
+        <StatCard label="平均得分率" value={fmtPct(overallRate)} sub="本页考试" colorClass="bg-stat-emerald-soft" valueColorClass="text-stat-emerald" />
         <StatCard label="标签数" value={String(tagCatalog.length)} sub="可用薄弱点标签" colorClass="bg-stat-rose-soft" valueColorClass="text-stat-rose" />
       </section>
 
@@ -140,6 +153,8 @@ export default async function ExamsPage({ searchParams }: PageProps) {
             </tbody>
           </table>
         </div>
+
+        <Pagination page={examResult.page} pageSize={examResult.pageSize} total={examResult.total} buildHref={buildPageHref} />
       </section>
     </div>
   );
