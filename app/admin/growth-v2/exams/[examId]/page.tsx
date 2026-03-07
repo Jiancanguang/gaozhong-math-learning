@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
 import { updateGrowthExamAction } from '@/app/admin/growth-v2/actions';
-import { AdminLogoutButton } from '@/components/admin-auth-panels';
+
 import {
   GrowthV2ExamBatchForm,
   type GrowthV2ExamFormGroup,
@@ -70,24 +70,23 @@ export default async function GrowthV2ExamDetailPage({ params, searchParams }: G
   } catch (fetchError) {
     if (isGrowthV2TableMissingError(fetchError)) {
       return (
-        <div className="mx-auto w-full max-w-6xl px-4 pb-12 pt-8 sm:px-6 lg:px-8">
+        <>
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
               <p className="text-sm font-medium text-accent">Growth V2</p>
-              <h1 className="mt-2 text-3xl font-semibold text-tide">考试详情</h1>
+              <h1 className="mt-2 text-3xl font-semibold text-ink">考试详情</h1>
               <p className="mt-2 text-sm text-ink/70">考试详情页已经接到真实数据层，但当前 Supabase 里还没有 `growth_*` 表。</p>
             </div>
             <div className="flex flex-wrap gap-3">
               <Link href={'/admin/growth-v2/exams' as Route} className="rounded-lg border border-tide/20 px-4 py-2 text-sm font-medium text-tide transition hover:bg-tide/5">
                 返回考试列表
               </Link>
-              <AdminLogoutButton redirectPath={detailHref} />
             </div>
           </div>
           <div className="mt-5">
             <GrowthV2AdminErrorBanner error="missing-table" />
           </div>
-        </div>
+        </>
       );
     }
 
@@ -131,11 +130,11 @@ export default async function GrowthV2ExamDetailPage({ params, searchParams }: G
   const updateAction = updateGrowthExamAction.bind(null, exam.id);
 
   return (
-    <div className="mx-auto w-full max-w-6xl px-4 pb-12 pt-8 sm:px-6 lg:px-8">
+    <>
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <p className="text-sm font-medium text-accent">Growth V2</p>
-          <h1 className="mt-2 text-3xl font-semibold text-tide">{exam.name}</h1>
+          <h1 className="mt-2 text-3xl font-semibold text-ink">{exam.name}</h1>
           <p className="mt-2 text-sm text-ink/70">
             {exam.examDate} · {exam.group?.name ?? '--'} · {examTypeLabels[exam.examType]}
           </p>
@@ -147,7 +146,6 @@ export default async function GrowthV2ExamDetailPage({ params, searchParams }: G
           <Link href={`/admin/growth-v2/exams/${exam.id}/delete` as Route} className="rounded-lg border border-[#e05555]/30 px-4 py-2 text-sm font-medium text-[#e05555] transition hover:bg-[#f7dede]">
             删除考试
           </Link>
-          <AdminLogoutButton redirectPath={detailHref} />
         </div>
       </div>
 
@@ -162,21 +160,21 @@ export default async function GrowthV2ExamDetailPage({ params, searchParams }: G
       </div>
 
       <section className="mt-6 grid gap-4 md:grid-cols-4">
-        <article className="rounded-2xl border border-tide/10 bg-white/90 p-5 shadow-card">
+        <article className="rounded-2xl border border-border-light bg-surface p-5 shadow-card">
           <p className="text-sm text-ink/65">成绩人数</p>
-          <p className="mt-2 text-3xl font-semibold text-tide">{exam.scores.length}</p>
+          <p className="mt-2 text-3xl font-semibold text-ink">{exam.scores.length}</p>
         </article>
-        <article className="rounded-2xl border border-tide/10 bg-white/90 p-5 shadow-card">
+        <article className="rounded-2xl border border-border-light bg-surface p-5 shadow-card">
           <p className="text-sm text-ink/65">平均分</p>
-          <p className="mt-2 text-3xl font-semibold text-tide">{formatNumber(scoreValues.length ? scoreValues.reduce((sum, value) => sum + value, 0) / scoreValues.length : null)}</p>
+          <p className="mt-2 text-3xl font-semibold text-ink">{formatNumber(scoreValues.length ? scoreValues.reduce((sum, value) => sum + value, 0) / scoreValues.length : null)}</p>
         </article>
-        <article className="rounded-2xl border border-tide/10 bg-white/90 p-5 shadow-card">
+        <article className="rounded-2xl border border-border-light bg-surface p-5 shadow-card">
           <p className="text-sm text-ink/65">平均得分率</p>
-          <p className="mt-2 text-3xl font-semibold text-tide">{formatPercent(scoreRates.length ? scoreRates.reduce((sum, value) => sum + value, 0) / scoreRates.length : null)}</p>
+          <p className="mt-2 text-3xl font-semibold text-ink">{formatPercent(scoreRates.length ? scoreRates.reduce((sum, value) => sum + value, 0) / scoreRates.length : null)}</p>
         </article>
-        <article className="rounded-2xl border border-tide/10 bg-white/90 p-5 shadow-card">
+        <article className="rounded-2xl border border-border-light bg-surface p-5 shadow-card">
           <p className="text-sm text-ink/65">最高分 / 最低分</p>
-          <p className="mt-2 text-3xl font-semibold text-tide">
+          <p className="mt-2 text-3xl font-semibold text-ink">
             {scoreValues.length ? `${formatNumber(Math.max(...scoreValues))} / ${formatNumber(Math.min(...scoreValues))}` : '--'}
           </p>
         </article>
@@ -196,6 +194,6 @@ export default async function GrowthV2ExamDetailPage({ params, searchParams }: G
           initialEntries={initialEntries}
         />
       </section>
-    </div>
+    </>
   );
 }

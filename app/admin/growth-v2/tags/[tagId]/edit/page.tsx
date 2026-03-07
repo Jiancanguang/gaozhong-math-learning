@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
 import { updateGrowthTagCatalogAction } from '@/app/admin/growth-v2/actions';
-import { AdminLogoutButton } from '@/components/admin-auth-panels';
+
 import { GrowthV2AdminErrorBanner, renderGrowthV2AdminGate } from '@/components/growth-v2/admin-access';
 import { GrowthV2TagCatalogForm } from '@/components/growth-v2/tag-catalog-form';
 import { getGrowthTagCatalogItemById, isGrowthV2TableMissingError, listGrowthTagCatalogItems } from '@/lib/growth-v2-store';
@@ -55,7 +55,6 @@ export default async function GrowthV2EditTagPage({ params, searchParams }: Grow
               <Link href={'/admin/growth-v2/tags' as Route} className="rounded-lg border border-tide/20 px-4 py-2 text-sm font-medium text-tide transition hover:bg-tide/5">
                 返回标签目录
               </Link>
-              <AdminLogoutButton redirectPath={pageHref} />
             </div>
           </div>
           <div className="mt-5">
@@ -84,7 +83,6 @@ export default async function GrowthV2EditTagPage({ params, searchParams }: Grow
           <Link href={'/admin/growth-v2/tags' as Route} className="rounded-lg border border-tide/20 px-4 py-2 text-sm font-medium text-tide transition hover:bg-tide/5">
             返回标签目录
           </Link>
-          <AdminLogoutButton redirectPath={pageHref} />
         </div>
       </div>
 
