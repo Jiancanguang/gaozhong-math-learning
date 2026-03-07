@@ -6,19 +6,15 @@ import { SectionTitle } from '@/components/growth-v2/ui/section-title';
 import { StatCard } from '@/components/growth-v2/ui/stat-card';
 import { firstValue } from '@/lib/growth-v2-format';
 import type { GrowthGroup, GrowthStudentListItem } from '@/lib/growth-v2-store';
-import { isGrowthV2TableMissingError, listGrowthExams, listGrowthGroups, listGrowthLessons, listGrowthStudents } from '@/lib/growth-v2-store';
+import { getGrowthGroupCountSummary, isGrowthV2TableMissingError, listGrowthGroups, listGrowthStudents } from '@/lib/growth-v2-store';
 
 type PageProps = { searchParams?: { error?: string | string[]; saved?: string | string[]; status?: string | string[]; q?: string | string[] } };
 type GroupSummary = GrowthGroup & { studentCount: number; lessonCount: number; examCount: number };
 
-function buildSummaries(groups: GrowthGroup[], students: GrowthStudentListItem[], lessons: { groupId: string }[], exams: { groupId: string }[]) {
+function buildSummaries(groups: GrowthGroup[], students: GrowthStudentListItem[], lessonCounts: Map<string, number>, examCounts: Map<string, number>) {
   const sc = new Map<string, number>();
-  const lc = new Map<string, number>();
-  const ec = new Map<string, number>();
   for (const s of students) { if (s.homeGroupId) sc.set(s.homeGroupId, (sc.get(s.homeGroupId) ?? 0) + 1); }
-  for (const l of lessons) lc.set(l.groupId, (lc.get(l.groupId) ?? 0) + 1);
-  for (const e of exams) ec.set(e.groupId, (ec.get(e.groupId) ?? 0) + 1);
-  return groups.map((g) => ({ ...g, studentCount: sc.get(g.id) ?? 0, lessonCount: lc.get(g.id) ?? 0, examCount: ec.get(g.id) ?? 0 }));
+  return groups.map((g) => ({ ...g, studentCount: sc.get(g.id) ?? 0, lessonCount: lessonCounts.get(g.id) ?? 0, examCount: examCounts.get(g.id) ?? 0 }));
 }
 
 export const dynamic = 'force-dynamic';
@@ -35,20 +31,19 @@ export default async function GroupsPage({ searchParams }: PageProps) {
 
   let groups: GrowthGroup[] = [];
   let students: GrowthStudentListItem[] = [];
-  let lessonItems: { groupId: string }[] = [];
-  let examItems: { groupId: string }[] = [];
+  let lessonCounts = new Map<string, number>();
+  let examCounts = new Map<string, number>();
 
   try {
-    const [g, s, lr, er] = await Promise.all([
+    const [g, s, counts] = await Promise.all([
       listGrowthGroups({ status }),
       listGrowthStudents({ status: 'all' }),
-      listGrowthLessons({ pageSize: 100 }),
-      listGrowthExams({ pageSize: 100 })
+      getGrowthGroupCountSummary()
     ]);
     groups = g;
     students = s;
-    lessonItems = lr.items;
-    examItems = er.items;
+    lessonCounts = counts.lessonCounts;
+    examCounts = counts.examCounts;
   } catch (fetchError) {
     if (isGrowthV2TableMissingError(fetchError)) return <GrowthV2AdminErrorBanner error="missing-table" />;
     throw fetchError;
@@ -58,7 +53,7 @@ export default async function GroupsPage({ searchParams }: PageProps) {
     if (!q) return true;
     return [g.name, g.teacherName, g.gradeLabel, g.notes].join('\n').toLowerCase().includes(q.toLowerCase());
   });
-  const summaries = buildSummaries(filtered, students, lessonItems, examItems);
+  const summaries = buildSummaries(filtered, students, lessonCounts, examCounts);
   const activeCount = summaries.filter((g) => g.status === 'active').length;
 
   return (

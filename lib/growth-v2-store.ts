@@ -798,6 +798,30 @@ export async function getGrowthV2AdminSnapshot(): Promise<GrowthV2AdminSnapshot>
   };
 }
 
+export type GroupCountSummary = { lessonCounts: Map<string, number>; examCounts: Map<string, number> };
+
+export async function getGrowthGroupCountSummary(): Promise<GroupCountSummary> {
+  type GroupIdRow = { group_id: string };
+
+  const [lessonRows, examRows] = await Promise.all([
+    readRows<GroupIdRow>(buildTablePath(GROWTH_LESSONS_TABLE, new URLSearchParams({ select: 'group_id' }).toString())),
+    readRows<GroupIdRow>(buildTablePath(GROWTH_EXAMS_TABLE, new URLSearchParams({ select: 'group_id' }).toString()))
+  ]);
+
+  const lessonCounts = new Map<string, number>();
+  const examCounts = new Map<string, number>();
+
+  for (const row of lessonRows) {
+    lessonCounts.set(row.group_id, (lessonCounts.get(row.group_id) ?? 0) + 1);
+  }
+
+  for (const row of examRows) {
+    examCounts.set(row.group_id, (examCounts.get(row.group_id) ?? 0) + 1);
+  }
+
+  return { lessonCounts, examCounts };
+}
+
 export async function createGrowthStudent(input: CreateGrowthStudentInput): Promise<GrowthStudent> {
   const response = await supabaseAdminRequest(buildTablePath(GROWTH_STUDENTS_TABLE), {
     method: 'POST',
