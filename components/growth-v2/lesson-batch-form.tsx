@@ -349,32 +349,32 @@ export function GrowthV2LessonBatchForm({
 
         {entries.length > 0 ? (
           <div className="mt-6 overflow-x-auto rounded-2xl border border-tide/10 bg-white">
-            <table className="min-w-full border-collapse text-sm">
+            <table className="w-max min-w-full border-collapse text-sm">
               <thead>
                 <tr className="border-b border-tide/10 bg-paper/60 text-left text-ink/70">
-                  <th className="px-4 py-3 font-medium">学生</th>
-                  <th className="px-4 py-3 font-medium">身份</th>
-                  <th className="px-4 py-3 font-medium">进门考</th>
-                  <th className="px-4 py-3 font-medium">课后测</th>
-                  <th className="px-4 py-3 font-medium">课堂表现</th>
-                  <th className="px-4 py-3 font-medium">掌握度</th>
-                  <th className="px-4 py-3 font-medium">评语</th>
-                  <th className="px-4 py-3 font-medium">操作</th>
+                  <th className="whitespace-nowrap px-4 py-3 font-medium">学生</th>
+                  <th className="whitespace-nowrap px-4 py-3 font-medium">身份</th>
+                  <th className="whitespace-nowrap px-4 py-3 font-medium">进门考</th>
+                  <th className="whitespace-nowrap px-4 py-3 font-medium">课后测</th>
+                  <th className="whitespace-nowrap px-4 py-3 font-medium">课堂表现</th>
+                  <th className="whitespace-nowrap px-4 py-3 font-medium">掌握度</th>
+                  <th className="whitespace-nowrap px-4 py-3 font-medium">评语</th>
+                  <th className="whitespace-nowrap px-4 py-3 font-medium">操作</th>
                 </tr>
               </thead>
               <tbody>
                 {entries.map((entry, index) => (
                   <tr key={`${entry.id}-${entry.isGuest ? 'guest' : 'home'}`} className="border-b border-tide/10 align-top last:border-b-0">
-                    <td className="px-4 py-4">
+                    <td className="min-w-[120px] whitespace-nowrap px-4 py-4">
                       <input type="hidden" name={`students[${index}].id`} value={entry.id} />
                       <input type="hidden" name={`students[${index}].isGuest`} value={entry.isGuest ? 'true' : 'false'} />
                       <p className="font-medium text-tide">{entry.name}</p>
-                      <p className="mt-1 text-xs text-ink/55">
+                      <p className="mt-1 max-w-[160px] truncate text-xs text-ink/55" title={`${entry.gradeLabel || '未填年级'}${entry.homeGroupName ? ` · ${entry.homeGroupName}` : ''}`}>
                         {entry.gradeLabel || '未填年级'}
                         {entry.homeGroupName ? ` · ${entry.homeGroupName}` : ''}
                       </p>
                     </td>
-                    <td className="px-4 py-4">
+                    <td className="whitespace-nowrap px-4 py-4">
                       <span
                         className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${
                           entry.isGuest ? 'bg-[#f7ead5] text-[#f0932b] ring-1 ring-[#f0932b]/30' : 'bg-[#d4f2ea] text-[#00b894] ring-1 ring-[#00b894]/30'
@@ -445,7 +445,7 @@ export function GrowthV2LessonBatchForm({
                         className="min-h-[64px] w-56 rounded-lg border border-tide/20 bg-white px-3 py-2 text-sm outline-none focus:border-accent"
                       />
                     </td>
-                    <td className="px-4 py-4">
+                    <td className="whitespace-nowrap px-4 py-4">
                       {entry.isGuest ? (
                         <button
                           type="button"
