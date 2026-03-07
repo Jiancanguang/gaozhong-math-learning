@@ -2,74 +2,50 @@ import type { Route } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
-import { GROWTH_V2_MASTERY_OPTIONS } from '@/lib/growth-v2';
+import { MasteryBadge } from '@/components/growth-v2/ui/mastery-badge';
+import { SectionTitle } from '@/components/growth-v2/ui/section-title';
+import { StatCard } from '@/components/growth-v2/ui/stat-card';
+import { StudentAvatar } from '@/components/growth-v2/ui/student-avatar';
 import type { GrowthParentReport } from '@/lib/growth-v2-store';
 import { getGrowthParentReportByToken, isGrowthV2StoreEnabled, isGrowthV2TableMissingError } from '@/lib/growth-v2-store';
 
-type GrowthV2ParentPageProps = {
-  params: {
-    token: string;
-  };
-};
+import { ParentCharts } from './parent-charts';
 
-const demoSections = ['进门考与课后测试趋势', '能力成长摘要', '知识点掌握情况', '考试成绩与薄弱点分析', '教师时间线评语'];
-const examTypeLabels = {
+type PageProps = { params: { token: string } };
+
+const examTypeLabels: Record<string, string> = {
   school: '学校考试',
   internal: '工作室测验',
   other: '其他'
-} as const;
-const masteryLabelMap = new Map<string, string>(GROWTH_V2_MASTERY_OPTIONS.map((item) => [item.value, item.label]));
-
-const masteryColorMap: Record<string, string> = {
-  lv985: 'bg-[#f7ead5] text-[#f0932b] border-[#f0932b]',
-  lvtk: 'bg-[#f0e6f8] text-[#6b21a8] border-[#6b21a8]',
-  lveb: 'bg-[#e3edf8] text-[#2b5797] border-[#2b5797]',
-  lvbk: 'bg-[#e0f5e9] text-[#16a34a] border-[#16a34a]',
-  lvzk: 'bg-[#f7dede] text-[#e05555] border-[#e05555]'
 };
 
-function formatNumber(value: number | null, digits = 1) {
-  return value === null ? '--' : value.toFixed(digits);
+function fmt(v: number | null, d = 1) {
+  return v === null ? '--' : v.toFixed(d);
 }
 
-function formatPercent(value: number | null) {
-  return value === null ? '--' : `${value.toFixed(1)}%`;
+function fmtPct(v: number | null) {
+  return v === null ? '--' : `${v.toFixed(1)}%`;
 }
 
-function formatRank(classRank: number | null, gradeRank: number | null) {
-  if (classRank === null && gradeRank === null) return '--';
-  if (classRank !== null && gradeRank !== null) return `班 ${classRank} / 年 ${gradeRank}`;
-  if (classRank !== null) return `班 ${classRank}`;
-  return `年 ${gradeRank}`;
+function fmtRank(c: number | null, g: number | null) {
+  if (c === null && g === null) return '--';
+  if (c !== null && g !== null) return `班 ${c} / 年 ${g}`;
+  return c !== null ? `班 ${c}` : `年 ${g}`;
 }
 
-function formatMastery(value: string | null) {
-  if (!value) return '--';
-  return masteryLabelMap.get(value) ?? value;
-}
-
-function MasteryBadge({ value }: { value: string | null }) {
-  if (!value) return <span className="text-[#9f96ab]">--</span>;
-  const colorClass = masteryColorMap[value] ?? 'bg-[#f3f1f5] text-[#6b6478] border-[#ddd8e0]';
-  return (
-    <span className={`inline-block rounded-lg border px-2 py-0.5 text-xs font-semibold ${colorClass}`}>
-      {formatMastery(value)}
-    </span>
-  );
-}
+const demoSections = ['进门考与课后测试趋势', '能力成长摘要', '知识点掌握情况', '考试成绩与薄弱点分析', '教师时间线评语'];
 
 export const dynamic = 'force-dynamic';
 
-export default async function GrowthV2ParentPage({ params }: GrowthV2ParentPageProps) {
+export default async function ParentPage({ params }: PageProps) {
   const overviewHref = '/growth-v2' as Route;
 
   if (params.token === 'demo-token') {
     return (
       <div className="space-y-8">
-        {/* Purple gradient header */}
         <section className="overflow-hidden rounded-3xl bg-gradient-to-br from-[#5a4bd6] via-[#6c5ce7] to-[#a29bfe] p-10 text-center text-white shadow-card">
           <p className="text-xs font-medium opacity-60">筑学工作室 · 学生成长报告</p>
-          <h1 className="mt-2 font-['Noto_Serif_SC',serif] text-3xl font-bold">家长成长报告页</h1>
+          <h1 className="mt-2 font-serif text-3xl font-bold">家长成长报告页</h1>
           <p className="mt-2 text-sm opacity-65">正式访问时会根据每位学生的 token 拉取真实数据</p>
           <div className="mt-6">
             <Link href={overviewHref} className="rounded-full border-2 border-white/50 bg-white/15 px-6 py-2 text-sm font-semibold text-white backdrop-blur transition hover:bg-white/30">
@@ -77,10 +53,9 @@ export default async function GrowthV2ParentPage({ params }: GrowthV2ParentPageP
             </Link>
           </div>
         </section>
-
         <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
           {demoSections.map((item) => (
-            <article key={item} className="rounded-2xl border border-[#ddd8e0] bg-[#f9f8fa] p-5 shadow-card">
+            <article key={item} className="rounded-2xl border border-border-default bg-surface p-5 shadow-card">
               <p className="text-sm font-medium text-tide">{item}</p>
             </article>
           ))}
@@ -93,14 +68,13 @@ export default async function GrowthV2ParentPage({ params }: GrowthV2ParentPageP
     return (
       <div className="overflow-hidden rounded-3xl bg-gradient-to-br from-[#5a4bd6] via-[#6c5ce7] to-[#a29bfe] p-10 text-center text-white shadow-card">
         <p className="text-xs font-medium opacity-60">筑学工作室 · 学生成长报告</p>
-        <h1 className="mt-2 font-['Noto_Serif_SC',serif] text-3xl font-bold">家长报告暂不可用</h1>
+        <h1 className="mt-2 font-serif text-3xl font-bold">家长报告暂不可用</h1>
         <p className="mt-3 text-sm opacity-75">当前环境还没有连接 Supabase 管理接口，暂时无法读取学生成长数据。</p>
       </div>
     );
   }
 
   let report: GrowthParentReport | null = null;
-
   try {
     report = await getGrowthParentReportByToken(params.token);
   } catch (fetchError) {
@@ -108,191 +82,169 @@ export default async function GrowthV2ParentPage({ params }: GrowthV2ParentPageP
       return (
         <div className="overflow-hidden rounded-3xl bg-gradient-to-br from-[#5a4bd6] via-[#6c5ce7] to-[#a29bfe] p-10 text-center text-white shadow-card">
           <p className="text-xs font-medium opacity-60">筑学工作室 · 学生成长报告</p>
-          <h1 className="mt-2 font-['Noto_Serif_SC',serif] text-3xl font-bold">家长报告暂不可用</h1>
+          <h1 className="mt-2 font-serif text-3xl font-bold">家长报告暂不可用</h1>
           <p className="mt-3 text-sm opacity-75">Growth V2 数据表还没有建好，完成数据库初始化后这个链接会自动恢复。</p>
         </div>
       );
     }
-
     throw fetchError;
   }
 
-  if (!report) {
-    notFound();
+  if (!report) notFound();
+
+  // Compute additional stats
+  const lessons = report.recentLessons;
+  const entryScores = lessons.map((l) => l.entryScore).filter((v): v is number => v !== null);
+  const avgEntryScore = entryScores.length > 0 ? entryScores.reduce((a, b) => a + b, 0) / entryScores.length : null;
+
+  const exitRates = lessons.slice().reverse().map((l) => l.exitScoreRate).filter((v): v is number => v !== null);
+  let progressTrend: number | null = null;
+  if (exitRates.length >= 4) {
+    const recent = exitRates.slice(-3);
+    const earlier = exitRates.slice(-6, -3);
+    if (earlier.length > 0) {
+      const avgRecent = recent.reduce((a, b) => a + b, 0) / recent.length;
+      const avgEarlier = earlier.reduce((a, b) => a + b, 0) / earlier.length;
+      progressTrend = avgRecent - avgEarlier;
+    }
   }
 
-  const statCards = [
-    { label: '课堂记录', value: String(report.lessonCount), color: 'bg-[#dfe9f7] text-[#4a90d9]' },
-    { label: '平均课后得分率', value: formatPercent(report.avgExitScoreRate), color: 'bg-[#f7ead5] text-[#f0932b]' },
-    { label: '平均课堂表现', value: formatNumber(report.avgPerformance), color: 'bg-[#d4f2ea] text-[#00b894]' },
-    { label: '考试次数', value: String(report.examCount), color: 'bg-[#f7e3dd] text-[#e17055]' },
-    { label: '平均考试得分率', value: formatPercent(report.avgExamScoreRate), color: 'bg-[#e4e0f8] text-[#6c5ce7]' }
-  ];
+  // Chart data (chronological)
+  const chartLessons = lessons.slice().reverse();
+  const chartLabels = chartLessons.map((l) => l.lesson.lessonDate.slice(5));
+  const chartEntryScores = chartLessons.map((l) => l.entryScore);
+  const chartExitRates = chartLessons.map((l) => l.exitScoreRate);
+  const chartTooltipLabels = chartLessons.map((l) => `${l.lesson.lessonDate} ${l.lesson.topic}`);
 
   return (
-    <div className="space-y-8">
+    <div className="mx-auto max-w-4xl space-y-10 px-4 pb-12 pt-8 sm:px-6">
       {/* Purple gradient header */}
-      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#5a4bd6] via-[#6c5ce7] to-[#a29bfe] p-10 text-center text-white shadow-card">
+      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#5a4bd6] via-[#6c5ce7] to-[#a29bfe] px-8 py-10 text-white shadow-lg">
         <div className="pointer-events-none absolute inset-0" style={{ background: 'radial-gradient(circle at 30% 50%, rgba(255,255,255,0.08), transparent 60%)' }} />
         <p className="relative text-xs font-medium opacity-60">筑学工作室 · 学生成长报告</p>
-        <h1 className="relative mt-2 font-['Noto_Serif_SC',serif] text-3xl font-bold">{report.student.name} 的成长追踪</h1>
-        <p className="relative mt-2 text-sm opacity-65">
-          年级：{report.student.gradeLabel || '--'} · 班组：{report.homeGroup?.name ?? '--'} · {report.student.status === 'active' ? '在读' : '归档'}
-        </p>
-        <div className="relative mt-5">
-          <Link href={overviewHref} className="rounded-full border-2 border-white/50 bg-white/15 px-6 py-2 text-sm font-semibold text-white backdrop-blur transition hover:bg-white/30">
-            ← 返回
-          </Link>
+        <div className="relative mt-4 flex items-center gap-4">
+          <StudentAvatar name={report.student.name} size="lg" />
+          <div>
+            <h1 className="font-serif text-3xl font-bold">{report.student.name} <span className="font-normal opacity-80">的成长报告</span></h1>
+            <p className="mt-1 text-sm opacity-65">
+              {report.student.gradeLabel || '--'} · {report.homeGroup?.name ?? '--'}
+            </p>
+          </div>
         </div>
       </section>
 
-      {/* Colored stat cards */}
-      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-        {statCards.map((card) => (
-          <article key={card.label} className={`rounded-2xl p-6 shadow-card ${card.color}`}>
-            <p className="text-xs font-semibold opacity-70">{card.label}</p>
-            <p className="mt-2 font-['Noto_Serif_SC',serif] text-3xl font-black leading-none">{card.value}</p>
-          </article>
-        ))}
+      {/* Stat Cards */}
+      <section className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+        <StatCard label="累计课次" value={String(report.lessonCount)} sub="已上课程" colorClass="bg-stat-blue-soft" valueColorClass="text-stat-blue" />
+        <StatCard label="进门考均分" value={avgEntryScore !== null ? fmt(avgEntryScore) : '--'} sub="满分10分" colorClass="bg-stat-amber-soft" valueColorClass="text-stat-amber" />
+        <StatCard label="课后测试得分率" value={fmtPct(report.avgExitScoreRate)} sub="平均得分率" colorClass="bg-stat-emerald-soft" valueColorClass="text-stat-emerald" />
+        <StatCard label="进步趋势" value={progressTrend !== null ? `${progressTrend >= 0 ? '+' : ''}${progressTrend.toFixed(1)}%` : '--'} sub="前后期得分率对比" colorClass="bg-stat-rose-soft" valueColorClass={progressTrend !== null && progressTrend >= 0 ? 'text-stat-emerald' : 'text-[#e05555]'} />
       </section>
 
-      {/* Weak points */}
-      <section className="rounded-2xl border border-[#ddd8e0] bg-[#f9f8fa] p-6 shadow-card">
-        <h2 className="flex items-center gap-2 font-['Noto_Serif_SC',serif] text-lg font-bold text-ink">
-          <span className="h-5 w-1 rounded-sm bg-tide" />
-          高频薄弱点
-        </h2>
+      {/* Score Trend Chart */}
+      {chartLessons.length > 1 ? (
+        <section>
+          <SectionTitle title="进门考与课后测试趋势" />
+          <div className="mt-4 rounded-2xl border border-border-light bg-surface p-4 shadow-sm">
+            <ParentCharts labels={chartLabels} entryScores={chartEntryScores} exitRates={chartExitRates} tooltipLabels={chartTooltipLabels} />
+          </div>
+        </section>
+      ) : null}
+
+      {/* Exam Results */}
+      {report.recentExams.length > 0 ? (
+        <section>
+          <SectionTitle title="考试成绩与分析" />
+          <div className="mt-4 overflow-x-auto rounded-2xl border border-border-light bg-surface shadow-sm">
+            <table className="min-w-full text-sm">
+              <thead>
+                <tr className="border-b border-border-light bg-surface-alt text-left text-xs font-bold uppercase tracking-wider text-text-light">
+                  <th className="px-4 py-3">日期</th>
+                  <th className="px-4 py-3">考试</th>
+                  <th className="px-4 py-3">类型</th>
+                  <th className="px-4 py-3">成绩</th>
+                  <th className="px-4 py-3">排名</th>
+                  <th className="px-4 py-3">掌握度</th>
+                  <th className="px-4 py-3">薄弱点</th>
+                </tr>
+              </thead>
+              <tbody>
+                {report.recentExams.map((item, i) => (
+                  <tr key={item.id} className={`border-b border-border-light last:border-b-0 ${i % 2 === 1 ? 'bg-tide/[0.03]' : ''}`}>
+                    <td className="px-4 py-3.5 font-serif text-sm font-bold text-tide">{item.exam.examDate}</td>
+                    <td className="px-4 py-3.5 font-medium text-ink">{item.exam.name}</td>
+                    <td className="px-4 py-3.5">
+                      <span className={`rounded-full px-2 py-0.5 text-xs font-bold ${item.exam.examType === 'school' ? 'bg-tide/10 text-tide' : 'bg-stat-rose-soft text-stat-rose'}`}>
+                        {examTypeLabels[item.exam.examType] ?? item.exam.examType}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3.5">
+                      <span className="font-semibold text-ink">{fmt(item.score, 0)}</span>
+                      <span className="ml-1 text-xs text-text-muted">({fmtPct(item.scoreRate)})</span>
+                    </td>
+                    <td className="px-4 py-3.5 text-text-light">{fmtRank(item.classRank, item.gradeRank)}</td>
+                    <td className="px-4 py-3.5"><MasteryBadge value={item.masteryLevel} /></td>
+                    <td className="px-4 py-3.5">
+                      {item.tags.length > 0 ? (
+                        <div className="flex flex-wrap gap-1">
+                          {item.tags.map((tag) => (
+                            <span key={tag.id} className="rounded-full bg-accent/10 px-2 py-0.5 text-xs font-semibold text-accent">{tag.tagName}</span>
+                          ))}
+                        </div>
+                      ) : <span className="text-text-muted">--</span>}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      ) : null}
+
+      {/* Weak Points & Teacher Comments Timeline */}
+      <section>
+        <SectionTitle title="薄弱点与教师评语" color="bg-accent" />
         {report.topWeakTags.length > 0 ? (
           <div className="mt-4 flex flex-wrap gap-2">
             {report.topWeakTags.map((tag) => (
-              <span key={tag.tagName} className="rounded-full bg-[#f7e3dd] px-3 py-1 text-xs font-semibold text-accent">
+              <span key={tag.tagName} className="rounded-full bg-accent/10 px-3 py-1 text-xs font-semibold text-accent">
                 {tag.tagName} · {tag.count}
               </span>
             ))}
           </div>
-        ) : (
-          <p className="mt-3 text-sm text-[#9f96ab]">当前还没有薄弱点标签记录。</p>
-        )}
-      </section>
+        ) : null}
 
-      {/* Lesson timeline */}
-      <section className="rounded-2xl border border-[#ddd8e0] bg-[#f9f8fa] p-6 shadow-card">
-        <div className="flex flex-wrap items-end justify-between gap-3">
-          <h2 className="flex items-center gap-2 font-['Noto_Serif_SC',serif] text-lg font-bold text-ink">
-            <span className="h-5 w-1 rounded-sm bg-tide" />
-            课堂记录时间线
-          </h2>
-          <p className="text-sm text-[#9f96ab]">共 {report.recentLessons.length} 条</p>
-        </div>
-
-        <div className="mt-6 overflow-x-auto rounded-xl border border-[#ddd8e0] bg-white">
-          <table className="min-w-full border-collapse text-sm">
-            <thead>
-              <tr className="border-b border-[#ddd8e0] bg-[#f3f1f5] text-center text-xs font-bold uppercase tracking-wider text-[#6b6478]">
-                <th className="px-3 py-3 text-left">日期</th>
-                <th className="px-3 py-3 text-left">课堂主题</th>
-                <th className="px-3 py-3">班组</th>
-                <th className="px-3 py-3">进门考</th>
-                <th className="px-3 py-3">课后得分率</th>
-                <th className="px-3 py-3">课堂表现</th>
-                <th className="px-3 py-3">掌握度</th>
-                <th className="px-3 py-3 text-left">教师评语</th>
-              </tr>
-            </thead>
-            <tbody>
-              {report.recentLessons.length > 0 ? (
-                report.recentLessons.map((item, i) => (
-                  <tr key={item.id} className={`border-b border-[#e8e3ea] align-top last:border-b-0 transition hover:bg-[rgba(108,92,231,0.04)] ${i % 2 === 1 ? 'bg-[rgba(108,92,231,0.03)]' : ''}`}>
-                    <td className="px-3 py-3 font-['Noto_Serif_SC',serif] text-sm font-bold text-tide">{item.lesson.lessonDate}</td>
-                    <td className="px-3 py-3">
-                      <p className="font-semibold text-ink">{item.lesson.topic}</p>
-                      {item.lesson.exitTestTopic ? <p className="mt-1 text-xs text-[#9f96ab]">课后测：{item.lesson.exitTestTopic}</p> : null}
-                    </td>
-                    <td className="px-3 py-3 text-center text-[#6b6478]">{item.group?.name ?? '--'}</td>
-                    <td className="px-3 py-3 text-center font-bold text-tide">{formatNumber(item.entryScore)}</td>
-                    <td className="px-3 py-3 text-center font-bold text-tide">{formatPercent(item.exitScoreRate)}</td>
-                    <td className="px-3 py-3 text-center text-[#6b6478]">{formatNumber(item.performance)}</td>
-                    <td className="px-3 py-3 text-center"><MasteryBadge value={item.masteryLevel} /></td>
-                    <td className="px-3 py-3 text-[#6b6478]">{item.comment || '--'}</td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={8} className="px-4 py-10 text-center text-sm text-[#9f96ab]">当前还没有课堂记录。</td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      {/* Exam timeline */}
-      <section className="rounded-2xl border border-[#ddd8e0] bg-[#f9f8fa] p-6 shadow-card">
-        <div className="flex flex-wrap items-end justify-between gap-3">
-          <h2 className="flex items-center gap-2 font-['Noto_Serif_SC',serif] text-lg font-bold text-ink">
-            <span className="h-5 w-1 rounded-sm bg-tide" />
-            考试成绩时间线
-          </h2>
-          <p className="text-sm text-[#9f96ab]">共 {report.recentExams.length} 条</p>
-        </div>
-
-        <div className="mt-6 overflow-x-auto rounded-xl border border-[#ddd8e0] bg-white">
-          <table className="min-w-full border-collapse text-sm">
-            <thead>
-              <tr className="border-b border-[#ddd8e0] bg-[#f3f1f5] text-center text-xs font-bold uppercase tracking-wider text-[#6b6478]">
-                <th className="px-3 py-3 text-left">日期</th>
-                <th className="px-3 py-3 text-left">考试</th>
-                <th className="px-3 py-3">类型</th>
-                <th className="px-3 py-3">成绩</th>
-                <th className="px-3 py-3">排名</th>
-                <th className="px-3 py-3">掌握度</th>
-                <th className="px-3 py-3 text-left">薄弱点</th>
-                <th className="px-3 py-3 text-left">备注</th>
-              </tr>
-            </thead>
-            <tbody>
-              {report.recentExams.length > 0 ? (
-                report.recentExams.map((item, i) => (
-                  <tr key={item.id} className={`border-b border-[#e8e3ea] align-top last:border-b-0 transition hover:bg-[rgba(108,92,231,0.04)] ${i % 2 === 1 ? 'bg-[rgba(108,92,231,0.03)]' : ''}`}>
-                    <td className="px-3 py-3 font-['Noto_Serif_SC',serif] text-sm font-bold text-tide">{item.exam.examDate}</td>
-                    <td className="px-3 py-3">
-                      <p className="font-semibold text-ink">{item.exam.name}</p>
-                      <p className="mt-1 text-xs text-[#9f96ab]">{item.group?.name ?? '--'} · {item.exam.subject}</p>
-                    </td>
-                    <td className="px-3 py-3 text-center">
-                      <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${item.exam.examType === 'school' ? 'bg-[#e4e0f8] text-tide' : 'bg-[#f7e3dd] text-accent'}`}>
-                        {examTypeLabels[item.exam.examType]}
-                      </span>
-                    </td>
-                    <td className="px-3 py-3 text-center">
-                      <p className="font-bold text-tide">{formatNumber(item.score)}</p>
-                      <p className="mt-1 text-xs text-[#9f96ab]">{formatPercent(item.scoreRate)}</p>
-                    </td>
-                    <td className="px-3 py-3 text-center text-[#6b6478]">{formatRank(item.classRank, item.gradeRank)}</td>
-                    <td className="px-3 py-3 text-center"><MasteryBadge value={item.masteryLevel} /></td>
-                    <td className="px-3 py-3">
-                      {item.tags.length > 0 ? (
-                        <div className="flex flex-wrap gap-1">
-                          {item.tags.map((tag) => (
-                            <span key={tag.id} className="rounded-full bg-[#f7e3dd] px-2 py-0.5 text-xs font-semibold text-accent">
-                              {tag.tagName}
-                            </span>
-                          ))}
-                        </div>
-                      ) : (
-                        <span className="text-[#9f96ab]">--</span>
-                      )}
-                    </td>
-                    <td className="px-3 py-3 text-[#6b6478]">{item.note || item.exam.notes || '--'}</td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={8} className="px-4 py-10 text-center text-sm text-[#9f96ab]">当前还没有考试记录。</td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+        {/* Timeline */}
+        <div className="mt-6 border-l-[2.5px] border-border-default pl-5">
+          {lessons.length > 0 ? (
+            lessons.filter((l) => l.comment).map((item) => (
+              <div key={item.id} className="relative pb-6">
+                <span className="absolute -left-[29px] top-1 h-3 w-3 rounded-full border-[2.5px] border-surface bg-tide shadow-[0_0_0_3px_rgba(108,92,231,0.15)]" />
+                <p className="text-xs font-bold tracking-wide text-text-muted">{item.lesson.lessonDate}</p>
+                <p className="mt-1 text-sm font-bold text-ink">{item.lesson.topic}</p>
+                {item.comment ? (
+                  <div className="mt-2 rounded-lg border-l-[3px] border-tide/30 bg-surface-alt px-3 py-2 text-sm text-text-light">
+                    {item.comment}
+                  </div>
+                ) : null}
+                <div className="mt-2 flex flex-wrap gap-1.5">
+                  {item.entryScore !== null ? (
+                    <span className="rounded-full bg-tide/10 px-2 py-0.5 text-xs font-semibold text-tide">
+                      进门考 {fmt(item.entryScore)}
+                    </span>
+                  ) : null}
+                  {item.exitScoreRate !== null ? (
+                    <span className="rounded-full bg-stat-emerald-soft px-2 py-0.5 text-xs font-semibold text-stat-emerald">
+                      课后 {fmtPct(item.exitScoreRate)}
+                    </span>
+                  ) : null}
+                  <MasteryBadge value={item.masteryLevel} />
+                </div>
+              </div>
+            ))
+          ) : (
+            <p className="py-4 text-sm text-text-muted">当前还没有课堂记录。</p>
+          )}
         </div>
       </section>
     </div>
