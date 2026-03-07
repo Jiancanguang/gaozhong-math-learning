@@ -27,10 +27,10 @@ export const GROWTH_V2_ADMIN_MODULES = [
 ] as const;
 
 export const GROWTH_V2_PUBLIC_HIGHLIGHTS = [
-  '从“考试台账”升级为“成长追踪”',
+  '从”考试台账”升级为”成长追踪”',
   '一套数据同时支撑老师后台和家长报告',
   '支持课堂记录、考试记录、掌握度和薄弱点标签',
-  '先并行上线，不直接替换旧系统'
+  '已正式上线，旧版系统已下线'
 ] as const;
 
 export const GROWTH_V2_TABLES = [
@@ -54,8 +54,7 @@ export const GROWTH_V2_MASTERY_OPTIONS = [
 
 export const GROWTH_V2_NEXT_STEPS = [
   '补更细的操作日志和关键操作审计。',
-  '补更细的家长报告图表和阶段性总结。',
-  '最后再把旧成长追踪入口切到 Growth V2。'
+  '补更细的家长报告图表和阶段性总结。'
 ] as const;
 
 export function normalizeGrowthV2Mastery(value: string | null | undefined) {

@@ -18,10 +18,10 @@ const focusTracks = [
     href: '/gaokao' as Route
   },
   {
-    title: '学生成绩追踪系统',
-    description: '为老师持续记录学生多次考试的总分、单科分和班排年排变化。',
+    title: '学生成长追踪系统',
+    description: '为老师记录课堂表现、考试成绩、掌握度和薄弱点，并生成家长报告。',
     timeline: '支持长期追踪',
-    href: '/score-tracker' as Route
+    href: '/growth-v2' as Route
   }
 ];
 
@@ -44,7 +44,7 @@ export default function HomePage() {
   const gaokaoSystemHref = '/gaokao-system' as Route;
   const roadmapHref = '/roadmap' as Route;
   const resourcesHref = '/resources' as Route;
-  const scoreTrackerHref = '/score-tracker' as Route;
+  const growthV2Href = '/growth-v2' as Route;
   const latestCourses = getLatestCourses(6);
   const latestChapters = Array.from(new Set(latestCourses.map((course) => course.chapter))).map((chapter) => mapChapterName(chapter));
 
@@ -73,8 +73,8 @@ export default function HomePage() {
           <Link href={gaokaoSystemHref} className="rounded-xl bg-white px-5 py-3 text-sm font-medium text-tide ring-1 ring-tide/20 transition hover:bg-tide/5">
             进入提分专区
           </Link>
-          <Link href={scoreTrackerHref} className="rounded-xl bg-white px-5 py-3 text-sm font-medium text-tide ring-1 ring-tide/20 transition hover:bg-tide/5">
-            打开成绩追踪
+          <Link href={growthV2Href} className="rounded-xl bg-white px-5 py-3 text-sm font-medium text-tide ring-1 ring-tide/20 transition hover:bg-tide/5">
+            打开成长追踪
           </Link>
           <Link href={roadmapHref} className="rounded-xl bg-white px-5 py-3 text-sm font-medium text-tide ring-1 ring-tide/20 transition hover:bg-tide/5">
             查看学习路径
