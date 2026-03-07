@@ -17,7 +17,7 @@ export default function GrowthV2Layout({
 
   return (
     <div className="mx-auto w-full max-w-6xl px-4 pb-12 pt-8 sm:px-6 lg:px-8">
-      <div className="rounded-3xl border border-tide/10 bg-white/85 p-6 shadow-card">
+      <div className="rounded-3xl border border-[#ddd8e0] bg-[#f9f8fa] p-6 shadow-card">
         <p className="text-sm font-semibold uppercase tracking-wider text-accent">Growth Tracking</p>
         <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
           <div>

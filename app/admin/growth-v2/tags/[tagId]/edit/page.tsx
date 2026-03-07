@@ -91,10 +91,10 @@ export default async function GrowthV2EditTagPage({ params, searchParams }: Grow
       <div className="mt-5">
         <GrowthV2AdminErrorBanner error={error} />
         {error === 'validation' ? (
-          <p className="mt-3 rounded-lg border border-amber-300/70 bg-amber-50 px-3 py-2 text-sm text-amber-800">请至少填写标签分类和标签名称，排序值不能小于 0。</p>
+          <p className="mt-3 rounded-lg border border-[#f0932b]/30 bg-[#f7ead5] px-3 py-2 text-sm text-[#b8720a]">请至少填写标签分类和标签名称，排序值不能小于 0。</p>
         ) : null}
         {error === 'duplicate' ? (
-          <p className="mt-3 rounded-lg border border-amber-300/70 bg-amber-50 px-3 py-2 text-sm text-amber-800">同一分类下标签名称已存在，请换一个名称。</p>
+          <p className="mt-3 rounded-lg border border-[#f0932b]/30 bg-[#f7ead5] px-3 py-2 text-sm text-[#b8720a]">同一分类下标签名称已存在，请换一个名称。</p>
         ) : null}
       </div>
 

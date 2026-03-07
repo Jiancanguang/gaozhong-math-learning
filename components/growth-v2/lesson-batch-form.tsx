@@ -377,7 +377,7 @@ export function GrowthV2LessonBatchForm({
                     <td className="px-4 py-4">
                       <span
                         className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${
-                          entry.isGuest ? 'bg-amber-50 text-amber-700 ring-1 ring-amber-200' : 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200'
+                          entry.isGuest ? 'bg-[#f7ead5] text-[#f0932b] ring-1 ring-[#f0932b]/30' : 'bg-[#d4f2ea] text-[#00b894] ring-1 ring-[#00b894]/30'
                         }`}
                       >
                         {entry.isGuest ? '调课' : '常驻'}
@@ -450,7 +450,7 @@ export function GrowthV2LessonBatchForm({
                         <button
                           type="button"
                           onClick={() => removeGuestStudent(entry.id)}
-                          className="rounded-lg border border-rose-200 px-3 py-1 text-xs font-medium text-rose-700 transition hover:bg-rose-50"
+                          className="rounded-lg border border-[#e05555]/30 px-3 py-1 text-xs font-medium text-[#e05555] transition hover:bg-[#f7dede]"
                         >
                           移除
                         </button>

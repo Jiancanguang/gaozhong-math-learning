@@ -114,7 +114,7 @@ export default async function GrowthV2TagsPage({ searchParams }: GrowthV2TagsPag
                 <p className="text-sm font-semibold uppercase tracking-[0.18em] text-accent">Live Snapshot</p>
                 <h2 className="mt-2 text-2xl font-semibold text-tide">当前标签结构</h2>
               </div>
-              <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700">线上数据</span>
+              <span className="rounded-full bg-[#d4f2ea] px-3 py-1 text-xs font-semibold text-[#00b894]">线上数据</span>
             </div>
             <div className="mt-6 grid gap-3 sm:grid-cols-2">
               <article className="rounded-2xl border border-tide/10 bg-white/90 p-4">
@@ -144,12 +144,12 @@ export default async function GrowthV2TagsPage({ searchParams }: GrowthV2TagsPag
       <div className="mt-6">
         <GrowthV2AdminErrorBanner error={error} />
         {error === 'validation' ? (
-          <p className="mt-3 rounded-lg border border-amber-300/70 bg-amber-50 px-3 py-2 text-sm text-amber-800">请至少填写标签分类和标签名称，排序值不能小于 0。</p>
+          <p className="mt-3 rounded-lg border border-[#f0932b]/30 bg-[#f7ead5] px-3 py-2 text-sm text-[#b8720a]">请至少填写标签分类和标签名称，排序值不能小于 0。</p>
         ) : null}
         {error === 'duplicate' ? (
-          <p className="mt-3 rounded-lg border border-amber-300/70 bg-amber-50 px-3 py-2 text-sm text-amber-800">同一分类下标签名称不能重复，请调整后再保存。</p>
+          <p className="mt-3 rounded-lg border border-[#f0932b]/30 bg-[#f7ead5] px-3 py-2 text-sm text-[#b8720a]">同一分类下标签名称不能重复，请调整后再保存。</p>
         ) : null}
-        {savedTagId ? <p className="mt-3 rounded-lg border border-emerald-300/70 bg-emerald-50 px-3 py-2 text-sm text-emerald-700">标签目录已保存。</p> : null}
+        {savedTagId ? <p className="mt-3 rounded-lg border border-[#00b894]/30 bg-[#d4f2ea] px-3 py-2 text-sm text-[#00b894]">标签目录已保存。</p> : null}
       </div>
 
       <section className="mt-8 rounded-3xl border border-tide/10 bg-white/85 p-6 shadow-card">
@@ -218,7 +218,7 @@ export default async function GrowthV2TagsPage({ searchParams }: GrowthV2TagsPag
                     <td className="px-4 py-4">
                       <span
                         className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${
-                          tag.isActive ? 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200' : 'bg-slate-100 text-slate-700 ring-1 ring-slate-200'
+                          tag.isActive ? 'bg-[#d4f2ea] text-[#00b894] ring-1 ring-[#00b894]/30' : 'bg-[#f3f1f5] text-[#6b6478] ring-1 ring-[#ddd8e0]'
                         }`}
                       >
                         {tag.isActive ? '启用中' : '已停用'}

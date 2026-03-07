@@ -22,13 +22,13 @@ export function GrowthV2DeleteConfirmCard({
   errorMessage
 }: GrowthV2DeleteConfirmCardProps) {
   return (
-    <form action={action} className="rounded-2xl border border-rose-200/70 bg-white/95 p-6 shadow-card">
-      <div className="rounded-2xl border border-rose-200 bg-rose-50/70 p-5">
-        <h2 className="text-xl font-semibold text-rose-700">{title}</h2>
-        <p className="mt-2 text-sm text-rose-800/85">{description}</p>
+    <form action={action} className="rounded-2xl border border-[#e05555]/30/70 bg-white/95 p-6 shadow-card">
+      <div className="rounded-2xl border border-[#e05555]/30 bg-[#f7dede]/70 p-5">
+        <h2 className="text-xl font-semibold text-[#e05555]">{title}</h2>
+        <p className="mt-2 text-sm text-[#c44040]/85">{description}</p>
       </div>
 
-      {errorMessage ? <p className="mt-4 rounded-lg border border-amber-300/70 bg-amber-50 px-3 py-2 text-sm text-amber-800">{errorMessage}</p> : null}
+      {errorMessage ? <p className="mt-4 rounded-lg border border-[#f0932b]/30 bg-[#f7ead5] px-3 py-2 text-sm text-[#b8720a]">{errorMessage}</p> : null}
 
       <div className="mt-5 rounded-2xl border border-tide/10 bg-paper/50 p-5">
         <p className="text-sm font-medium text-tide">本次删除会影响</p>
@@ -53,12 +53,12 @@ export function GrowthV2DeleteConfirmCard({
           autoComplete="off"
           spellCheck={false}
           placeholder={`请输入：${confirmValue}`}
-          className="w-full rounded-lg border border-tide/20 bg-white px-3 py-2 outline-none transition focus:border-rose-400"
+          className="w-full rounded-lg border border-tide/20 bg-white px-3 py-2 outline-none transition focus:border-[#e05555]"
         />
       </label>
 
       <div className="mt-6 flex flex-wrap gap-3">
-        <button type="submit" className="rounded-lg bg-rose-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-rose-700">
+        <button type="submit" className="rounded-lg bg-[#e05555] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#e05555]">
           {submitLabel}
         </button>
         <a href={cancelHref} className="rounded-lg border border-tide/20 px-4 py-2 text-sm font-medium text-tide transition hover:bg-tide/5">

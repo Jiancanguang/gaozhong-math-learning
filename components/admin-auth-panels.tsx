@@ -31,7 +31,7 @@ export function AdminSupabaseUnavailablePanel({
   return (
     <PanelContainer maxWidthClassName={maxWidthClassName}>
       <h1 className="text-3xl font-semibold text-tide">{title}</h1>
-      <p className="mt-3 rounded-xl border border-amber-300/60 bg-amber-50 p-4 text-sm text-amber-900">{message}</p>
+      <p className="mt-3 rounded-xl border border-[#f0932b]/30 bg-[#f7ead5] p-4 text-sm text-[#b8720a]">{message}</p>
     </PanelContainer>
   );
 }
@@ -44,7 +44,7 @@ export function AdminTokenUnavailablePanel({
   return (
     <PanelContainer maxWidthClassName={maxWidthClassName}>
       <h1 className="text-3xl font-semibold text-tide">{title}</h1>
-      <p className="mt-3 rounded-xl border border-amber-300/60 bg-amber-50 p-4 text-sm text-amber-900">{message}</p>
+      <p className="mt-3 rounded-xl border border-[#f0932b]/30 bg-[#f7ead5] p-4 text-sm text-[#b8720a]">{message}</p>
     </PanelContainer>
   );
 }
@@ -57,7 +57,7 @@ export function AdminLoginPanel({ title, description, successPath, error, maxWid
       <h1 className="text-3xl font-semibold text-tide">{title}</h1>
       <p className="mt-3 text-sm text-ink/70">{description}</p>
       {error === 'invalid-token' ? (
-        <p className="mt-3 rounded-lg border border-rose-300/70 bg-rose-50 px-3 py-2 text-sm text-rose-700">口令不正确，请重新输入。</p>
+        <p className="mt-3 rounded-lg border border-[#e05555]/30 bg-[#f7dede] px-3 py-2 text-sm text-[#e05555]">口令不正确，请重新输入。</p>
       ) : null}
       <form action={loginAction} className="mt-6 rounded-2xl border border-tide/10 bg-white/90 p-5 shadow-card">
         <label htmlFor="token" className="text-sm font-medium text-ink">

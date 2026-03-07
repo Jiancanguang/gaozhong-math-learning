@@ -26,7 +26,7 @@ export default function LoginPage({ searchParams }: Props) {
       <p className="mt-2 text-center text-sm text-ink/60">教师端登录</p>
 
       {errorMessage ? (
-        <p className="mt-6 rounded-lg border border-rose-300/70 bg-rose-50 px-3 py-2 text-sm text-rose-700">{errorMessage}</p>
+        <p className="mt-6 rounded-lg border border-[#e05555]/30 bg-[#f7dede] px-3 py-2 text-sm text-[#e05555]">{errorMessage}</p>
       ) : null}
 
       <form action={loginWithEmailAction} className="mt-8 rounded-2xl border border-gt-primary/10 bg-white/90 p-6 shadow-card">

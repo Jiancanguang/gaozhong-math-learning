@@ -94,7 +94,7 @@ export default async function GrowthV2EditStudentPage({ params, searchParams }: 
       <div className="mt-5">
         <GrowthV2AdminErrorBanner error={error} />
         {error === 'validation' ? (
-          <p className="mt-3 rounded-lg border border-amber-300/70 bg-amber-50 px-3 py-2 text-sm text-amber-800">请至少填写学生姓名和年级标签。</p>
+          <p className="mt-3 rounded-lg border border-[#f0932b]/30 bg-[#f7ead5] px-3 py-2 text-sm text-[#b8720a]">请至少填写学生姓名和年级标签。</p>
         ) : null}
       </div>
 

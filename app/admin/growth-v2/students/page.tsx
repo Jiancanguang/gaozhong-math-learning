@@ -120,7 +120,7 @@ export default async function GrowthV2StudentsPage({ searchParams }: GrowthV2Stu
                 <p className="text-sm font-semibold uppercase tracking-[0.18em] text-accent">Live Snapshot</p>
                 <h2 className="mt-2 text-2xl font-semibold text-tide">当前档案概况</h2>
               </div>
-              <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700">线上数据</span>
+              <span className="rounded-full bg-[#d4f2ea] px-3 py-1 text-xs font-semibold text-[#00b894]">线上数据</span>
             </div>
             <div className="mt-6 grid gap-3 sm:grid-cols-2">
               <article className="rounded-2xl border border-tide/10 bg-white/90 p-4">
@@ -250,8 +250,8 @@ export default async function GrowthV2StudentsPage({ searchParams }: GrowthV2Stu
                       <span
                         className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${
                           student.status === 'active'
-                            ? 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200'
-                            : 'bg-slate-100 text-slate-700 ring-1 ring-slate-200'
+                            ? 'bg-[#d4f2ea] text-[#00b894] ring-1 ring-[#00b894]/30'
+                            : 'bg-[#f3f1f5] text-[#6b6478] ring-1 ring-[#ddd8e0]'
                         }`}
                       >
                         {student.status === 'active' ? '在读' : '归档'}

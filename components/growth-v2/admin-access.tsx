@@ -35,14 +35,14 @@ export function GrowthV2AdminErrorBanner({ error }: { error?: string }) {
 
   if (error === 'missing-table') {
     return (
-      <p className="rounded-lg border border-rose-300/70 bg-rose-50 px-3 py-2 text-sm text-rose-700">
+      <p className="rounded-lg border border-[#e05555]/30 bg-[#f7dede] px-3 py-2 text-sm text-[#e05555]">
         Growth V2 相关数据表还没建好。请先执行 `docs/growth-v2-schema.sql`，再刷新页面。
       </p>
     );
   }
 
   if (error === 'save-failed') {
-    return <p className="rounded-lg border border-rose-300/70 bg-rose-50 px-3 py-2 text-sm text-rose-700">保存失败，请稍后重试。</p>;
+    return <p className="rounded-lg border border-[#e05555]/30 bg-[#f7dede] px-3 py-2 text-sm text-[#e05555]">保存失败，请稍后重试。</p>;
   }
 
   return null;
