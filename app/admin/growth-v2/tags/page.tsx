@@ -4,12 +4,11 @@ import Link from 'next/link';
 import { GrowthV2AdminErrorBanner, renderGrowthV2AdminGate } from '@/components/growth-v2/admin-access';
 import { SectionTitle } from '@/components/growth-v2/ui/section-title';
 import { StatCard } from '@/components/growth-v2/ui/stat-card';
+import { firstValue } from '@/lib/growth-v2-format';
 import type { GrowthTagCatalogSummaryItem } from '@/lib/growth-v2-store';
 import { isGrowthV2TableMissingError, listGrowthTagCatalogSummary } from '@/lib/growth-v2-store';
 
 type PageProps = { searchParams?: { error?: string | string[]; saved?: string | string[]; q?: string | string[]; category?: string | string[]; status?: string | string[] } };
-
-function firstValue(v?: string | string[]) { return Array.isArray(v) ? v[0] : v; }
 
 export const dynamic = 'force-dynamic';
 

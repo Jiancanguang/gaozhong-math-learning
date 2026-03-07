@@ -6,16 +6,13 @@ import { GrowthV2ExamBatchForm, type GrowthV2ExamFormGroup, type GrowthV2ExamFor
 import { GrowthV2AdminErrorBanner, renderGrowthV2AdminGate } from '@/components/growth-v2/admin-access';
 import { SectionTitle } from '@/components/growth-v2/ui/section-title';
 import { StatCard } from '@/components/growth-v2/ui/stat-card';
+import { firstValue, fmt, fmtPct } from '@/lib/growth-v2-format';
 import type { GrowthExamListItem, GrowthGroup, GrowthStudentListItem, GrowthTagCatalogItem } from '@/lib/growth-v2-store';
 import { isGrowthV2TableMissingError, listGrowthExams, listGrowthGroups, listGrowthStudents, listGrowthTagCatalog } from '@/lib/growth-v2-store';
 
 type PageProps = {
   searchParams?: { error?: string | string[]; q?: string | string[]; groupId?: string | string[]; examType?: string | string[]; saved?: string | string[]; deleted?: string | string[] };
 };
-
-function firstValue(v?: string | string[]) { return Array.isArray(v) ? v[0] : v; }
-function fmtPct(v: number | null) { return v === null ? '--' : `${v.toFixed(1)}%`; }
-function fmt(v: number | null, d = 1) { return v === null ? '--' : v.toFixed(d); }
 
 const examTypeLabels: Record<string, string> = { school: '学校考试', internal: '工作室测验', other: '其他' };
 

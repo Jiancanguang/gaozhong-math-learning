@@ -6,13 +6,10 @@ import { GrowthV2AdminErrorBanner, renderGrowthV2AdminGate } from '@/components/
 import { SectionTitle } from '@/components/growth-v2/ui/section-title';
 import { StatCard } from '@/components/growth-v2/ui/stat-card';
 import { GROWTH_V2_ADMIN_MODULES } from '@/lib/growth-v2';
+import { firstValue } from '@/lib/growth-v2-format';
 import { getGrowthV2AdminSnapshot, isGrowthV2TableMissingError } from '@/lib/growth-v2-store';
 
 type PageProps = { searchParams?: { error?: string | string[] } };
-
-function firstValue(v?: string | string[]) {
-  return Array.isArray(v) ? v[0] : v;
-}
 
 export const dynamic = 'force-dynamic';
 

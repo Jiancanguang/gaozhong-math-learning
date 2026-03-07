@@ -5,6 +5,7 @@ import { createGrowthTagCatalogAction } from '@/app/admin/growth-v2/actions';
 
 import { GrowthV2AdminErrorBanner, renderGrowthV2AdminGate } from '@/components/growth-v2/admin-access';
 import { GrowthV2TagCatalogForm } from '@/components/growth-v2/tag-catalog-form';
+import { firstValue } from '@/lib/growth-v2-format';
 import { isGrowthV2TableMissingError, listGrowthTagCatalogItems } from '@/lib/growth-v2-store';
 
 type GrowthV2NewTagPageProps = {
@@ -12,10 +13,6 @@ type GrowthV2NewTagPageProps = {
     error?: string | string[];
   };
 };
-
-function firstValue(value?: string | string[]) {
-  return Array.isArray(value) ? value[0] : value;
-}
 
 export const dynamic = 'force-dynamic';
 

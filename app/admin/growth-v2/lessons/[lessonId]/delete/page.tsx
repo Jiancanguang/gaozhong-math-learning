@@ -7,6 +7,7 @@ import { deleteGrowthLessonAction } from '@/app/admin/growth-v2/actions';
 import { GrowthV2AdminErrorBanner, renderGrowthV2AdminGate } from '@/components/growth-v2/admin-access';
 import { GrowthV2DeleteConfirmCard } from '@/components/growth-v2/delete-confirm-card';
 import { getGrowthLessonDetailById, isGrowthV2TableMissingError } from '@/lib/growth-v2-store';
+import { firstValue } from '@/lib/growth-v2-format';
 
 type GrowthV2DeleteLessonPageProps = {
   params: {
@@ -16,10 +17,6 @@ type GrowthV2DeleteLessonPageProps = {
     error?: string | string[];
   };
 };
-
-function firstValue(value?: string | string[]) {
-  return Array.isArray(value) ? value[0] : value;
-}
 
 export const dynamic = 'force-dynamic';
 

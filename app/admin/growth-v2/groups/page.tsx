@@ -4,13 +4,12 @@ import Link from 'next/link';
 import { GrowthV2AdminErrorBanner, renderGrowthV2AdminGate } from '@/components/growth-v2/admin-access';
 import { SectionTitle } from '@/components/growth-v2/ui/section-title';
 import { StatCard } from '@/components/growth-v2/ui/stat-card';
+import { firstValue } from '@/lib/growth-v2-format';
 import type { GrowthExamListItem, GrowthGroup, GrowthLessonListItem, GrowthStudentListItem } from '@/lib/growth-v2-store';
 import { isGrowthV2TableMissingError, listGrowthExams, listGrowthGroups, listGrowthLessons, listGrowthStudents } from '@/lib/growth-v2-store';
 
 type PageProps = { searchParams?: { error?: string | string[]; saved?: string | string[]; status?: string | string[]; q?: string | string[] } };
 type GroupSummary = GrowthGroup & { studentCount: number; lessonCount: number; examCount: number };
-
-function firstValue(v?: string | string[]) { return Array.isArray(v) ? v[0] : v; }
 
 function buildSummaries(groups: GrowthGroup[], students: GrowthStudentListItem[], lessons: GrowthLessonListItem[], exams: GrowthExamListItem[]) {
   const sc = new Map<string, number>();

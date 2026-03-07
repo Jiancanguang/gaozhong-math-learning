@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { GrowthV2AdminErrorBanner, renderGrowthV2AdminGate } from '@/components/growth-v2/admin-access';
 import { StudentAvatar } from '@/components/growth-v2/ui/student-avatar';
 import type { GrowthGroup, GrowthStudentListItem } from '@/lib/growth-v2-store';
+import { firstValue } from '@/lib/growth-v2-format';
 import { isGrowthV2TableMissingError, listGrowthGroups, listGrowthStudents } from '@/lib/growth-v2-store';
 
 const CARD_ACCENT_COLORS = ['#6c5ce7', '#e17055', '#00b894', '#4a90d9', '#a29bfe', '#f0932b', '#fd79a8', '#636e72'];
@@ -17,10 +18,6 @@ type PageProps = {
     gradeLabel?: string | string[];
   };
 };
-
-function firstValue(v?: string | string[]) {
-  return Array.isArray(v) ? v[0] : v;
-}
 
 export const dynamic = 'force-dynamic';
 

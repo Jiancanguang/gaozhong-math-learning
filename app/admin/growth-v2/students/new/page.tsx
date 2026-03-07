@@ -5,6 +5,7 @@ import { createGrowthStudentAction } from '@/app/admin/growth-v2/actions';
 
 import { GrowthV2AdminErrorBanner, renderGrowthV2AdminGate } from '@/components/growth-v2/admin-access';
 import { GrowthV2StudentForm } from '@/components/growth-v2/student-form';
+import { firstValue } from '@/lib/growth-v2-format';
 import type { GrowthGroup } from '@/lib/growth-v2-store';
 import { isGrowthV2TableMissingError, listGrowthGroups } from '@/lib/growth-v2-store';
 
@@ -13,10 +14,6 @@ type GrowthV2NewStudentPageProps = {
     error?: string | string[];
   };
 };
-
-function firstValue(value?: string | string[]) {
-  return Array.isArray(value) ? value[0] : value;
-}
 
 function buildGradeOptions(groups: GrowthGroup[]) {
   return Array.from(new Set(['高一', '高二', '高三', ...groups.map((group) => group.gradeLabel).filter(Boolean)])).sort((left, right) =>

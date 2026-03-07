@@ -8,15 +8,11 @@ import { SectionTitle } from '@/components/growth-v2/ui/section-title';
 import { StatCard } from '@/components/growth-v2/ui/stat-card';
 import type { GrowthGroup, GrowthLessonListItem, GrowthStudentListItem } from '@/lib/growth-v2-store';
 import { isGrowthV2TableMissingError, listGrowthGroups, listGrowthLessons, listGrowthStudents } from '@/lib/growth-v2-store';
+import { firstValue, fmt, fmtPct, fmtTime } from '@/lib/growth-v2-format';
 
 type PageProps = {
   searchParams?: { error?: string | string[]; q?: string | string[]; groupId?: string | string[]; saved?: string | string[]; deleted?: string | string[] };
 };
-
-function firstValue(v?: string | string[]) { return Array.isArray(v) ? v[0] : v; }
-function fmt(v: number | null, d = 1) { return v === null ? '--' : v.toFixed(d); }
-function fmtPct(v: number | null) { return v === null ? '--' : `${v.toFixed(1)}%`; }
-function fmtTime(s: string | null, e: string | null) { if (!s && !e) return '--'; if (s && e) return `${s} - ${e}`; return s ?? e ?? '--'; }
 
 export const dynamic = 'force-dynamic';
 

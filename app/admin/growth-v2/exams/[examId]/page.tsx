@@ -13,6 +13,7 @@ import {
 } from '@/components/growth-v2/exam-batch-form';
 import { GrowthV2AdminErrorBanner, renderGrowthV2AdminGate } from '@/components/growth-v2/admin-access';
 import type { GrowthExamDetail, GrowthGroup, GrowthStudentListItem, GrowthTagCatalogItem } from '@/lib/growth-v2-store';
+import { firstValue, fmt, fmtPct } from '@/lib/growth-v2-format';
 import { getGrowthExamDetailById, isGrowthV2TableMissingError, listGrowthGroups, listGrowthStudents, listGrowthTagCatalog } from '@/lib/growth-v2-store';
 
 type GrowthV2ExamDetailPageProps = {
@@ -30,18 +31,6 @@ const examTypeLabels = {
   internal: '工作室测验',
   other: '其他'
 } as const;
-
-function firstValue(value?: string | string[]) {
-  return Array.isArray(value) ? value[0] : value;
-}
-
-function formatNumber(value: number | null, digits = 1) {
-  return value === null ? '--' : value.toFixed(digits);
-}
-
-function formatPercent(value: number | null) {
-  return value === null ? '--' : `${value.toFixed(1)}%`;
-}
 
 export const dynamic = 'force-dynamic';
 
@@ -166,16 +155,16 @@ export default async function GrowthV2ExamDetailPage({ params, searchParams }: G
         </article>
         <article className="rounded-2xl border border-border-light bg-surface p-5 shadow-card">
           <p className="text-sm text-ink/65">平均分</p>
-          <p className="mt-2 text-3xl font-semibold text-ink">{formatNumber(scoreValues.length ? scoreValues.reduce((sum, value) => sum + value, 0) / scoreValues.length : null)}</p>
+          <p className="mt-2 text-3xl font-semibold text-ink">{fmt(scoreValues.length ? scoreValues.reduce((sum, value) => sum + value, 0) / scoreValues.length : null)}</p>
         </article>
         <article className="rounded-2xl border border-border-light bg-surface p-5 shadow-card">
           <p className="text-sm text-ink/65">平均得分率</p>
-          <p className="mt-2 text-3xl font-semibold text-ink">{formatPercent(scoreRates.length ? scoreRates.reduce((sum, value) => sum + value, 0) / scoreRates.length : null)}</p>
+          <p className="mt-2 text-3xl font-semibold text-ink">{fmtPct(scoreRates.length ? scoreRates.reduce((sum, value) => sum + value, 0) / scoreRates.length : null)}</p>
         </article>
         <article className="rounded-2xl border border-border-light bg-surface p-5 shadow-card">
           <p className="text-sm text-ink/65">最高分 / 最低分</p>
           <p className="mt-2 text-3xl font-semibold text-ink">
-            {scoreValues.length ? `${formatNumber(Math.max(...scoreValues))} / ${formatNumber(Math.min(...scoreValues))}` : '--'}
+            {scoreValues.length ? `${fmt(Math.max(...scoreValues))} / ${fmt(Math.min(...scoreValues))}` : '--'}
           </p>
         </article>
       </section>

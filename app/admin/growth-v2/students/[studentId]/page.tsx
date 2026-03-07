@@ -7,6 +7,7 @@ import { MasteryBadge } from '@/components/growth-v2/ui/mastery-badge';
 import { SectionTitle } from '@/components/growth-v2/ui/section-title';
 import { StatCard } from '@/components/growth-v2/ui/stat-card';
 import { StudentAvatar } from '@/components/growth-v2/ui/student-avatar';
+import { firstValue, fmt, fmtPct, fmtRank } from '@/lib/growth-v2-format';
 import { getGrowthStudentReportById, isGrowthV2TableMissingError } from '@/lib/growth-v2-store';
 
 import { StudentDetailCharts } from './student-detail-charts';
@@ -21,24 +22,6 @@ const examTypeLabels: Record<string, string> = {
   internal: '工作室测验',
   other: '其他'
 };
-
-function firstValue(v?: string | string[]) {
-  return Array.isArray(v) ? v[0] : v;
-}
-
-function fmt(v: number | null, d = 1) {
-  return v === null ? '--' : v.toFixed(d);
-}
-
-function fmtPct(v: number | null) {
-  return v === null ? '--' : `${v.toFixed(1)}%`;
-}
-
-function fmtRank(c: number | null, g: number | null) {
-  if (c === null && g === null) return '--';
-  if (c !== null && g !== null) return `班 ${c} / 年 ${g}`;
-  return c !== null ? `班 ${c}` : `年 ${g}`;
-}
 
 export const dynamic = 'force-dynamic';
 
