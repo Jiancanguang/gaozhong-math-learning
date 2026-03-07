@@ -9,22 +9,22 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        ink: '#0f172a',
-        paper: '#fef9f2',
-        accent: '#ff6b35',
-        tide: '#0d3b66',
-        sky: '#79c7ff',
-        'gt-primary': '#1a365d',
-        'gt-accent': '#c0582c',
-        'gt-green': '#1d7a4c',
-        'gt-gold': '#b8912b',
-        'gt-red': '#c44040'
+        ink: '#2d2a33',
+        paper: '#efeced',
+        accent: '#e17055',
+        tide: '#6c5ce7',
+        sky: '#a29bfe',
+        'gt-primary': '#6c5ce7',
+        'gt-accent': '#e17055',
+        'gt-green': '#00b894',
+        'gt-gold': '#f0932b',
+        'gt-red': '#e05555'
       },
       boxShadow: {
-        card: '0 12px 30px rgba(13, 59, 102, 0.14)'
+        card: '0 2px 8px rgba(45, 42, 51, 0.09), 0 4px 16px rgba(45, 42, 51, 0.06)'
       },
       backgroundImage: {
-        hero: 'radial-gradient(circle at 12% 20%, rgba(121, 199, 255, 0.45) 0%, rgba(254, 249, 242, 0) 40%), radial-gradient(circle at 90% 0%, rgba(255, 107, 53, 0.3) 0%, rgba(254, 249, 242, 0) 35%)'
+        hero: 'radial-gradient(circle at 12% 20%, rgba(108, 92, 231, 0.12) 0%, transparent 40%), radial-gradient(circle at 90% 0%, rgba(225, 112, 85, 0.1) 0%, transparent 35%)'
       }
     }
   },

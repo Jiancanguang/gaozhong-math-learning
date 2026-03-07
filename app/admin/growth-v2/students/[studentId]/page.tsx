@@ -131,7 +131,7 @@ export default async function GrowthV2StudentDetailPage({ params, searchParams }
 
       <div className="mt-5">
         <GrowthV2AdminErrorBanner error={error} />
-        {saved ? <p className="mt-3 rounded-lg border border-emerald-300/70 bg-emerald-50 px-3 py-2 text-sm text-emerald-700">学生档案已更新。</p> : null}
+        {saved ? <p className="mt-3 rounded-lg border border-[#00b894]/30 bg-[#d4f2ea] px-3 py-2 text-sm text-[#00b894]">学生档案已更新。</p> : null}
       </div>
 
       <section className="mt-6 grid gap-4 md:grid-cols-5">

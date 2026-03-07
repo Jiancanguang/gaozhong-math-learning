@@ -13,47 +13,34 @@ export function Header() {
   const showAdminEntry = process.env.NODE_ENV === 'production';
 
   return (
-    <header className="border-b border-tide/10 bg-paper/90 backdrop-blur-sm">
-      <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-        <Link href="/" className="text-lg font-semibold text-tide">
-          高中数学教学主页
+    <header className="sticky top-0 z-50 border-b border-[#ddd8e0] bg-[rgba(249,248,250,0.92)] backdrop-blur-xl">
+      <div className="mx-auto flex w-full max-w-6xl items-stretch px-4 sm:px-6 lg:px-8" style={{ height: 56 }}>
+        <Link href="/" className="mr-8 flex items-center gap-2 text-ink no-underline">
+          <span className="font-['Noto_Serif_SC',serif] text-base font-bold tracking-wide">筑学</span>
+          <span className="text-xs text-[#9f96ab]">· 高中数学</span>
         </Link>
-        <nav className="flex items-center gap-4 text-sm text-ink/80">
-          <Link href="/courses?grade=10" className="transition hover:text-accent">
-            同步课程
-          </Link>
-          <Link href={gaokaoHref} className="transition hover:text-accent">
-            真题专区
-          </Link>
-          <Link href={gaokaoSystemHref} className="transition hover:text-accent">
-            提分专区
-          </Link>
-          <Link href={growthV2Href} className="transition hover:text-accent">
-            成长追踪
-          </Link>
-          <Link href={difficultyGradingHref} className="transition hover:text-accent">
-            难度分级
-          </Link>
-          <Link href={roadmapHref} className="transition hover:text-accent">
-            学习路径
-          </Link>
-          <Link href={resourcesHref} className="transition hover:text-accent">
-            资料库
-          </Link>
-          <Link href="/courses" className="transition hover:text-accent">
-            全部内容
-          </Link>
-          <Link href={assignmentHref} className="transition hover:text-accent">
-            作业方案
-          </Link>
-          {showAdminEntry ? (
-            <Link href={adminVideosHref} className="transition hover:text-accent">
-              视频后台
+        <nav className="flex items-stretch gap-0 overflow-x-auto">
+          {[
+            { href: '/courses?grade=10', label: '同步课程' },
+            { href: gaokaoHref, label: '真题专区' },
+            { href: gaokaoSystemHref, label: '提分专区' },
+            { href: growthV2Href, label: '成长追踪' },
+            { href: difficultyGradingHref, label: '难度分级' },
+            { href: roadmapHref, label: '学习路径' },
+            { href: resourcesHref, label: '资料库' },
+            { href: '/courses', label: '全部内容' },
+            { href: assignmentHref, label: '作业方案' },
+            ...(showAdminEntry ? [{ href: adminVideosHref, label: '视频后台' }] : []),
+            { href: '/about', label: '关于我' }
+          ].map(({ href, label }) => (
+            <Link
+              key={label}
+              href={href as Route}
+              className="relative flex items-center px-4 text-xs font-medium tracking-wide text-[#9f96ab] transition-colors hover:text-ink"
+            >
+              {label}
             </Link>
-          ) : null}
-          <Link href="/about" className="transition hover:text-accent">
-            关于我
-          </Link>
+          ))}
         </nav>
       </div>
     </header>

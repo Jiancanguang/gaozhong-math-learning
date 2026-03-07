@@ -80,14 +80,14 @@ export default async function AdminVideosPage({ searchParams }: AdminVideosPageP
           <h1 className="text-3xl font-semibold text-tide">视频管理后台</h1>
           <p className="mt-2 text-sm text-ink/70">只改数据库里的视频链接，不改课程 MDX 内容文件。</p>
           <p className="mt-2 text-xs text-ink/55">提示中的“已解析”仅表示链接格式可转换成 B 站播放器，不代表该视频一定允许站外嵌入。</p>
-          {searchParams?.saved === '1' ? <p className="mt-2 text-sm text-emerald-700">已保存。</p> : null}
+          {searchParams?.saved === '1' ? <p className="mt-2 text-sm text-[#00b894]">已保存。</p> : null}
           {searchParams?.error === 'missing-table' ? (
-            <p className="mt-2 rounded-lg border border-rose-300/70 bg-rose-50 px-3 py-2 text-sm text-rose-700">
+            <p className="mt-2 rounded-lg border border-[#e05555]/30 bg-[#f7dede] px-3 py-2 text-sm text-[#e05555]">
               数据表不存在：请先在 Supabase SQL Editor 执行建表语句 `course_video_overrides`。
             </p>
           ) : null}
           {searchParams?.error === 'save-failed' ? (
-            <p className="mt-2 rounded-lg border border-rose-300/70 bg-rose-50 px-3 py-2 text-sm text-rose-700">保存失败，请稍后重试。</p>
+            <p className="mt-2 rounded-lg border border-[#e05555]/30 bg-[#f7dede] px-3 py-2 text-sm text-[#e05555]">保存失败，请稍后重试。</p>
           ) : null}
         </div>
         <AdminLogoutButton redirectPath="/admin/videos" />
@@ -111,15 +111,15 @@ export default async function AdminVideosPage({ searchParams }: AdminVideosPageP
               const overrideHint = getVideoEmbedHint(overrideUrl);
               const hintClassName =
                 effectiveHint.tone === 'emerald'
-                  ? 'text-emerald-700'
+                  ? 'text-[#00b894]'
                   : effectiveHint.tone === 'amber'
-                    ? 'text-amber-700'
+                    ? 'text-[#f0932b]'
                     : 'text-ink/50';
               const overrideHintClassName =
                 overrideHint.tone === 'emerald'
-                  ? 'text-emerald-700'
+                  ? 'text-[#00b894]'
                   : overrideHint.tone === 'amber'
-                    ? 'text-amber-700'
+                    ? 'text-[#f0932b]'
                     : 'text-ink/50';
               return (
                 <tr key={course.id} className="border-b border-tide/10 align-top last:border-b-0">

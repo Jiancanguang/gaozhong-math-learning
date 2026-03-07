@@ -144,7 +144,7 @@ export default async function GrowthV2ExamsPage({ searchParams }: GrowthV2ExamsP
                 <p className="text-sm font-semibold uppercase tracking-[0.18em] text-accent">Live Snapshot</p>
                 <h2 className="mt-2 text-2xl font-semibold text-tide">当前考试沉淀</h2>
               </div>
-              <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700">线上数据</span>
+              <span className="rounded-full bg-[#d4f2ea] px-3 py-1 text-xs font-semibold text-[#00b894]">线上数据</span>
             </div>
             <div className="mt-6 grid gap-3 sm:grid-cols-2">
               <article className="rounded-2xl border border-tide/10 bg-white/90 p-4">
@@ -174,12 +174,12 @@ export default async function GrowthV2ExamsPage({ searchParams }: GrowthV2ExamsP
       <div className="mt-6">
         <GrowthV2AdminErrorBanner error={error} />
         {error === 'validation' ? (
-          <p className="mt-3 rounded-lg border border-amber-300/70 bg-amber-50 px-3 py-2 text-sm text-amber-800">
+          <p className="mt-3 rounded-lg border border-[#f0932b]/30 bg-[#f7ead5] px-3 py-2 text-sm text-[#b8720a]">
             请至少填写班组、考试名称、考试日期、类型和满分；数字字段也要保证合法。
           </p>
         ) : null}
-        {saved ? <p className="mt-3 rounded-lg border border-emerald-300/70 bg-emerald-50 px-3 py-2 text-sm text-emerald-700">考试记录已保存。</p> : null}
-        {deleted ? <p className="mt-3 rounded-lg border border-amber-300/70 bg-amber-50 px-3 py-2 text-sm text-amber-700">考试记录已删除。</p> : null}
+        {saved ? <p className="mt-3 rounded-lg border border-[#00b894]/30 bg-[#d4f2ea] px-3 py-2 text-sm text-[#00b894]">考试记录已保存。</p> : null}
+        {deleted ? <p className="mt-3 rounded-lg border border-[#f0932b]/30 bg-[#f7ead5] px-3 py-2 text-sm text-[#f0932b]">考试记录已删除。</p> : null}
       </div>
 
       <section className="mt-8">

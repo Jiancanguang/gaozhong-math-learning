@@ -27,7 +27,7 @@ const defaultValues: GrowthV2GroupFormValues = {
 export function GrowthV2GroupForm({ action, submitLabel, cancelHref, values = defaultValues, errorMessage }: GrowthV2GroupFormProps) {
   return (
     <form action={action} className="rounded-2xl border border-tide/10 bg-white/90 p-6 shadow-card">
-      {errorMessage ? <p className="rounded-lg border border-rose-300/70 bg-rose-50 px-3 py-2 text-sm text-rose-700">{errorMessage}</p> : null}
+      {errorMessage ? <p className="rounded-lg border border-[#e05555]/30 bg-[#f7dede] px-3 py-2 text-sm text-[#e05555]">{errorMessage}</p> : null}
 
       <div className="grid gap-4 sm:grid-cols-2">
         <label className="text-sm">

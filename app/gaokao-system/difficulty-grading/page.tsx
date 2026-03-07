@@ -37,10 +37,10 @@ const levelStyles: Record<
   }
 > = {
   benke: {
-    badge: 'bg-emerald-100 text-emerald-700',
-    soft: 'bg-emerald-50',
-    border: 'border-emerald-200',
-    text: 'text-emerald-700'
+    badge: 'bg-[#d4f2ea] text-[#00b894]',
+    soft: 'bg-[#d4f2ea]',
+    border: 'border-[#00b894]/30',
+    text: 'text-[#00b894]'
   },
   erben: {
     badge: 'bg-sky-100 text-sky-700',
@@ -55,10 +55,10 @@ const levelStyles: Record<
     text: 'text-violet-700'
   },
   '985': {
-    badge: 'bg-amber-100 text-amber-700',
-    soft: 'bg-amber-50',
-    border: 'border-amber-200',
-    text: 'text-amber-700'
+    badge: 'bg-[#f7ead5] text-[#f0932b]',
+    soft: 'bg-[#f7ead5]',
+    border: 'border-[#f0932b]/30',
+    text: 'text-[#f0932b]'
   }
 };
 

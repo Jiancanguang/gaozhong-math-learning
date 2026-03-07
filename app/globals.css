@@ -12,21 +12,22 @@
 
 body {
   margin: 0;
-  font-family: 'Noto Serif SC', 'Songti SC', 'STSong', 'SimSun', serif;
+  font-family: 'Noto Sans SC', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 
 .gaokao-system-theme {
-  --gs-bg: #f6fbff;
-  --gs-card: #ffffff;
-  --gs-ink: #0b253a;
-  --gs-muted: #40607a;
-  --gs-primary: #0f6d8c;
-  --gs-accent: #f08a24;
-  --gs-line: rgba(15, 109, 140, 0.18);
+  --gs-bg: #f3f1f5;
+  --gs-card: #f9f8fa;
+  --gs-ink: #2d2a33;
+  --gs-muted: #6b6478;
+  --gs-primary: #6c5ce7;
+  --gs-accent: #e17055;
+  --gs-line: rgba(108, 92, 231, 0.18);
   background:
-    radial-gradient(circle at 8% 8%, rgba(15, 109, 140, 0.14) 0%, rgba(246, 251, 255, 0) 33%),
-    radial-gradient(circle at 90% 0%, rgba(240, 138, 36, 0.16) 0%, rgba(246, 251, 255, 0) 30%),
-    linear-gradient(180deg, #f6fbff 0%, #fefcf7 100%);
+    radial-gradient(circle at 8% 8%, rgba(108, 92, 231, 0.1) 0%, transparent 33%),
+    radial-gradient(circle at 90% 0%, rgba(225, 112, 85, 0.1) 0%, transparent 30%),
+    linear-gradient(180deg, #f3f1f5 0%, #efeced 100%);
   color: var(--gs-ink);
   border-radius: 1.5rem;
   padding: 1rem;
@@ -37,7 +38,7 @@ body {
   background: var(--gs-card);
   border: 1px solid var(--gs-line);
   border-radius: 1rem;
-  box-shadow: 0 10px 24px rgba(11, 37, 58, 0.08);
+  box-shadow: 0 2px 8px rgba(45, 42, 51, 0.09);
 }
 
 .mdx-content h2 {
@@ -45,7 +46,7 @@ body {
   font-size: 1.25rem;
   line-height: 1.7rem;
   font-weight: 700;
-  color: #0d3b66;
+  color: #6c5ce7;
 }
 
 .mdx-content h3 {
@@ -57,7 +58,7 @@ body {
 .mdx-content p,
 .mdx-content li {
   margin-top: 0.65rem;
-  color: rgb(15 23 42 / 0.86);
+  color: rgb(45 42 51 / 0.86);
 }
 
 .mdx-content ul {
@@ -67,6 +68,6 @@ body {
 
 .mdx-content code {
   border-radius: 0.375rem;
-  background: rgb(13 59 102 / 0.08);
+  background: rgb(108 92 231 / 0.08);
   padding: 0.1rem 0.3rem;
 }

@@ -36,7 +36,7 @@ const moduleVisualMap: Record<
   },
   学生档案: {
     eyebrow: 'Students',
-    accentClassName: 'bg-emerald-100 text-emerald-700',
+    accentClassName: 'bg-[#d4f2ea] text-[#00b894]',
     quickPoints: ['新建编辑', '家长 Token', '学习轨迹']
   },
   课堂记录: {
@@ -156,7 +156,7 @@ export default async function GrowthV2AdminPage({ searchParams }: GrowthV2AdminP
                 <p className="text-sm font-semibold uppercase tracking-[0.18em] text-accent">Live Snapshot</p>
                 <h2 className="mt-2 text-2xl font-semibold text-tide">当前线上数据规模</h2>
               </div>
-              <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700">已连真实数据</span>
+              <span className="rounded-full bg-[#d4f2ea] px-3 py-1 text-xs font-semibold text-[#00b894]">已连真实数据</span>
             </div>
             <div className="mt-6 grid gap-3 sm:grid-cols-2">
               <article className="rounded-2xl border border-tide/10 bg-white/90 p-4">

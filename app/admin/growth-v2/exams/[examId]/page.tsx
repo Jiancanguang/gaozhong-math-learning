@@ -144,7 +144,7 @@ export default async function GrowthV2ExamDetailPage({ params, searchParams }: G
           <Link href={'/admin/growth-v2/exams' as Route} className="rounded-lg border border-tide/20 px-4 py-2 text-sm font-medium text-tide transition hover:bg-tide/5">
             返回考试列表
           </Link>
-          <Link href={`/admin/growth-v2/exams/${exam.id}/delete` as Route} className="rounded-lg border border-rose-200 px-4 py-2 text-sm font-medium text-rose-700 transition hover:bg-rose-50">
+          <Link href={`/admin/growth-v2/exams/${exam.id}/delete` as Route} className="rounded-lg border border-[#e05555]/30 px-4 py-2 text-sm font-medium text-[#e05555] transition hover:bg-[#f7dede]">
             删除考试
           </Link>
           <AdminLogoutButton redirectPath={detailHref} />
@@ -154,11 +154,11 @@ export default async function GrowthV2ExamDetailPage({ params, searchParams }: G
       <div className="mt-5">
         <GrowthV2AdminErrorBanner error={error} />
         {error === 'validation' ? (
-          <p className="mt-3 rounded-lg border border-amber-300/70 bg-amber-50 px-3 py-2 text-sm text-amber-800">
+          <p className="mt-3 rounded-lg border border-[#f0932b]/30 bg-[#f7ead5] px-3 py-2 text-sm text-[#b8720a]">
             请至少填写班组、考试名称、考试日期、类型和满分；数字字段也要保证合法。
           </p>
         ) : null}
-        {saved ? <p className="mt-3 rounded-lg border border-emerald-300/70 bg-emerald-50 px-3 py-2 text-sm text-emerald-700">考试记录已更新。</p> : null}
+        {saved ? <p className="mt-3 rounded-lg border border-[#00b894]/30 bg-[#d4f2ea] px-3 py-2 text-sm text-[#00b894]">考试记录已更新。</p> : null}
       </div>
 
       <section className="mt-6 grid gap-4 md:grid-cols-4">
