@@ -1,14 +1,12 @@
 import type { Route } from 'next';
 import Link from 'next/link';
 
-import { createGrowthLessonAction } from '@/app/admin/growth-v2/actions';
-import { GrowthV2LessonBatchForm, type GrowthV2LessonFormGroup, type GrowthV2LessonFormStudent } from '@/components/growth-v2/lesson-batch-form';
 import { GrowthV2AdminErrorBanner, renderGrowthV2AdminGate } from '@/components/growth-v2/admin-access';
 import { SectionTitle } from '@/components/growth-v2/ui/section-title';
 import { StatCard } from '@/components/growth-v2/ui/stat-card';
-import type { GrowthGroup, GrowthLessonListItem, GrowthStudentListItem } from '@/lib/growth-v2-store';
-import { isGrowthV2TableMissingError, listGrowthGroups, listGrowthLessons, listGrowthStudents } from '@/lib/growth-v2-store';
 import { firstValue, fmt, fmtPct, fmtTime } from '@/lib/growth-v2-format';
+import type { GrowthGroup, GrowthLessonListItem } from '@/lib/growth-v2-store';
+import { isGrowthV2TableMissingError, listGrowthGroups, listGrowthLessons } from '@/lib/growth-v2-store';
 
 type PageProps = {
   searchParams?: { error?: string | string[]; q?: string | string[]; groupId?: string | string[]; saved?: string | string[]; deleted?: string | string[] };
@@ -28,13 +26,11 @@ export default async function LessonsPage({ searchParams }: PageProps) {
 
   let groups: GrowthGroup[] = [];
   let lessons: GrowthLessonListItem[] = [];
-  let students: GrowthStudentListItem[] = [];
 
   try {
-    [groups, lessons, students] = await Promise.all([
+    [groups, lessons] = await Promise.all([
       listGrowthGroups({ status: 'all' }),
-      listGrowthLessons({ q, groupId }),
-      listGrowthStudents({ status: 'active' })
+      listGrowthLessons({ q, groupId })
     ]);
   } catch (fetchError) {
     if (isGrowthV2TableMissingError(fetchError)) return <GrowthV2AdminErrorBanner error="missing-table" />;
@@ -47,17 +43,18 @@ export default async function LessonsPage({ searchParams }: PageProps) {
   const overallExitRate = exitRates.length ? exitRates.reduce((a, b) => a + b, 0) / exitRates.length : null;
   const overallPerf = perfValues.length ? perfValues.reduce((a, b) => a + b, 0) / perfValues.length : null;
 
-  const activeGroups: GrowthV2LessonFormGroup[] = groups.filter((g) => g.status === 'active').map((g) => ({ id: g.id, name: g.name, gradeLabel: g.gradeLabel }));
-  const activeStudents: GrowthV2LessonFormStudent[] = students.map((s) => ({ id: s.id, name: s.name, gradeLabel: s.gradeLabel, homeGroupId: s.homeGroupId, homeGroupName: s.homeGroup?.name ?? null }));
-
   return (
     <div>
       <GrowthV2AdminErrorBanner error={error} />
-      {error === 'validation' ? <p className="mb-3 rounded-lg border border-stat-amber/30 bg-stat-amber-soft px-3 py-2 text-sm text-stat-amber">请至少填写班组、上课日期和课堂主题。</p> : null}
       {saved ? <p className="mb-3 rounded-lg border border-stat-emerald/30 bg-stat-emerald-soft px-3 py-2 text-sm text-stat-emerald">课堂记录已保存。</p> : null}
       {deleted ? <p className="mb-3 rounded-lg border border-stat-amber/30 bg-stat-amber-soft px-3 py-2 text-sm text-stat-amber">课堂记录已删除。</p> : null}
 
-      <h1 className="text-2xl font-bold text-ink">课堂记录</h1>
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <h1 className="text-2xl font-bold text-ink">课堂记录</h1>
+        <Link href={'/admin/growth-v2/lessons/new' as Route} className="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white transition hover:bg-accent/90">
+          + 新建课堂
+        </Link>
+      </div>
 
       {/* Stat Cards */}
       <section className="mt-5 grid grid-cols-2 gap-4 lg:grid-cols-4">
@@ -65,15 +62,6 @@ export default async function LessonsPage({ searchParams }: PageProps) {
         <StatCard label="总记录" value={String(totalRecords)} sub="学生记录条数" colorClass="bg-stat-amber-soft" valueColorClass="text-stat-amber" />
         <StatCard label="平均课后得分率" value={fmtPct(overallExitRate)} sub="全部课次" colorClass="bg-stat-emerald-soft" valueColorClass="text-stat-emerald" />
         <StatCard label="平均课堂表现" value={fmt(overallPerf)} sub="全部课次" colorClass="bg-stat-rose-soft" valueColorClass="text-stat-rose" />
-      </section>
-
-      {/* New Lesson Form */}
-      <section className="mt-10">
-        <SectionTitle title="新建课堂记录" />
-        <p className="mt-2 text-sm text-text-light">班组、主题、时间、测验和逐个学生表现可以一次录完。当前可选学生 {activeStudents.length} 人。</p>
-        <div className="mt-4">
-          <GrowthV2LessonBatchForm groups={activeGroups} students={activeStudents} action={createGrowthLessonAction} />
-        </div>
       </section>
 
       {/* Lesson List */}

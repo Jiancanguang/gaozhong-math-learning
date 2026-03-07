@@ -1,14 +1,12 @@
 import type { Route } from 'next';
 import Link from 'next/link';
 
-import { createGrowthExamAction } from '@/app/admin/growth-v2/actions';
-import { GrowthV2ExamBatchForm, type GrowthV2ExamFormGroup, type GrowthV2ExamFormStudent } from '@/components/growth-v2/exam-batch-form';
 import { GrowthV2AdminErrorBanner, renderGrowthV2AdminGate } from '@/components/growth-v2/admin-access';
 import { SectionTitle } from '@/components/growth-v2/ui/section-title';
 import { StatCard } from '@/components/growth-v2/ui/stat-card';
 import { firstValue, fmt, fmtPct } from '@/lib/growth-v2-format';
-import type { GrowthExamListItem, GrowthGroup, GrowthStudentListItem, GrowthTagCatalogItem } from '@/lib/growth-v2-store';
-import { isGrowthV2TableMissingError, listGrowthExams, listGrowthGroups, listGrowthStudents, listGrowthTagCatalog } from '@/lib/growth-v2-store';
+import type { GrowthExamListItem, GrowthGroup, GrowthTagCatalogItem } from '@/lib/growth-v2-store';
+import { isGrowthV2TableMissingError, listGrowthExams, listGrowthGroups, listGrowthTagCatalog } from '@/lib/growth-v2-store';
 
 type PageProps = {
   searchParams?: { error?: string | string[]; q?: string | string[]; groupId?: string | string[]; examType?: string | string[]; saved?: string | string[]; deleted?: string | string[] };
@@ -32,14 +30,12 @@ export default async function ExamsPage({ searchParams }: PageProps) {
 
   let groups: GrowthGroup[] = [];
   let exams: GrowthExamListItem[] = [];
-  let students: GrowthStudentListItem[] = [];
   let tagCatalog: GrowthTagCatalogItem[] = [];
 
   try {
-    [groups, exams, students, tagCatalog] = await Promise.all([
+    [groups, exams, tagCatalog] = await Promise.all([
       listGrowthGroups({ status: 'all' }),
       listGrowthExams({ q, groupId, examType }),
-      listGrowthStudents({ status: 'active' }),
       listGrowthTagCatalog()
     ]);
   } catch (fetchError) {
@@ -51,21 +47,22 @@ export default async function ExamsPage({ searchParams }: PageProps) {
   const rateValues = exams.flatMap((e) => (e.avgScoreRate === null ? [] : [e.avgScoreRate]));
   const overallRate = rateValues.length ? rateValues.reduce((a, b) => a + b, 0) / rateValues.length : null;
 
-  const activeGroups: GrowthV2ExamFormGroup[] = groups.filter((g) => g.status === 'active').map((g) => ({ id: g.id, name: g.name, gradeLabel: g.gradeLabel }));
-  const activeStudents: GrowthV2ExamFormStudent[] = students.map((s) => ({ id: s.id, name: s.name, gradeLabel: s.gradeLabel, homeGroupId: s.homeGroupId }));
-
   return (
     <div>
       <GrowthV2AdminErrorBanner error={error} />
-      {error === 'validation' ? <p className="mb-3 rounded-lg border border-stat-amber/30 bg-stat-amber-soft px-3 py-2 text-sm text-stat-amber">请至少填写班组、考试名称、日期、类型和满分。</p> : null}
       {saved ? <p className="mb-3 rounded-lg border border-stat-emerald/30 bg-stat-emerald-soft px-3 py-2 text-sm text-stat-emerald">考试记录已保存。</p> : null}
       {deleted ? <p className="mb-3 rounded-lg border border-stat-amber/30 bg-stat-amber-soft px-3 py-2 text-sm text-stat-amber">考试记录已删除。</p> : null}
 
       <div className="flex flex-wrap items-center justify-between gap-4">
         <h1 className="text-2xl font-bold text-ink">考试管理</h1>
-        <Link href={'/admin/growth-v2/tags' as Route} className="rounded-lg border border-border-default px-3 py-1.5 text-sm text-text-light transition hover:bg-surface-alt">
-          管理标签目录
-        </Link>
+        <div className="flex flex-wrap gap-2">
+          <Link href={'/admin/growth-v2/tags' as Route} className="rounded-lg border border-border-default px-3 py-1.5 text-sm text-text-light transition hover:bg-surface-alt">
+            管理标签目录
+          </Link>
+          <Link href={'/admin/growth-v2/exams/new' as Route} className="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white transition hover:bg-accent/90">
+            + 新建考试
+          </Link>
+        </div>
       </div>
 
       <section className="mt-5 grid grid-cols-2 gap-4 lg:grid-cols-4">
@@ -73,14 +70,6 @@ export default async function ExamsPage({ searchParams }: PageProps) {
         <StatCard label="成绩记录" value={String(totalScores)} sub="学生成绩条数" colorClass="bg-stat-amber-soft" valueColorClass="text-stat-amber" />
         <StatCard label="平均得分率" value={fmtPct(overallRate)} sub="全部考试" colorClass="bg-stat-emerald-soft" valueColorClass="text-stat-emerald" />
         <StatCard label="标签数" value={String(tagCatalog.length)} sub="可用薄弱点标签" colorClass="bg-stat-rose-soft" valueColorClass="text-stat-rose" />
-      </section>
-
-      <section className="mt-10">
-        <SectionTitle title="新建考试记录" />
-        <p className="mt-2 text-sm text-text-light">当前可选学生 {activeStudents.length} 人，已启用标签 {tagCatalog.length} 个。</p>
-        <div className="mt-4">
-          <GrowthV2ExamBatchForm groups={activeGroups} students={activeStudents} tagCatalog={tagCatalog} action={createGrowthExamAction} />
-        </div>
       </section>
 
       <section className="mt-10">
