@@ -318,101 +318,89 @@ export function GrowthV2ExamBatchForm({
         </div>
 
         {entries.length > 0 ? (
-          <div className="mt-6 overflow-x-auto rounded-2xl border border-border-light bg-surface">
-            <table className="min-w-full border-collapse text-sm">
-              <thead>
-                <tr className="border-b border-border-light bg-surface-alt text-left text-ink/70">
-                  <th className="px-4 py-3 font-medium">学生</th>
-                  <th className="px-4 py-3 font-medium">分数</th>
-                  <th className="px-4 py-3 font-medium">班排</th>
-                  <th className="px-4 py-3 font-medium">年排</th>
-                  <th className="px-4 py-3 font-medium">掌握度</th>
-                  <th className="px-4 py-3 font-medium">薄弱点</th>
-                  <th className="px-4 py-3 font-medium">备注</th>
-                </tr>
-              </thead>
-              <tbody>
-                {entries.map((entry, index) => (
-                  <tr key={entry.id} className="border-b border-border-light align-top last:border-b-0">
-                    <td className="px-4 py-4">
-                      <input type="hidden" name={`students[${index}].id`} value={entry.id} />
-                      <p className="font-medium text-ink">{entry.name}</p>
-                      <p className="mt-1 text-xs text-ink/55">{entry.gradeLabel || '未填年级'}</p>
-                    </td>
-                    <td className="px-4 py-4">
-                      <input
-                        name={`students[${index}].score`}
-                        type="number"
-                        step="0.1"
-                        min="0"
-                        value={entry.score}
-                        onChange={(event) => updateEntry(index, 'score', event.target.value)}
-                        className="w-24 rounded-lg border border-border-default bg-white px-3 py-2 text-sm outline-none focus:border-accent"
-                      />
-                    </td>
-                    <td className="px-4 py-4">
-                      <input
-                        name={`students[${index}].classRank`}
-                        type="number"
-                        step="1"
-                        min="1"
-                        value={entry.classRank}
-                        onChange={(event) => updateEntry(index, 'classRank', event.target.value)}
-                        className="w-24 rounded-lg border border-border-default bg-white px-3 py-2 text-sm outline-none focus:border-accent"
-                      />
-                    </td>
-                    <td className="px-4 py-4">
-                      <input
-                        name={`students[${index}].gradeRank`}
-                        type="number"
-                        step="1"
-                        min="1"
-                        value={entry.gradeRank}
-                        onChange={(event) => updateEntry(index, 'gradeRank', event.target.value)}
-                        className="w-24 rounded-lg border border-border-default bg-white px-3 py-2 text-sm outline-none focus:border-accent"
-                      />
-                    </td>
-                    <td className="px-4 py-4">
-                      <select
-                        name={`students[${index}].masteryLevel`}
-                        value={entry.masteryLevel}
-                        onChange={(event) => updateEntry(index, 'masteryLevel', event.target.value)}
-                        className="w-32 rounded-lg border border-border-default bg-white px-3 py-2 text-sm outline-none focus:border-accent"
-                      >
-                        <option value="">未填</option>
-                        {GROWTH_V2_MASTERY_OPTIONS.map((option) => (
-                          <option key={option.value} value={option.value}>
-                            {option.label}
-                          </option>
-                        ))}
-                      </select>
-                    </td>
-                    <td className="px-4 py-4">
-                      <input
-                        name={`students[${index}].tagNames`}
-                        type="text"
-                        value={entry.tagNames}
-                        onFocus={() => setFocusedEntryId(entry.id)}
-                        onChange={(event) => updateEntry(index, 'tagNames', event.target.value)}
-                        placeholder="逗号分隔，例如 计算错误，导数运算"
-                        className="w-64 rounded-lg border border-border-default bg-white px-3 py-2 text-sm outline-none focus:border-accent"
-                      />
-                    </td>
-                    <td className="px-4 py-4">
-                      <textarea
-                        name={`students[${index}].note`}
-                        rows={2}
-                        value={entry.note}
-                        onChange={(event) => updateEntry(index, 'note', event.target.value)}
-                        placeholder="例如：选择题稳定，大题导数第二问失分"
-                        className="min-h-[64px] w-56 rounded-lg border border-border-default bg-white px-3 py-2 text-sm outline-none focus:border-accent"
-                      />
-                    </td>
+          <>
+            {/* Desktop table */}
+            <div className="mt-6 hidden overflow-x-auto rounded-2xl border border-border-light bg-surface md:block">
+              <table className="min-w-full border-collapse text-sm">
+                <thead>
+                  <tr className="border-b border-border-light bg-surface-alt text-left text-ink/70">
+                    <th className="whitespace-nowrap px-4 py-3 font-medium">学生</th>
+                    <th className="whitespace-nowrap px-4 py-3 font-medium">分数</th>
+                    <th className="whitespace-nowrap px-4 py-3 font-medium">班排</th>
+                    <th className="whitespace-nowrap px-4 py-3 font-medium">年排</th>
+                    <th className="whitespace-nowrap px-4 py-3 font-medium">掌握度</th>
+                    <th className="whitespace-nowrap px-4 py-3 font-medium">薄弱点</th>
+                    <th className="whitespace-nowrap px-4 py-3 font-medium">备注</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {entries.map((entry, index) => (
+                    <tr key={`${entry.id}-desk`} className="border-b border-border-light align-top last:border-b-0">
+                      <td className="whitespace-nowrap px-4 py-4">
+                        <p className="font-medium text-ink">{entry.name}</p>
+                        <p className="mt-1 text-xs text-ink/55">{entry.gradeLabel || '未填年级'}</p>
+                      </td>
+                      <td className="px-4 py-4"><input type="number" step="0.1" min="0" value={entry.score} onChange={(e) => updateEntry(index, 'score', e.target.value)} className="w-24 rounded-lg border border-border-default bg-white px-3 py-2 text-sm outline-none focus:border-accent" /></td>
+                      <td className="px-4 py-4"><input type="number" step="1" min="1" value={entry.classRank} onChange={(e) => updateEntry(index, 'classRank', e.target.value)} className="w-24 rounded-lg border border-border-default bg-white px-3 py-2 text-sm outline-none focus:border-accent" /></td>
+                      <td className="px-4 py-4"><input type="number" step="1" min="1" value={entry.gradeRank} onChange={(e) => updateEntry(index, 'gradeRank', e.target.value)} className="w-24 rounded-lg border border-border-default bg-white px-3 py-2 text-sm outline-none focus:border-accent" /></td>
+                      <td className="px-4 py-4">
+                        <select value={entry.masteryLevel} onChange={(e) => updateEntry(index, 'masteryLevel', e.target.value)} className="w-32 rounded-lg border border-border-default bg-white px-3 py-2 text-sm outline-none focus:border-accent">
+                          <option value="">未填</option>
+                          {GROWTH_V2_MASTERY_OPTIONS.map((opt) => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+                        </select>
+                      </td>
+                      <td className="px-4 py-4"><input type="text" value={entry.tagNames} onFocus={() => setFocusedEntryId(entry.id)} onChange={(e) => updateEntry(index, 'tagNames', e.target.value)} placeholder="逗号分隔" className="w-64 rounded-lg border border-border-default bg-white px-3 py-2 text-sm outline-none focus:border-accent" /></td>
+                      <td className="px-4 py-4"><textarea rows={2} value={entry.note} onChange={(e) => updateEntry(index, 'note', e.target.value)} placeholder="例如：大题导数第二问失分" className="min-h-[64px] w-56 rounded-lg border border-border-default bg-white px-3 py-2 text-sm outline-none focus:border-accent" /></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile card list */}
+            <div className="mt-6 grid gap-4 md:hidden">
+              {entries.map((entry, index) => (
+                <div key={`${entry.id}-mob`} className="rounded-2xl border border-border-light bg-surface p-4">
+                  <input type="hidden" name={`students[${index}].id`} value={entry.id} />
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-medium text-ink">{entry.name}</p>
+                      <p className="text-xs text-ink/55">{entry.gradeLabel || '未填年级'}</p>
+                    </div>
+                  </div>
+                  <div className="mt-3 grid grid-cols-2 gap-3">
+                    <label className="text-xs text-ink/70">
+                      分数
+                      <input name={`students[${index}].score`} type="number" step="0.1" min="0" value={entry.score} onChange={(e) => updateEntry(index, 'score', e.target.value)} className="mt-1 w-full rounded-lg border border-border-default bg-white px-3 py-2 text-sm outline-none focus:border-accent" />
+                    </label>
+                    <label className="text-xs text-ink/70">
+                      掌握度
+                      <select name={`students[${index}].masteryLevel`} value={entry.masteryLevel} onChange={(e) => updateEntry(index, 'masteryLevel', e.target.value)} className="mt-1 w-full rounded-lg border border-border-default bg-white px-3 py-2 text-sm outline-none focus:border-accent">
+                        <option value="">未填</option>
+                        {GROWTH_V2_MASTERY_OPTIONS.map((opt) => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+                      </select>
+                    </label>
+                    <label className="text-xs text-ink/70">
+                      班排
+                      <input name={`students[${index}].classRank`} type="number" step="1" min="1" value={entry.classRank} onChange={(e) => updateEntry(index, 'classRank', e.target.value)} className="mt-1 w-full rounded-lg border border-border-default bg-white px-3 py-2 text-sm outline-none focus:border-accent" />
+                    </label>
+                    <label className="text-xs text-ink/70">
+                      年排
+                      <input name={`students[${index}].gradeRank`} type="number" step="1" min="1" value={entry.gradeRank} onChange={(e) => updateEntry(index, 'gradeRank', e.target.value)} className="mt-1 w-full rounded-lg border border-border-default bg-white px-3 py-2 text-sm outline-none focus:border-accent" />
+                    </label>
+                  </div>
+                  <label className="mt-3 block text-xs text-ink/70">
+                    薄弱点
+                    <input name={`students[${index}].tagNames`} type="text" value={entry.tagNames} onFocus={() => setFocusedEntryId(entry.id)} onChange={(e) => updateEntry(index, 'tagNames', e.target.value)} placeholder="逗号分隔" className="mt-1 w-full rounded-lg border border-border-default bg-white px-3 py-2 text-sm outline-none focus:border-accent" />
+                  </label>
+                  <label className="mt-3 block text-xs text-ink/70">
+                    备注
+                    <textarea name={`students[${index}].note`} rows={2} value={entry.note} onChange={(e) => updateEntry(index, 'note', e.target.value)} placeholder="例如：大题导数第二问失分" className="mt-1 w-full rounded-lg border border-border-default bg-white px-3 py-2 text-sm outline-none focus:border-accent" />
+                  </label>
+                </div>
+              ))}
+            </div>
+          </>
         ) : (
           <div className="mt-6 rounded-2xl border border-dashed border-border-default bg-surface-alt p-8 text-center text-sm text-ink/60">
             请选择一个班组开始录入。
