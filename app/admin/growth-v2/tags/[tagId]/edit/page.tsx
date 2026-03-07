@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
 import { updateGrowthTagCatalogAction } from '@/app/admin/growth-v2/actions';
-import { AdminLogoutButton } from '@/components/admin-auth-panels';
+
 import { GrowthV2AdminErrorBanner, renderGrowthV2AdminGate } from '@/components/growth-v2/admin-access';
 import { GrowthV2TagCatalogForm } from '@/components/growth-v2/tag-catalog-form';
 import { getGrowthTagCatalogItemById, isGrowthV2TableMissingError, listGrowthTagCatalogItems } from '@/lib/growth-v2-store';
@@ -44,24 +44,23 @@ export default async function GrowthV2EditTagPage({ params, searchParams }: Grow
   } catch (fetchError) {
     if (isGrowthV2TableMissingError(fetchError)) {
       return (
-        <div className="mx-auto w-full max-w-4xl px-4 pb-12 pt-8 sm:px-6 lg:px-8">
+        <>
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
               <p className="text-sm font-medium text-accent">Growth V2</p>
-              <h1 className="mt-2 text-3xl font-semibold text-tide">编辑标签</h1>
+              <h1 className="mt-2 text-3xl font-semibold text-ink">编辑标签</h1>
               <p className="mt-2 text-sm text-ink/70">标签编辑页已经接到真实数据层，但当前 Supabase 里还没有 `growth_*` 表。</p>
             </div>
             <div className="flex flex-wrap gap-3">
               <Link href={'/admin/growth-v2/tags' as Route} className="rounded-lg border border-tide/20 px-4 py-2 text-sm font-medium text-tide transition hover:bg-tide/5">
                 返回标签目录
               </Link>
-              <AdminLogoutButton redirectPath={pageHref} />
             </div>
           </div>
           <div className="mt-5">
             <GrowthV2AdminErrorBanner error="missing-table" />
           </div>
-        </div>
+        </>
       );
     }
 
@@ -73,18 +72,17 @@ export default async function GrowthV2EditTagPage({ params, searchParams }: Grow
   }
 
   return (
-    <div className="mx-auto w-full max-w-4xl px-4 pb-12 pt-8 sm:px-6 lg:px-8">
+    <>
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <p className="text-sm font-medium text-accent">Growth V2</p>
-          <h1 className="mt-2 text-3xl font-semibold text-tide">编辑标签</h1>
+          <h1 className="mt-2 text-3xl font-semibold text-ink">编辑标签</h1>
           <p className="mt-2 text-sm text-ink/70">这里会更新标签分类、名称、排序和启用状态，不会改动已经存在的考试记录。</p>
         </div>
         <div className="flex flex-wrap gap-3">
           <Link href={'/admin/growth-v2/tags' as Route} className="rounded-lg border border-tide/20 px-4 py-2 text-sm font-medium text-tide transition hover:bg-tide/5">
             返回标签目录
           </Link>
-          <AdminLogoutButton redirectPath={pageHref} />
         </div>
       </div>
 
@@ -112,6 +110,6 @@ export default async function GrowthV2EditTagPage({ params, searchParams }: Grow
           }}
         />
       </div>
-    </div>
+    </>
   );
 }

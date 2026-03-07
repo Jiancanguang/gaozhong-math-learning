@@ -2,44 +2,26 @@ import type { Route } from 'next';
 import Link from 'next/link';
 
 import { createGrowthExamAction } from '@/app/admin/growth-v2/actions';
-import { AdminLogoutButton } from '@/components/admin-auth-panels';
 import { GrowthV2ExamBatchForm, type GrowthV2ExamFormGroup, type GrowthV2ExamFormStudent } from '@/components/growth-v2/exam-batch-form';
 import { GrowthV2AdminErrorBanner, renderGrowthV2AdminGate } from '@/components/growth-v2/admin-access';
+import { SectionTitle } from '@/components/growth-v2/ui/section-title';
+import { StatCard } from '@/components/growth-v2/ui/stat-card';
 import type { GrowthExamListItem, GrowthGroup, GrowthStudentListItem, GrowthTagCatalogItem } from '@/lib/growth-v2-store';
 import { isGrowthV2TableMissingError, listGrowthExams, listGrowthGroups, listGrowthStudents, listGrowthTagCatalog } from '@/lib/growth-v2-store';
 
-type GrowthV2ExamsPageProps = {
-  searchParams?: {
-    error?: string | string[];
-    q?: string | string[];
-    groupId?: string | string[];
-    examType?: string | string[];
-    saved?: string | string[];
-    deleted?: string | string[];
-  };
+type PageProps = {
+  searchParams?: { error?: string | string[]; q?: string | string[]; groupId?: string | string[]; examType?: string | string[]; saved?: string | string[]; deleted?: string | string[] };
 };
 
-function firstValue(value?: string | string[]) {
-  return Array.isArray(value) ? value[0] : value;
-}
+function firstValue(v?: string | string[]) { return Array.isArray(v) ? v[0] : v; }
+function fmtPct(v: number | null) { return v === null ? '--' : `${v.toFixed(1)}%`; }
+function fmt(v: number | null, d = 1) { return v === null ? '--' : v.toFixed(d); }
 
-function formatNumber(value: number | null, digits = 1) {
-  return value === null ? '--' : value.toFixed(digits);
-}
-
-function formatPercent(value: number | null) {
-  return value === null ? '--' : `${value.toFixed(1)}%`;
-}
-
-const examTypeLabels = {
-  school: '学校考试',
-  internal: '工作室测验',
-  other: '其他'
-} as const;
+const examTypeLabels: Record<string, string> = { school: '学校考试', internal: '工作室测验', other: '其他' };
 
 export const dynamic = 'force-dynamic';
 
-export default async function GrowthV2ExamsPage({ searchParams }: GrowthV2ExamsPageProps) {
+export default async function ExamsPage({ searchParams }: PageProps) {
   const error = firstValue(searchParams?.error);
   const q = firstValue(searchParams?.q)?.trim() ?? '';
   const groupId = firstValue(searchParams?.groupId)?.trim() ?? '';
@@ -47,11 +29,8 @@ export default async function GrowthV2ExamsPage({ searchParams }: GrowthV2ExamsP
   const examType = examTypeValue === 'school' || examTypeValue === 'internal' || examTypeValue === 'other' ? examTypeValue : 'all';
   const saved = firstValue(searchParams?.saved) === '1';
   const deleted = firstValue(searchParams?.deleted) === '1';
-  const adminHref = '/admin/growth-v2' as Route;
-  const gate = renderGrowthV2AdminGate({
-    successPath: '/admin/growth-v2/exams',
-    searchError: error
-  });
+
+  const gate = renderGrowthV2AdminGate({ successPath: '/admin/growth-v2/exams', searchError: error });
   if (gate) return gate;
 
   let groups: GrowthGroup[] = [];
@@ -67,236 +46,110 @@ export default async function GrowthV2ExamsPage({ searchParams }: GrowthV2ExamsP
       listGrowthTagCatalog()
     ]);
   } catch (fetchError) {
-    if (isGrowthV2TableMissingError(fetchError)) {
-      return (
-        <div className="mx-auto w-full max-w-6xl px-4 pb-12 pt-8 sm:px-6 lg:px-8">
-          <div className="flex flex-wrap items-start justify-between gap-4">
-            <div>
-              <p className="text-sm font-medium text-accent">Growth V2</p>
-              <h1 className="mt-2 text-3xl font-semibold text-tide">考试模块</h1>
-              <p className="mt-2 text-sm text-ink/70">考试页已经接到真实数据层，但当前 Supabase 里还没有 Growth V2 相关表。</p>
-            </div>
-            <div className="flex flex-wrap gap-3">
-              <Link href={adminHref} className="rounded-lg border border-tide/20 px-4 py-2 text-sm font-medium text-tide transition hover:bg-tide/5">
-                返回后台
-              </Link>
-              <AdminLogoutButton redirectPath="/admin/growth-v2/exams" />
-            </div>
-          </div>
-
-          <div className="mt-5">
-            <GrowthV2AdminErrorBanner error="missing-table" />
-          </div>
-        </div>
-      );
-    }
-
+    if (isGrowthV2TableMissingError(fetchError)) return <GrowthV2AdminErrorBanner error="missing-table" />;
     throw fetchError;
   }
 
-  const totalScores = exams.reduce((sum, exam) => sum + exam.scoreCount, 0);
-  const avgScoreRateValues = exams.flatMap((exam) => (exam.avgScoreRate === null ? [] : [exam.avgScoreRate]));
-  const overallScoreRate = avgScoreRateValues.length ? avgScoreRateValues.reduce((sum, value) => sum + value, 0) / avgScoreRateValues.length : null;
-  const totalTaggedHotspots = exams.reduce((sum, exam) => sum + exam.topTags.length, 0);
-  const activeGroups: GrowthV2ExamFormGroup[] = groups
-    .filter((group) => group.status === 'active')
-    .map((group) => ({
-      id: group.id,
-      name: group.name,
-      gradeLabel: group.gradeLabel
-    }));
-  const activeStudents: GrowthV2ExamFormStudent[] = students.map((student) => ({
-    id: student.id,
-    name: student.name,
-    gradeLabel: student.gradeLabel,
-    homeGroupId: student.homeGroupId
-  }));
+  const totalScores = exams.reduce((sum, e) => sum + e.scoreCount, 0);
+  const rateValues = exams.flatMap((e) => (e.avgScoreRate === null ? [] : [e.avgScoreRate]));
+  const overallRate = rateValues.length ? rateValues.reduce((a, b) => a + b, 0) / rateValues.length : null;
+
+  const activeGroups: GrowthV2ExamFormGroup[] = groups.filter((g) => g.status === 'active').map((g) => ({ id: g.id, name: g.name, gradeLabel: g.gradeLabel }));
+  const activeStudents: GrowthV2ExamFormStudent[] = students.map((s) => ({ id: s.id, name: s.name, gradeLabel: s.gradeLabel, homeGroupId: s.homeGroupId }));
 
   return (
-    <div className="mx-auto w-full max-w-6xl px-4 pb-12 pt-8 sm:px-6 lg:px-8">
-      <section className="rounded-3xl border border-tide/10 bg-white/82 p-8 shadow-card">
-        <div className="grid gap-8 xl:grid-cols-[1.1fr_0.9fr]">
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-accent">Exams</p>
-            <h1 className="mt-3 text-3xl font-semibold text-tide sm:text-4xl">考试管理</h1>
-            <p className="mt-4 max-w-3xl text-base leading-8 text-ink/80">
-              这页直接读取 `growth_exams`、`growth_exam_scores` 和 `growth_exam_score_tags`。除了批量录分，还能把薄弱点标签一起沉淀下来，后面学生详情和家长页都会复用这些分析结果。
-            </p>
-            <div className="mt-6 flex flex-wrap gap-3 text-sm">
-              <span className="rounded-full bg-accent/10 px-3 py-1 font-medium text-accent">批量录入成绩与排名</span>
-              <span className="rounded-full bg-paper px-3 py-1 font-medium text-tide ring-1 ring-tide/10">快捷追加薄弱点标签</span>
-              <span className="rounded-full bg-tide/10 px-3 py-1 font-medium text-tide">历史考试可编辑和二次确认删除</span>
-            </div>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Link href={'/admin/growth-v2/tags' as Route} className="rounded-xl bg-accent px-5 py-3 text-sm font-medium text-white transition hover:bg-accent/90">
-                管理标签目录
-              </Link>
-              <Link href={adminHref} className="rounded-xl border border-tide/20 px-5 py-3 text-sm font-medium text-tide transition hover:bg-tide/5">
-                返回后台
-              </Link>
-              <AdminLogoutButton redirectPath="/admin/growth-v2/exams" />
-            </div>
-          </div>
+    <div>
+      <GrowthV2AdminErrorBanner error={error} />
+      {error === 'validation' ? <p className="mb-3 rounded-lg border border-stat-amber/30 bg-stat-amber-soft px-3 py-2 text-sm text-stat-amber">请至少填写班组、考试名称、日期、类型和满分。</p> : null}
+      {saved ? <p className="mb-3 rounded-lg border border-stat-emerald/30 bg-stat-emerald-soft px-3 py-2 text-sm text-stat-emerald">考试记录已保存。</p> : null}
+      {deleted ? <p className="mb-3 rounded-lg border border-stat-amber/30 bg-stat-amber-soft px-3 py-2 text-sm text-stat-amber">考试记录已删除。</p> : null}
 
-          <div className="rounded-3xl border border-tide/10 bg-paper/70 p-6">
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-accent">Live Snapshot</p>
-                <h2 className="mt-2 text-2xl font-semibold text-tide">当前考试沉淀</h2>
-              </div>
-              <span className="rounded-full bg-[#d4f2ea] px-3 py-1 text-xs font-semibold text-[#00b894]">线上数据</span>
-            </div>
-            <div className="mt-6 grid gap-3 sm:grid-cols-2">
-              <article className="rounded-2xl border border-tide/10 bg-white/90 p-4">
-                <p className="text-sm text-ink/60">考试数</p>
-                <p className="mt-2 text-3xl font-semibold text-tide">{exams.length}</p>
-              </article>
-              <article className="rounded-2xl border border-tide/10 bg-white/90 p-4">
-                <p className="text-sm text-ink/60">成绩记录数</p>
-                <p className="mt-2 text-3xl font-semibold text-tide">{totalScores}</p>
-              </article>
-              <article className="rounded-2xl border border-tide/10 bg-white/90 p-4">
-                <p className="text-sm text-ink/60">平均得分率</p>
-                <p className="mt-2 text-3xl font-semibold text-tide">{formatPercent(overallScoreRate)}</p>
-              </article>
-              <article className="rounded-2xl border border-tide/10 bg-white/90 p-4">
-                <p className="text-sm text-ink/60">高频薄弱点条目</p>
-                <p className="mt-2 text-3xl font-semibold text-tide">{totalTaggedHotspots}</p>
-              </article>
-            </div>
-            <div className="mt-5 rounded-2xl border border-tide/10 bg-white/80 p-4 text-sm leading-7 text-ink/75">
-              当前活跃录入班组 {activeGroups.length} 个，已启用标签 {tagCatalog.length} 个，录入时点中学生后可以直接追加标签目录中的薄弱点。
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <div className="mt-6">
-        <GrowthV2AdminErrorBanner error={error} />
-        {error === 'validation' ? (
-          <p className="mt-3 rounded-lg border border-[#f0932b]/30 bg-[#f7ead5] px-3 py-2 text-sm text-[#b8720a]">
-            请至少填写班组、考试名称、考试日期、类型和满分；数字字段也要保证合法。
-          </p>
-        ) : null}
-        {saved ? <p className="mt-3 rounded-lg border border-[#00b894]/30 bg-[#d4f2ea] px-3 py-2 text-sm text-[#00b894]">考试记录已保存。</p> : null}
-        {deleted ? <p className="mt-3 rounded-lg border border-[#f0932b]/30 bg-[#f7ead5] px-3 py-2 text-sm text-[#f0932b]">考试记录已删除。</p> : null}
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <h1 className="text-2xl font-bold text-ink">考试管理</h1>
+        <Link href={'/admin/growth-v2/tags' as Route} className="rounded-lg border border-border-default px-3 py-1.5 text-sm text-text-light transition hover:bg-surface-alt">
+          管理标签目录
+        </Link>
       </div>
 
-      <section className="mt-8">
-        <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent">Input</p>
-            <h2 className="mt-2 text-2xl font-semibold text-tide">新建考试记录</h2>
-            <p className="mt-2 text-sm leading-7 text-ink/70">适合一次录完一场考试。班组、名称、日期、类型、满分和学生成绩都在同一屏完成，不需要切到其他模块。</p>
-          </div>
-          <span className="rounded-full bg-paper px-3 py-1 text-sm font-medium text-tide ring-1 ring-tide/10">当前可选学生 {activeStudents.length} 人</span>
-        </div>
-        <GrowthV2ExamBatchForm groups={activeGroups} students={activeStudents} tagCatalog={tagCatalog} action={createGrowthExamAction} />
+      <section className="mt-5 grid grid-cols-2 gap-4 lg:grid-cols-4">
+        <StatCard label="考试数" value={String(exams.length)} sub="考试场次" colorClass="bg-stat-blue-soft" valueColorClass="text-stat-blue" />
+        <StatCard label="成绩记录" value={String(totalScores)} sub="学生成绩条数" colorClass="bg-stat-amber-soft" valueColorClass="text-stat-amber" />
+        <StatCard label="平均得分率" value={fmtPct(overallRate)} sub="全部考试" colorClass="bg-stat-emerald-soft" valueColorClass="text-stat-emerald" />
+        <StatCard label="标签数" value={String(tagCatalog.length)} sub="可用薄弱点标签" colorClass="bg-stat-rose-soft" valueColorClass="text-stat-rose" />
       </section>
 
-      <section className="mt-8 rounded-3xl border border-tide/10 bg-white/85 p-6 shadow-card">
-        <div className="flex flex-wrap items-end justify-between gap-3">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent">Archive</p>
-            <h2 className="mt-2 text-2xl font-semibold text-tide">考试列表</h2>
-            <p className="mt-2 text-sm leading-7 text-ink/70">支持按考试名、班组和类型筛选。列表里会把考试概况、人数、均分、得分率和高频薄弱点放在同一行，方便快速比对不同考试。</p>
-          </div>
-          <span className="rounded-full bg-paper px-3 py-1 text-sm font-medium text-tide ring-1 ring-tide/10">当前匹配 {exams.length} 场考试</span>
+      <section className="mt-10">
+        <SectionTitle title="新建考试记录" />
+        <p className="mt-2 text-sm text-text-light">当前可选学生 {activeStudents.length} 人，已启用标签 {tagCatalog.length} 个。</p>
+        <div className="mt-4">
+          <GrowthV2ExamBatchForm groups={activeGroups} students={activeStudents} tagCatalog={tagCatalog} action={createGrowthExamAction} />
         </div>
+      </section>
 
-        <form className="mt-6 rounded-2xl border border-tide/10 bg-paper/60 p-4">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <p className="text-sm font-medium text-tide">筛选条件</p>
-            <p className="text-xs text-ink/60">支持按考试名、班组和类型快速回看不同考试。</p>
-          </div>
-          <div className="mt-4 grid gap-3 md:grid-cols-[1.1fr_240px_180px_auto]">
-            <input
-              type="text"
-              name="q"
-              defaultValue={q}
-              placeholder="按考试名称搜索，例如 月考"
-              className="rounded-xl border border-tide/20 bg-white px-3 py-2 text-sm outline-none transition focus:border-accent"
-            />
-            <select name="groupId" defaultValue={groupId} className="rounded-xl border border-tide/20 bg-white px-3 py-2 text-sm outline-none transition focus:border-accent">
+      <section className="mt-10">
+        <SectionTitle title="考试列表" />
+        <form className="mt-4 rounded-xl border border-border-light bg-surface p-4">
+          <div className="grid gap-3 md:grid-cols-[1fr_180px_150px_auto]">
+            <input type="text" name="q" defaultValue={q} placeholder="按考试名称搜索" className="rounded-lg border border-border-default bg-white px-3 py-2 text-sm outline-none transition focus:border-tide" />
+            <select name="groupId" defaultValue={groupId} className="rounded-lg border border-border-default bg-white px-3 py-2 text-sm outline-none transition focus:border-tide">
               <option value="">全部班组</option>
-              {groups.map((group) => (
-                <option key={group.id} value={group.id}>
-                  {group.name}
-                </option>
-              ))}
+              {groups.map((g) => <option key={g.id} value={g.id}>{g.name}</option>)}
             </select>
-            <select name="examType" defaultValue={examType} className="rounded-xl border border-tide/20 bg-white px-3 py-2 text-sm outline-none transition focus:border-accent">
+            <select name="examType" defaultValue={examType} className="rounded-lg border border-border-default bg-white px-3 py-2 text-sm outline-none transition focus:border-tide">
               <option value="all">全部类型</option>
               <option value="school">学校考试</option>
               <option value="internal">工作室测验</option>
               <option value="other">其他</option>
             </select>
-            <button type="submit" className="rounded-xl bg-accent px-4 py-2 text-sm font-medium text-white transition hover:bg-accent/90">
-              筛选
-            </button>
+            <button type="submit" className="rounded-lg bg-tide px-4 py-2 text-sm font-medium text-white transition hover:bg-tide/90">筛选</button>
           </div>
         </form>
 
-        <div className="mt-6 overflow-x-auto rounded-3xl border border-tide/10 bg-white/90">
-          <table className="min-w-full border-collapse text-sm">
+        <div className="mt-4 overflow-x-auto rounded-2xl border border-border-light bg-surface shadow-sm">
+          <table className="min-w-full text-sm">
             <thead>
-              <tr className="border-b border-tide/10 bg-paper/70 text-left text-ink/70">
-                <th className="px-4 py-3 font-medium">日期</th>
-                <th className="px-4 py-3 font-medium">考试</th>
-                <th className="px-4 py-3 font-medium">班组</th>
-                <th className="px-4 py-3 font-medium">类型</th>
-                <th className="px-4 py-3 font-medium">科目 / 满分</th>
-                <th className="px-4 py-3 font-medium">成绩人数</th>
-                <th className="px-4 py-3 font-medium">平均分</th>
-                <th className="px-4 py-3 font-medium">平均得分率</th>
-                <th className="px-4 py-3 font-medium">高频薄弱点</th>
-                <th className="px-4 py-3 font-medium">操作</th>
+              <tr className="border-b border-border-light bg-surface-alt text-left text-xs font-bold uppercase tracking-wider text-text-light">
+                <th className="px-4 py-3">日期</th>
+                <th className="px-4 py-3">考试</th>
+                <th className="px-4 py-3">班组</th>
+                <th className="px-4 py-3">类型</th>
+                <th className="px-4 py-3">人数</th>
+                <th className="px-4 py-3">平均分</th>
+                <th className="px-4 py-3">得分率</th>
+                <th className="px-4 py-3">薄弱点</th>
+                <th className="px-4 py-3">操作</th>
               </tr>
             </thead>
             <tbody>
-              {exams.length > 0 ? (
-                exams.map((exam) => (
-                  <tr key={exam.id} className="border-b border-tide/10 align-top transition hover:bg-paper/30 last:border-b-0">
-                    <td className="px-4 py-4 text-ink/80">{exam.examDate}</td>
-                    <td className="px-4 py-4">
-                      <p className="text-base font-medium text-tide">{exam.name}</p>
-                      {exam.notes ? <p className="mt-1 text-xs text-ink/55">{exam.notes}</p> : null}
-                    </td>
-                    <td className="px-4 py-4 text-ink/80">{exam.group?.name ?? '--'}</td>
-                    <td className="px-4 py-4 text-ink/80">{examTypeLabels[exam.examType]}</td>
-                    <td className="px-4 py-4 text-ink/80">
-                      <p>{exam.subject}</p>
-                      <p className="mt-1 text-xs text-ink/55">满分：{exam.totalScore}</p>
-                    </td>
-                    <td className="px-4 py-4 text-ink/80">{exam.scoreCount}</td>
-                    <td className="px-4 py-4 text-ink/80">{formatNumber(exam.avgScore)}</td>
-                    <td className="px-4 py-4 text-ink/80">{formatPercent(exam.avgScoreRate)}</td>
-                    <td className="px-4 py-4">
-                      {exam.topTags.length > 0 ? (
-                        <div className="flex flex-wrap gap-2">
-                          {exam.topTags.map((tag) => (
-                            <span key={`${exam.id}-${tag.tagName}`} className="rounded-full bg-accent/10 px-3 py-1 text-xs font-medium text-accent">
-                              {tag.tagName} · {tag.count}
-                            </span>
-                          ))}
-                        </div>
-                      ) : (
-                        <span className="text-ink/55">--</span>
-                      )}
-                    </td>
-                    <td className="px-4 py-4">
-                      <Link href={`/admin/growth-v2/exams/${exam.id}` as Route} className="text-sm font-medium text-accent hover:underline">
-                        编辑
-                      </Link>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={10} className="px-4 py-10 text-center text-sm text-ink/60">
-                    没有找到符合条件的考试记录。
+              {exams.length > 0 ? exams.map((e, i) => (
+                <tr key={e.id} className={`border-b border-border-light last:border-b-0 ${i % 2 === 1 ? 'bg-tide/[0.03]' : ''}`}>
+                  <td className="px-4 py-3.5 text-text-light">{e.examDate}</td>
+                  <td className="px-4 py-3.5">
+                    <p className="font-medium text-ink">{e.name}</p>
+                    <p className="text-xs text-text-muted">{e.subject} · 满分{e.totalScore}</p>
+                  </td>
+                  <td className="px-4 py-3.5 text-text-light">{e.group?.name ?? '--'}</td>
+                  <td className="px-4 py-3.5">
+                    <span className={`rounded-full px-2 py-0.5 text-xs font-bold ${e.examType === 'school' ? 'bg-tide/10 text-tide' : 'bg-stat-rose-soft text-stat-rose'}`}>
+                      {examTypeLabels[e.examType] ?? e.examType}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3.5 text-text-light">{e.scoreCount}</td>
+                  <td className="px-4 py-3.5 text-text-light">{fmt(e.avgScore)}</td>
+                  <td className="px-4 py-3.5 text-text-light">{fmtPct(e.avgScoreRate)}</td>
+                  <td className="px-4 py-3.5">
+                    {e.topTags.length > 0 ? (
+                      <div className="flex flex-wrap gap-1">
+                        {e.topTags.map((t) => <span key={`${e.id}-${t.tagName}`} className="rounded-full bg-accent/10 px-2 py-0.5 text-xs font-semibold text-accent">{t.tagName}·{t.count}</span>)}
+                      </div>
+                    ) : <span className="text-text-muted">--</span>}
+                  </td>
+                  <td className="px-4 py-3.5">
+                    <Link href={`/admin/growth-v2/exams/${e.id}` as Route} className="text-sm font-medium text-tide hover:underline">编辑</Link>
                   </td>
                 </tr>
+              )) : (
+                <tr><td colSpan={9} className="px-4 py-10 text-center text-text-muted">没有找到符合条件的考试记录。</td></tr>
               )}
             </tbody>
           </table>

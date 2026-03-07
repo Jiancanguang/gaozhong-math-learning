@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
 import { updateGrowthStudentAction } from '@/app/admin/growth-v2/actions';
-import { AdminLogoutButton } from '@/components/admin-auth-panels';
+
 import { GrowthV2AdminErrorBanner, renderGrowthV2AdminGate } from '@/components/growth-v2/admin-access';
 import { GrowthV2StudentForm } from '@/components/growth-v2/student-form';
 import type { GrowthGroup } from '@/lib/growth-v2-store';
@@ -47,24 +47,23 @@ export default async function GrowthV2EditStudentPage({ params, searchParams }: 
   } catch (fetchError) {
     if (isGrowthV2TableMissingError(fetchError)) {
       return (
-        <div className="mx-auto w-full max-w-4xl px-4 pb-12 pt-8 sm:px-6 lg:px-8">
+        <>
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
               <p className="text-sm font-medium text-accent">Growth V2</p>
-              <h1 className="mt-2 text-3xl font-semibold text-tide">编辑学生</h1>
+              <h1 className="mt-2 text-3xl font-semibold text-ink">编辑学生</h1>
               <p className="mt-2 text-sm text-ink/70">学生编辑页已经接到真实数据层，但当前 Supabase 里还没有 `growth_*` 表。</p>
             </div>
             <div className="flex flex-wrap gap-3">
               <Link href={`/admin/growth-v2/students/${params.studentId}` as Route} className="rounded-lg border border-tide/20 px-4 py-2 text-sm font-medium text-tide transition hover:bg-tide/5">
                 返回学生详情
               </Link>
-              <AdminLogoutButton redirectPath={pageHref} />
             </div>
           </div>
           <div className="mt-5">
             <GrowthV2AdminErrorBanner error="missing-table" />
           </div>
-        </div>
+        </>
       );
     }
 
@@ -76,18 +75,17 @@ export default async function GrowthV2EditStudentPage({ params, searchParams }: 
   }
 
   return (
-    <div className="mx-auto w-full max-w-4xl px-4 pb-12 pt-8 sm:px-6 lg:px-8">
+    <>
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <p className="text-sm font-medium text-accent">Growth V2</p>
-          <h1 className="mt-2 text-3xl font-semibold text-tide">编辑学生</h1>
+          <h1 className="mt-2 text-3xl font-semibold text-ink">编辑学生</h1>
           <p className="mt-2 text-sm text-ink/70">这里会更新学生档案、班组归属、状态和备注，不改动历史课堂与考试记录。</p>
         </div>
         <div className="flex flex-wrap gap-3">
           <Link href={`/admin/growth-v2/students/${student.id}` as Route} className="rounded-lg border border-tide/20 px-4 py-2 text-sm font-medium text-tide transition hover:bg-tide/5">
             返回学生详情
           </Link>
-          <AdminLogoutButton redirectPath={pageHref} />
         </div>
       </div>
 
@@ -115,6 +113,6 @@ export default async function GrowthV2EditStudentPage({ params, searchParams }: 
           }}
         />
       </div>
-    </div>
+    </>
   );
 }

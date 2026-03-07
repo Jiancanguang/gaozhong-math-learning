@@ -2,7 +2,7 @@ import type { Route } from 'next';
 import Link from 'next/link';
 
 import { createGrowthStudentAction } from '@/app/admin/growth-v2/actions';
-import { AdminLogoutButton } from '@/components/admin-auth-panels';
+
 import { GrowthV2AdminErrorBanner, renderGrowthV2AdminGate } from '@/components/growth-v2/admin-access';
 import { GrowthV2StudentForm } from '@/components/growth-v2/student-form';
 import type { GrowthGroup } from '@/lib/growth-v2-store';
@@ -42,25 +42,24 @@ export default async function GrowthV2NewStudentPage({ searchParams }: GrowthV2N
   } catch (fetchError) {
     if (isGrowthV2TableMissingError(fetchError)) {
       return (
-        <div className="mx-auto w-full max-w-4xl px-4 pb-12 pt-8 sm:px-6 lg:px-8">
+        <>
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
               <p className="text-sm font-medium text-accent">Growth V2</p>
-              <h1 className="mt-2 text-3xl font-semibold text-tide">新建学生</h1>
+              <h1 className="mt-2 text-3xl font-semibold text-ink">新建学生</h1>
               <p className="mt-2 text-sm text-ink/70">学生创建页已经接到真实数据层，但当前 Supabase 里还没有 `growth_*` 表。</p>
             </div>
             <div className="flex flex-wrap gap-3">
               <Link href={'/admin/growth-v2/students' as Route} className="rounded-lg border border-tide/20 px-4 py-2 text-sm font-medium text-tide transition hover:bg-tide/5">
                 返回学生列表
               </Link>
-              <AdminLogoutButton redirectPath={pageHref} />
             </div>
           </div>
 
           <div className="mt-5">
             <GrowthV2AdminErrorBanner error="missing-table" />
           </div>
-        </div>
+        </>
       );
     }
 
@@ -68,18 +67,17 @@ export default async function GrowthV2NewStudentPage({ searchParams }: GrowthV2N
   }
 
   return (
-    <div className="mx-auto w-full max-w-4xl px-4 pb-12 pt-8 sm:px-6 lg:px-8">
+    <>
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <p className="text-sm font-medium text-accent">Growth V2</p>
-          <h1 className="mt-2 text-3xl font-semibold text-tide">新建学生</h1>
+          <h1 className="mt-2 text-3xl font-semibold text-ink">新建学生</h1>
           <p className="mt-2 text-sm text-ink/70">直接写入 `growth_students`，保存后自动生成家长访问 Token。</p>
         </div>
         <div className="flex flex-wrap gap-3">
           <Link href={'/admin/growth-v2/students' as Route} className="rounded-lg border border-tide/20 px-4 py-2 text-sm font-medium text-tide transition hover:bg-tide/5">
             返回学生列表
           </Link>
-          <AdminLogoutButton redirectPath={pageHref} />
         </div>
       </div>
 
@@ -99,6 +97,6 @@ export default async function GrowthV2NewStudentPage({ searchParams }: GrowthV2N
           gradeOptions={buildGradeOptions(groups)}
         />
       </div>
-    </div>
+    </>
   );
 }
