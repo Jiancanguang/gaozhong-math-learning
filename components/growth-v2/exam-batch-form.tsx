@@ -183,10 +183,10 @@ export function GrowthV2ExamBatchForm({
 
   return (
     <form action={action} className="space-y-6">
-      <section className="rounded-2xl border border-tide/10 bg-white/90 p-6 shadow-card">
+      <section className="rounded-2xl border border-border-light bg-surface p-6 shadow-card">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
-            <h2 className="text-xl font-semibold text-tide">{title}</h2>
+            <h2 className="text-xl font-semibold text-ink">{title}</h2>
             <p className="mt-2 text-sm text-ink/70">{description}</p>
           </div>
           <p className="text-sm text-ink/60">{currentGroup ? `${currentGroup.name} · ${entries.length} 人在表单中` : '先选择班组'}</p>
@@ -199,7 +199,7 @@ export function GrowthV2ExamBatchForm({
               name="groupId"
               value={selectedGroupId}
               onChange={(event) => handleGroupChange(event.target.value)}
-              className="mt-1 w-full rounded-lg border border-tide/20 bg-white px-3 py-2 text-sm outline-none focus:border-accent"
+              className="mt-1 w-full rounded-lg border border-border-default bg-white px-3 py-2 text-sm outline-none focus:border-accent"
             >
               <option value="">请选择班组</option>
               {groups.map((group) => (
@@ -216,7 +216,7 @@ export function GrowthV2ExamBatchForm({
               type="text"
               defaultValue={initialValues?.name ?? ''}
               placeholder="例如：3 月月考"
-              className="mt-1 w-full rounded-lg border border-tide/20 bg-white px-3 py-2 text-sm outline-none focus:border-accent"
+              className="mt-1 w-full rounded-lg border border-border-default bg-white px-3 py-2 text-sm outline-none focus:border-accent"
             />
           </label>
           <label className="text-sm text-ink/80">
@@ -225,7 +225,7 @@ export function GrowthV2ExamBatchForm({
               name="examDate"
               type="date"
               defaultValue={initialValues?.examDate ?? today}
-              className="mt-1 w-full rounded-lg border border-tide/20 bg-white px-3 py-2 text-sm outline-none focus:border-accent"
+              className="mt-1 w-full rounded-lg border border-border-default bg-white px-3 py-2 text-sm outline-none focus:border-accent"
             />
           </label>
           <label className="text-sm text-ink/80">
@@ -233,7 +233,7 @@ export function GrowthV2ExamBatchForm({
             <select
               name="examType"
               defaultValue={initialValues?.examType ?? 'internal'}
-              className="mt-1 w-full rounded-lg border border-tide/20 bg-white px-3 py-2 text-sm outline-none focus:border-accent"
+              className="mt-1 w-full rounded-lg border border-border-default bg-white px-3 py-2 text-sm outline-none focus:border-accent"
             >
               <option value="internal">工作室测验</option>
               <option value="school">学校考试</option>
@@ -249,7 +249,7 @@ export function GrowthV2ExamBatchForm({
               name="subject"
               type="text"
               defaultValue={initialValues?.subject ?? '数学'}
-              className="mt-1 w-full rounded-lg border border-tide/20 bg-white px-3 py-2 text-sm outline-none focus:border-accent"
+              className="mt-1 w-full rounded-lg border border-border-default bg-white px-3 py-2 text-sm outline-none focus:border-accent"
             />
           </label>
           <label className="text-sm text-ink/80">
@@ -261,7 +261,7 @@ export function GrowthV2ExamBatchForm({
               step="0.1"
               defaultValue={initialValues?.totalScore ?? ''}
               placeholder="例如：150"
-              className="mt-1 w-full rounded-lg border border-tide/20 bg-white px-3 py-2 text-sm outline-none focus:border-accent"
+              className="mt-1 w-full rounded-lg border border-border-default bg-white px-3 py-2 text-sm outline-none focus:border-accent"
             />
           </label>
           <label className="text-sm text-ink/80">
@@ -271,16 +271,16 @@ export function GrowthV2ExamBatchForm({
               type="text"
               defaultValue={initialValues?.notes ?? ''}
               placeholder="例如：压轴题偏难"
-              className="mt-1 w-full rounded-lg border border-tide/20 bg-white px-3 py-2 text-sm outline-none focus:border-accent"
+              className="mt-1 w-full rounded-lg border border-border-default bg-white px-3 py-2 text-sm outline-none focus:border-accent"
             />
           </label>
         </div>
       </section>
 
-      <section className="rounded-2xl border border-tide/10 bg-white/90 p-6 shadow-card">
+      <section className="rounded-2xl border border-border-light bg-surface p-6 shadow-card">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
-            <h2 className="text-xl font-semibold text-tide">薄弱点快捷标签</h2>
+            <h2 className="text-xl font-semibold text-ink">薄弱点快捷标签</h2>
             <p className="mt-2 text-sm text-ink/70">先点中某个学生的“薄弱点”输入框，再点下面的标签即可自动追加。</p>
           </div>
           <p className="text-sm text-ink/60">{focusedEntryId ? `当前焦点：${entries.find((entry) => entry.id === focusedEntryId)?.name ?? '已选择学生'}` : '当前没有聚焦学生'}</p>
@@ -289,7 +289,7 @@ export function GrowthV2ExamBatchForm({
         <div className="mt-5 space-y-4">
           {Object.entries(groupedTags).map(([category, items]) => (
             <div key={category}>
-              <p className="text-sm font-medium text-tide">{category}</p>
+              <p className="text-sm font-medium text-ink">{category}</p>
               <div className="mt-2 flex flex-wrap gap-2">
                 {items.map((item) => (
                   <button
@@ -297,7 +297,7 @@ export function GrowthV2ExamBatchForm({
                     type="button"
                     onClick={() => appendTagToFocusedEntry(item.tagName)}
                     disabled={!focusedEntryId}
-                    className="rounded-full border border-tide/15 bg-paper/60 px-3 py-1 text-xs font-medium text-tide transition hover:bg-tide/5 disabled:cursor-not-allowed disabled:opacity-45"
+                    className="rounded-full border border-border-default bg-surface-alt px-3 py-1 text-xs font-medium text-tide transition hover:bg-tide/5 disabled:cursor-not-allowed disabled:opacity-45"
                   >
                     {item.tagName}
                   </button>
@@ -308,20 +308,20 @@ export function GrowthV2ExamBatchForm({
         </div>
       </section>
 
-      <section className="rounded-2xl border border-tide/10 bg-white/90 p-6 shadow-card">
+      <section className="rounded-2xl border border-border-light bg-surface p-6 shadow-card">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
-            <h2 className="text-xl font-semibold text-tide">学生成绩录入</h2>
+            <h2 className="text-xl font-semibold text-ink">学生成绩录入</h2>
             <p className="mt-2 text-sm text-ink/70">默认按所选班组加载常驻学生。只有填写了分数的学生才会生成考试记录。</p>
           </div>
           <p className="text-sm text-ink/60">当前 {entries.length} 名学生</p>
         </div>
 
         {entries.length > 0 ? (
-          <div className="mt-6 overflow-x-auto rounded-2xl border border-tide/10 bg-white">
+          <div className="mt-6 overflow-x-auto rounded-2xl border border-border-light bg-surface">
             <table className="min-w-full border-collapse text-sm">
               <thead>
-                <tr className="border-b border-tide/10 bg-paper/60 text-left text-ink/70">
+                <tr className="border-b border-border-light bg-surface-alt text-left text-ink/70">
                   <th className="px-4 py-3 font-medium">学生</th>
                   <th className="px-4 py-3 font-medium">分数</th>
                   <th className="px-4 py-3 font-medium">班排</th>
@@ -333,10 +333,10 @@ export function GrowthV2ExamBatchForm({
               </thead>
               <tbody>
                 {entries.map((entry, index) => (
-                  <tr key={entry.id} className="border-b border-tide/10 align-top last:border-b-0">
+                  <tr key={entry.id} className="border-b border-border-light align-top last:border-b-0">
                     <td className="px-4 py-4">
                       <input type="hidden" name={`students[${index}].id`} value={entry.id} />
-                      <p className="font-medium text-tide">{entry.name}</p>
+                      <p className="font-medium text-ink">{entry.name}</p>
                       <p className="mt-1 text-xs text-ink/55">{entry.gradeLabel || '未填年级'}</p>
                     </td>
                     <td className="px-4 py-4">
@@ -347,7 +347,7 @@ export function GrowthV2ExamBatchForm({
                         min="0"
                         value={entry.score}
                         onChange={(event) => updateEntry(index, 'score', event.target.value)}
-                        className="w-24 rounded-lg border border-tide/20 bg-white px-3 py-2 text-sm outline-none focus:border-accent"
+                        className="w-24 rounded-lg border border-border-default bg-white px-3 py-2 text-sm outline-none focus:border-accent"
                       />
                     </td>
                     <td className="px-4 py-4">
@@ -358,7 +358,7 @@ export function GrowthV2ExamBatchForm({
                         min="1"
                         value={entry.classRank}
                         onChange={(event) => updateEntry(index, 'classRank', event.target.value)}
-                        className="w-24 rounded-lg border border-tide/20 bg-white px-3 py-2 text-sm outline-none focus:border-accent"
+                        className="w-24 rounded-lg border border-border-default bg-white px-3 py-2 text-sm outline-none focus:border-accent"
                       />
                     </td>
                     <td className="px-4 py-4">
@@ -369,7 +369,7 @@ export function GrowthV2ExamBatchForm({
                         min="1"
                         value={entry.gradeRank}
                         onChange={(event) => updateEntry(index, 'gradeRank', event.target.value)}
-                        className="w-24 rounded-lg border border-tide/20 bg-white px-3 py-2 text-sm outline-none focus:border-accent"
+                        className="w-24 rounded-lg border border-border-default bg-white px-3 py-2 text-sm outline-none focus:border-accent"
                       />
                     </td>
                     <td className="px-4 py-4">
@@ -377,7 +377,7 @@ export function GrowthV2ExamBatchForm({
                         name={`students[${index}].masteryLevel`}
                         value={entry.masteryLevel}
                         onChange={(event) => updateEntry(index, 'masteryLevel', event.target.value)}
-                        className="w-32 rounded-lg border border-tide/20 bg-white px-3 py-2 text-sm outline-none focus:border-accent"
+                        className="w-32 rounded-lg border border-border-default bg-white px-3 py-2 text-sm outline-none focus:border-accent"
                       >
                         <option value="">未填</option>
                         {GROWTH_V2_MASTERY_OPTIONS.map((option) => (
@@ -395,7 +395,7 @@ export function GrowthV2ExamBatchForm({
                         onFocus={() => setFocusedEntryId(entry.id)}
                         onChange={(event) => updateEntry(index, 'tagNames', event.target.value)}
                         placeholder="逗号分隔，例如 计算错误，导数运算"
-                        className="w-64 rounded-lg border border-tide/20 bg-white px-3 py-2 text-sm outline-none focus:border-accent"
+                        className="w-64 rounded-lg border border-border-default bg-white px-3 py-2 text-sm outline-none focus:border-accent"
                       />
                     </td>
                     <td className="px-4 py-4">
@@ -405,7 +405,7 @@ export function GrowthV2ExamBatchForm({
                         value={entry.note}
                         onChange={(event) => updateEntry(index, 'note', event.target.value)}
                         placeholder="例如：选择题稳定，大题导数第二问失分"
-                        className="min-h-[64px] w-56 rounded-lg border border-tide/20 bg-white px-3 py-2 text-sm outline-none focus:border-accent"
+                        className="min-h-[64px] w-56 rounded-lg border border-border-default bg-white px-3 py-2 text-sm outline-none focus:border-accent"
                       />
                     </td>
                   </tr>
@@ -414,7 +414,7 @@ export function GrowthV2ExamBatchForm({
             </table>
           </div>
         ) : (
-          <div className="mt-6 rounded-2xl border border-dashed border-tide/20 bg-paper/40 p-8 text-center text-sm text-ink/60">
+          <div className="mt-6 rounded-2xl border border-dashed border-border-default bg-surface-alt p-8 text-center text-sm text-ink/60">
             请选择一个班组开始录入。
           </div>
         )}

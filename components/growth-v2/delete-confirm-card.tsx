@@ -30,11 +30,11 @@ export function GrowthV2DeleteConfirmCard({
 
       {errorMessage ? <p className="mt-4 rounded-lg border border-[#f0932b]/30 bg-[#f7ead5] px-3 py-2 text-sm text-[#b8720a]">{errorMessage}</p> : null}
 
-      <div className="mt-5 rounded-2xl border border-tide/10 bg-paper/50 p-5">
-        <p className="text-sm font-medium text-tide">本次删除会影响</p>
+      <div className="mt-5 rounded-2xl border border-border-light bg-surface-alt p-5">
+        <p className="text-sm font-medium text-ink">本次删除会影响</p>
         <ul className="mt-3 space-y-2 text-sm text-ink/75">
           {impactItems.map((item) => (
-            <li key={item} className="rounded-lg border border-tide/10 bg-white px-3 py-2">
+            <li key={item} className="rounded-lg border border-border-light bg-white px-3 py-2">
               {item}
             </li>
           ))}
@@ -44,7 +44,7 @@ export function GrowthV2DeleteConfirmCard({
       <label className="mt-5 block text-sm">
         <span className="mb-1 block font-medium text-ink/80">
           输入{confirmLabel}
-          <code className="ml-2 rounded bg-paper px-2 py-1 text-xs text-tide">{confirmValue}</code>
+          <code className="ml-2 rounded bg-surface-alt px-2 py-1 text-xs text-ink">{confirmValue}</code>
           以确认删除
         </span>
         <input
@@ -53,7 +53,7 @@ export function GrowthV2DeleteConfirmCard({
           autoComplete="off"
           spellCheck={false}
           placeholder={`请输入：${confirmValue}`}
-          className="w-full rounded-lg border border-tide/20 bg-white px-3 py-2 outline-none transition focus:border-[#e05555]"
+          className="w-full rounded-lg border border-border-default bg-white px-3 py-2 outline-none transition focus:border-[#e05555]"
         />
       </label>
 
@@ -61,7 +61,7 @@ export function GrowthV2DeleteConfirmCard({
         <button type="submit" className="rounded-lg bg-[#e05555] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#e05555]">
           {submitLabel}
         </button>
-        <a href={cancelHref} className="rounded-lg border border-tide/20 px-4 py-2 text-sm font-medium text-tide transition hover:bg-tide/5">
+        <a href={cancelHref} className="rounded-lg border border-border-default px-4 py-2 text-sm font-medium text-tide transition hover:bg-tide/5">
           取消
         </a>
       </div>

@@ -26,7 +26,7 @@ const defaultValues: GrowthV2GroupFormValues = {
 
 export function GrowthV2GroupForm({ action, submitLabel, cancelHref, values = defaultValues, errorMessage }: GrowthV2GroupFormProps) {
   return (
-    <form action={action} className="rounded-2xl border border-tide/10 bg-white/90 p-6 shadow-card">
+    <form action={action} className="rounded-2xl border border-border-light bg-surface p-6 shadow-card">
       {errorMessage ? <p className="rounded-lg border border-[#e05555]/30 bg-[#f7dede] px-3 py-2 text-sm text-[#e05555]">{errorMessage}</p> : null}
 
       <div className="grid gap-4 sm:grid-cols-2">
@@ -37,7 +37,7 @@ export function GrowthV2GroupForm({ action, submitLabel, cancelHref, values = de
             defaultValue={values.name}
             required
             placeholder="例如：高二冲刺一班"
-            className="w-full rounded-lg border border-tide/20 bg-white px-3 py-2 outline-none transition focus:border-accent"
+            className="w-full rounded-lg border border-border-default bg-white px-3 py-2 outline-none transition focus:border-accent"
           />
         </label>
 
@@ -47,7 +47,7 @@ export function GrowthV2GroupForm({ action, submitLabel, cancelHref, values = de
             name="gradeLabel"
             defaultValue={values.gradeLabel}
             placeholder="例如：高二"
-            className="w-full rounded-lg border border-tide/20 bg-white px-3 py-2 outline-none transition focus:border-accent"
+            className="w-full rounded-lg border border-border-default bg-white px-3 py-2 outline-none transition focus:border-accent"
           />
         </label>
 
@@ -57,7 +57,7 @@ export function GrowthV2GroupForm({ action, submitLabel, cancelHref, values = de
             name="teacherName"
             defaultValue={values.teacherName}
             placeholder="例如：建灿老师"
-            className="w-full rounded-lg border border-tide/20 bg-white px-3 py-2 outline-none transition focus:border-accent"
+            className="w-full rounded-lg border border-border-default bg-white px-3 py-2 outline-none transition focus:border-accent"
           />
         </label>
 
@@ -66,7 +66,7 @@ export function GrowthV2GroupForm({ action, submitLabel, cancelHref, values = de
           <select
             name="status"
             defaultValue={values.status}
-            className="w-full rounded-lg border border-tide/20 bg-white px-3 py-2 outline-none transition focus:border-accent"
+            className="w-full rounded-lg border border-border-default bg-white px-3 py-2 outline-none transition focus:border-accent"
           >
             <option value="active">启用中</option>
             <option value="archived">已归档</option>
@@ -80,12 +80,12 @@ export function GrowthV2GroupForm({ action, submitLabel, cancelHref, values = de
             defaultValue={values.notes}
             rows={4}
             placeholder="可选，记录排课说明、班级定位或分层情况。"
-            className="w-full rounded-lg border border-tide/20 bg-white px-3 py-2 outline-none transition focus:border-accent"
+            className="w-full rounded-lg border border-border-default bg-white px-3 py-2 outline-none transition focus:border-accent"
           />
         </label>
       </div>
 
-      <div className="mt-5 rounded-xl border border-tide/10 bg-paper/50 px-4 py-3 text-sm text-ink/70">
+      <div className="mt-5 rounded-xl border border-border-light bg-surface-alt px-4 py-3 text-sm text-ink/70">
         学科默认使用 `math`，当前班组管理页主要维护名称、老师、年级与启用状态。
       </div>
 
@@ -93,7 +93,7 @@ export function GrowthV2GroupForm({ action, submitLabel, cancelHref, values = de
         <button type="submit" className="rounded-lg bg-tide px-4 py-2 text-sm font-medium text-white transition hover:bg-tide/90">
           {submitLabel}
         </button>
-        <a href={cancelHref} className="rounded-lg border border-tide/20 px-4 py-2 text-sm font-medium text-tide transition hover:bg-tide/5">
+        <a href={cancelHref} className="rounded-lg border border-border-default px-4 py-2 text-sm font-medium text-tide transition hover:bg-tide/5">
           取消
         </a>
       </div>
