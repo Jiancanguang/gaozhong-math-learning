@@ -6,6 +6,7 @@ export function Header() {
   const gaokaoHref = '/gaokao' as Route;
   const gaokaoSystemHref = '/gaokao-system' as Route;
   const growthV2Href = '/growth-v2' as Route;
+  const petHref = '/pet' as Route;
   const difficultyGradingHref = '/gaokao-system/difficulty-grading' as Route;
   const roadmapHref = '/roadmap' as Route;
   const resourcesHref = '/resources' as Route;
@@ -25,6 +26,7 @@ export function Header() {
             { href: gaokaoHref, label: '真题专区' },
             { href: gaokaoSystemHref, label: '提分专区' },
             { href: growthV2Href, label: '成长追踪' },
+            { href: petHref, label: '班级宠物' },
             { href: difficultyGradingHref, label: '难度分级' },
             { href: roadmapHref, label: '学习路径' },
             { href: resourcesHref, label: '资料库' },
