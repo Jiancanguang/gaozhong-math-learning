@@ -394,7 +394,7 @@ export async function updateGrowthStudentAction(studentId: string, formData: For
 export async function createGrowthLessonAction(formData: FormData) {
   requireAdminAccess();
 
-  let targetPath = '/admin/growth-v2/lessons';
+  let targetPath = '/admin/growth-v2/lessons/new';
 
   try {
     const payload = parseGrowthLessonPayload(formData);
@@ -402,7 +402,7 @@ export async function createGrowthLessonAction(formData: FormData) {
     await replaceGrowthLessonRecords(lesson.id, payload.records);
     targetPath = '/admin/growth-v2/lessons?saved=1';
   } catch (error) {
-    targetPath = getErrorRedirect('/admin/growth-v2/lessons', error);
+    targetPath = getErrorRedirect('/admin/growth-v2/lessons/new', error);
   }
 
   redirect(targetPath);
@@ -444,7 +444,7 @@ export async function deleteGrowthLessonAction(lessonId: string, lessonTopic: st
 export async function createGrowthExamAction(formData: FormData) {
   requireAdminAccess();
 
-  let targetPath = '/admin/growth-v2/exams';
+  let targetPath = '/admin/growth-v2/exams/new';
 
   try {
     const payload = parseGrowthExamPayload(formData);
@@ -452,7 +452,7 @@ export async function createGrowthExamAction(formData: FormData) {
     await replaceGrowthExamScores(exam.id, payload.scores);
     targetPath = '/admin/growth-v2/exams?saved=1';
   } catch (error) {
-    targetPath = getErrorRedirect('/admin/growth-v2/exams', error);
+    targetPath = getErrorRedirect('/admin/growth-v2/exams/new', error);
   }
 
   redirect(targetPath);

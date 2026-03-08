@@ -6,12 +6,13 @@ import { MasteryBadge } from '@/components/growth-v2/ui/mastery-badge';
 import { SectionTitle } from '@/components/growth-v2/ui/section-title';
 import { StatCard } from '@/components/growth-v2/ui/stat-card';
 import { StudentAvatar } from '@/components/growth-v2/ui/student-avatar';
+import { firstValue, fmt, fmtPct, fmtRank } from '@/lib/growth-v2-format';
 import type { GrowthParentReport } from '@/lib/growth-v2-store';
 import { getGrowthParentReportByToken, isGrowthV2StoreEnabled, isGrowthV2TableMissingError } from '@/lib/growth-v2-store';
 
 import { ParentCharts } from './parent-charts';
 
-type PageProps = { params: { token: string } };
+type PageProps = { params: { token: string }; searchParams?: { from?: string | string[]; to?: string | string[] } };
 
 const examTypeLabels: Record<string, string> = {
   school: '学校考试',
@@ -19,26 +20,14 @@ const examTypeLabels: Record<string, string> = {
   other: '其他'
 };
 
-function fmt(v: number | null, d = 1) {
-  return v === null ? '--' : v.toFixed(d);
-}
-
-function fmtPct(v: number | null) {
-  return v === null ? '--' : `${v.toFixed(1)}%`;
-}
-
-function fmtRank(c: number | null, g: number | null) {
-  if (c === null && g === null) return '--';
-  if (c !== null && g !== null) return `班 ${c} / 年 ${g}`;
-  return c !== null ? `班 ${c}` : `年 ${g}`;
-}
-
 const demoSections = ['进门考与课后测试趋势', '能力成长摘要', '知识点掌握情况', '考试成绩与薄弱点分析', '教师时间线评语'];
 
 export const dynamic = 'force-dynamic';
 
-export default async function ParentPage({ params }: PageProps) {
+export default async function ParentPage({ params, searchParams }: PageProps) {
   const overviewHref = '/growth-v2' as Route;
+  const fromDate = firstValue(searchParams?.from)?.trim() || '';
+  const toDate = firstValue(searchParams?.to)?.trim() || '';
 
   if (params.token === 'demo-token') {
     return (
@@ -92,8 +81,20 @@ export default async function ParentPage({ params }: PageProps) {
 
   if (!report) notFound();
 
+  // Apply date filters
+  const hasDateFilter = fromDate || toDate;
+  const lessons = report.recentLessons.filter((l) => {
+    if (fromDate && l.lesson.lessonDate < fromDate) return false;
+    if (toDate && l.lesson.lessonDate > toDate) return false;
+    return true;
+  });
+  const filteredExams = report.recentExams.filter((e) => {
+    if (fromDate && e.exam.examDate < fromDate) return false;
+    if (toDate && e.exam.examDate > toDate) return false;
+    return true;
+  });
+
   // Compute additional stats
-  const lessons = report.recentLessons;
   const entryScores = lessons.map((l) => l.entryScore).filter((v): v is number => v !== null);
   const avgEntryScore = entryScores.length > 0 ? entryScores.reduce((a, b) => a + b, 0) / entryScores.length : null;
 
@@ -108,6 +109,10 @@ export default async function ParentPage({ params }: PageProps) {
       progressTrend = avgRecent - avgEarlier;
     }
   }
+
+  // Recompute filtered stats
+  const filteredExitRates = lessons.flatMap((l) => (l.exitScoreRate === null ? [] : [l.exitScoreRate]));
+  const filteredAvgExitRate = filteredExitRates.length ? filteredExitRates.reduce((a, b) => a + b, 0) / filteredExitRates.length : null;
 
   // Chart data (chronological)
   const chartLessons = lessons.slice().reverse();
@@ -133,11 +138,34 @@ export default async function ParentPage({ params }: PageProps) {
         </div>
       </section>
 
+      {/* Date Range Filter */}
+      <form className="rounded-2xl border border-border-light bg-surface p-4 shadow-sm">
+        <div className="flex flex-wrap items-end gap-3">
+          <div className="flex-1 min-w-[140px]">
+            <label className="mb-1 block text-xs font-medium text-text-light">开始日期</label>
+            <input type="date" name="from" defaultValue={fromDate} className="w-full rounded-lg border border-border-default bg-white px-3 py-2 text-sm outline-none transition focus:border-tide" />
+          </div>
+          <div className="flex-1 min-w-[140px]">
+            <label className="mb-1 block text-xs font-medium text-text-light">结束日期</label>
+            <input type="date" name="to" defaultValue={toDate} className="w-full rounded-lg border border-border-default bg-white px-3 py-2 text-sm outline-none transition focus:border-tide" />
+          </div>
+          <button type="submit" className="rounded-lg bg-tide px-4 py-2 text-sm font-medium text-white transition hover:bg-tide/90">筛选</button>
+          {hasDateFilter ? (
+            <a href={`/growth-v2/parent/${params.token}`} className="rounded-lg border border-border-default px-4 py-2 text-sm text-text-light transition hover:bg-surface-alt">清除</a>
+          ) : null}
+        </div>
+        {hasDateFilter ? (
+          <p className="mt-2 text-xs text-text-muted">
+            当前筛选：{fromDate || '不限'} ~ {toDate || '不限'}，共 {lessons.length} 节课、{filteredExams.length} 场考试
+          </p>
+        ) : null}
+      </form>
+
       {/* Stat Cards */}
       <section className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <StatCard label="累计课次" value={String(report.lessonCount)} sub="已上课程" colorClass="bg-stat-blue-soft" valueColorClass="text-stat-blue" />
+        <StatCard label="累计课次" value={String(lessons.length)} sub={hasDateFilter ? '筛选范围内' : '已上课程'} colorClass="bg-stat-blue-soft" valueColorClass="text-stat-blue" />
         <StatCard label="进门考均分" value={avgEntryScore !== null ? fmt(avgEntryScore) : '--'} sub="满分10分" colorClass="bg-stat-amber-soft" valueColorClass="text-stat-amber" />
-        <StatCard label="课后测试得分率" value={fmtPct(report.avgExitScoreRate)} sub="平均得分率" colorClass="bg-stat-emerald-soft" valueColorClass="text-stat-emerald" />
+        <StatCard label="课后测试得分率" value={fmtPct(filteredAvgExitRate)} sub="平均得分率" colorClass="bg-stat-emerald-soft" valueColorClass="text-stat-emerald" />
         <StatCard label="进步趋势" value={progressTrend !== null ? `${progressTrend >= 0 ? '+' : ''}${progressTrend.toFixed(1)}%` : '--'} sub="前后期得分率对比" colorClass="bg-stat-rose-soft" valueColorClass={progressTrend !== null && progressTrend >= 0 ? 'text-stat-emerald' : 'text-[#e05555]'} />
       </section>
 
@@ -152,7 +180,7 @@ export default async function ParentPage({ params }: PageProps) {
       ) : null}
 
       {/* Exam Results */}
-      {report.recentExams.length > 0 ? (
+      {filteredExams.length > 0 ? (
         <section>
           <SectionTitle title="考试成绩与分析" />
           <div className="mt-4 overflow-x-auto rounded-2xl border border-border-light bg-surface shadow-sm">
@@ -169,7 +197,7 @@ export default async function ParentPage({ params }: PageProps) {
                 </tr>
               </thead>
               <tbody>
-                {report.recentExams.map((item, i) => (
+                {filteredExams.map((item, i) => (
                   <tr key={item.id} className={`border-b border-border-light last:border-b-0 ${i % 2 === 1 ? 'bg-tide/[0.03]' : ''}`}>
                     <td className="px-4 py-3.5 font-serif text-sm font-bold text-tide">{item.exam.examDate}</td>
                     <td className="px-4 py-3.5 font-medium text-ink">{item.exam.name}</td>
@@ -204,15 +232,22 @@ export default async function ParentPage({ params }: PageProps) {
       {/* Weak Points & Teacher Comments Timeline */}
       <section>
         <SectionTitle title="薄弱点与教师评语" color="bg-accent" />
-        {report.topWeakTags.length > 0 ? (
-          <div className="mt-4 flex flex-wrap gap-2">
-            {report.topWeakTags.map((tag) => (
-              <span key={tag.tagName} className="rounded-full bg-accent/10 px-3 py-1 text-xs font-semibold text-accent">
-                {tag.tagName} · {tag.count}
-              </span>
-            ))}
-          </div>
-        ) : null}
+        {(() => {
+          const tagCounts = new Map<string, number>();
+          for (const e of filteredExams) {
+            for (const t of e.tags) tagCounts.set(t.tagName, (tagCounts.get(t.tagName) ?? 0) + 1);
+          }
+          const weakTags = [...tagCounts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 8);
+          return weakTags.length > 0 ? (
+            <div className="mt-4 flex flex-wrap gap-2">
+              {weakTags.map(([tagName, count]) => (
+                <span key={tagName} className="rounded-full bg-accent/10 px-3 py-1 text-xs font-semibold text-accent">
+                  {tagName} · {count}
+                </span>
+              ))}
+            </div>
+          ) : null;
+        })()}
 
         {/* Timeline */}
         <div className="mt-6 border-l-[2.5px] border-border-default pl-5">

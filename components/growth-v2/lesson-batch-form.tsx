@@ -171,10 +171,10 @@ export function GrowthV2LessonBatchForm({
 
   return (
     <form action={action} className="space-y-6">
-      <section className="rounded-2xl border border-tide/10 bg-white/90 p-6 shadow-card">
+      <section className="rounded-2xl border border-border-light bg-surface p-6 shadow-card">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
-            <h2 className="text-xl font-semibold text-tide">{title}</h2>
+            <h2 className="text-xl font-semibold text-ink">{title}</h2>
             <p className="mt-2 text-sm text-ink/70">{description}</p>
           </div>
           <p className="text-sm text-ink/60">{currentGroup ? `${currentGroup.name} · ${entries.length} 人在表单中` : '先选择班组'}</p>
@@ -187,7 +187,7 @@ export function GrowthV2LessonBatchForm({
               name="groupId"
               value={selectedGroupId}
               onChange={(event) => handleGroupChange(event.target.value)}
-              className="mt-1 w-full rounded-lg border border-tide/20 bg-white px-3 py-2 text-sm outline-none focus:border-accent"
+              className="mt-1 w-full rounded-lg border border-border-default bg-white px-3 py-2 text-sm outline-none focus:border-accent"
             >
               <option value="">请选择班组</option>
               {groups.map((group) => (
@@ -203,7 +203,7 @@ export function GrowthV2LessonBatchForm({
               name="lessonDate"
               type="date"
               defaultValue={initialValues?.lessonDate ?? today}
-              className="mt-1 w-full rounded-lg border border-tide/20 bg-white px-3 py-2 text-sm outline-none focus:border-accent"
+              className="mt-1 w-full rounded-lg border border-border-default bg-white px-3 py-2 text-sm outline-none focus:border-accent"
             />
           </label>
           <label className="text-sm text-ink/80">
@@ -213,7 +213,7 @@ export function GrowthV2LessonBatchForm({
               type="text"
               defaultValue={initialValues?.topic ?? ''}
               placeholder="例如：导数单调性与极值"
-              className="mt-1 w-full rounded-lg border border-tide/20 bg-white px-3 py-2 text-sm outline-none focus:border-accent"
+              className="mt-1 w-full rounded-lg border border-border-default bg-white px-3 py-2 text-sm outline-none focus:border-accent"
             />
           </label>
         </div>
@@ -225,7 +225,7 @@ export function GrowthV2LessonBatchForm({
               name="timeStart"
               type="time"
               defaultValue={initialValues?.timeStart ?? ''}
-              className="mt-1 w-full rounded-lg border border-tide/20 bg-white px-3 py-2 text-sm outline-none focus:border-accent"
+              className="mt-1 w-full rounded-lg border border-border-default bg-white px-3 py-2 text-sm outline-none focus:border-accent"
             />
           </label>
           <label className="text-sm text-ink/80">
@@ -234,7 +234,7 @@ export function GrowthV2LessonBatchForm({
               name="timeEnd"
               type="time"
               defaultValue={initialValues?.timeEnd ?? ''}
-              className="mt-1 w-full rounded-lg border border-tide/20 bg-white px-3 py-2 text-sm outline-none focus:border-accent"
+              className="mt-1 w-full rounded-lg border border-border-default bg-white px-3 py-2 text-sm outline-none focus:border-accent"
             />
           </label>
           <label className="text-sm text-ink/80">
@@ -244,7 +244,7 @@ export function GrowthV2LessonBatchForm({
               type="text"
               defaultValue={initialValues?.entryTestTopic ?? ''}
               placeholder="例如：上节课复习"
-              className="mt-1 w-full rounded-lg border border-tide/20 bg-white px-3 py-2 text-sm outline-none focus:border-accent"
+              className="mt-1 w-full rounded-lg border border-border-default bg-white px-3 py-2 text-sm outline-none focus:border-accent"
             />
           </label>
           <label className="text-sm text-ink/80">
@@ -254,7 +254,7 @@ export function GrowthV2LessonBatchForm({
               type="text"
               defaultValue={initialValues?.exitTestTopic ?? ''}
               placeholder="例如：当堂巩固"
-              className="mt-1 w-full rounded-lg border border-tide/20 bg-white px-3 py-2 text-sm outline-none focus:border-accent"
+              className="mt-1 w-full rounded-lg border border-border-default bg-white px-3 py-2 text-sm outline-none focus:border-accent"
             />
           </label>
         </div>
@@ -269,7 +269,7 @@ export function GrowthV2LessonBatchForm({
               step="0.1"
               defaultValue={initialValues?.testTotal ?? ''}
               placeholder="例如：50"
-              className="mt-1 w-full rounded-lg border border-tide/20 bg-white px-3 py-2 text-sm outline-none focus:border-accent"
+              className="mt-1 w-full rounded-lg border border-border-default bg-white px-3 py-2 text-sm outline-none focus:border-accent"
             />
           </label>
           <label className="text-sm text-ink/80 md:col-span-2">
@@ -279,7 +279,7 @@ export function GrowthV2LessonBatchForm({
               type="text"
               defaultValue={initialValues?.homework ?? ''}
               placeholder="例如：课本 112 页第 3、5、8 题"
-              className="mt-1 w-full rounded-lg border border-tide/20 bg-white px-3 py-2 text-sm outline-none focus:border-accent"
+              className="mt-1 w-full rounded-lg border border-border-default bg-white px-3 py-2 text-sm outline-none focus:border-accent"
             />
           </label>
         </div>
@@ -292,7 +292,7 @@ export function GrowthV2LessonBatchForm({
               rows={4}
               defaultValue={initialValues?.keyPoints ?? ''}
               placeholder="记录本节课覆盖的方法、题型和注意点"
-              className="mt-1 w-full rounded-lg border border-tide/20 bg-white px-3 py-2 text-sm outline-none focus:border-accent"
+              className="mt-1 w-full rounded-lg border border-border-default bg-white px-3 py-2 text-sm outline-none focus:border-accent"
             />
           </label>
           <label className="text-sm text-ink/80">
@@ -302,30 +302,30 @@ export function GrowthV2LessonBatchForm({
               rows={4}
               defaultValue={initialValues?.notes ?? ''}
               placeholder="记录课堂节奏、共性问题或家长需要知道的信息"
-              className="mt-1 w-full rounded-lg border border-tide/20 bg-white px-3 py-2 text-sm outline-none focus:border-accent"
+              className="mt-1 w-full rounded-lg border border-border-default bg-white px-3 py-2 text-sm outline-none focus:border-accent"
             />
           </label>
         </div>
       </section>
 
-      <section className="rounded-2xl border border-tide/10 bg-white/90 p-6 shadow-card">
+      <section className="rounded-2xl border border-border-light bg-surface p-6 shadow-card">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
-            <h2 className="text-xl font-semibold text-tide">学生录入</h2>
+            <h2 className="text-xl font-semibold text-ink">学生录入</h2>
             <p className="mt-2 text-sm text-ink/70">本班学生默认全部列出，调课学生可以从下面追加。没有数据的学生会被视为本节未录入。</p>
           </div>
           <p className="text-sm text-ink/60">常驻 {entries.filter((entry) => !entry.isGuest).length} 人 · 调课 {entries.filter((entry) => entry.isGuest).length} 人</p>
         </div>
 
         {selectedGroupId ? (
-          <div className="mt-5 rounded-2xl border border-dashed border-tide/20 bg-paper/40 p-4">
+          <div className="mt-5 rounded-2xl border border-dashed border-border-default bg-surface-alt p-4">
             <div className="grid gap-3 md:grid-cols-[1fr_auto]">
               <label className="text-sm text-ink/80">
                 <span className="font-medium">追加调课学生</span>
                 <select
                   value={guestStudentId}
                   onChange={(event) => setGuestStudentId(event.target.value)}
-                  className="mt-1 w-full rounded-lg border border-tide/20 bg-white px-3 py-2 text-sm outline-none focus:border-accent"
+                  className="mt-1 w-full rounded-lg border border-border-default bg-white px-3 py-2 text-sm outline-none focus:border-accent"
                 >
                   <option value="">请选择其他班组学生</option>
                   {availableGuestStudents.map((student) => (
@@ -339,7 +339,7 @@ export function GrowthV2LessonBatchForm({
                 type="button"
                 onClick={addGuestStudent}
                 disabled={!guestStudentId}
-                className="rounded-lg border border-tide/20 px-4 py-2 text-sm font-medium text-tide transition hover:bg-tide/5 disabled:cursor-not-allowed disabled:opacity-50"
+                className="rounded-lg border border-border-default px-4 py-2 text-sm font-medium text-tide transition hover:bg-tide/5 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 加入调课名单
               </button>
@@ -348,123 +348,117 @@ export function GrowthV2LessonBatchForm({
         ) : null}
 
         {entries.length > 0 ? (
-          <div className="mt-6 overflow-x-auto rounded-2xl border border-tide/10 bg-white">
-            <table className="w-max min-w-full border-collapse text-sm">
-              <thead>
-                <tr className="border-b border-tide/10 bg-paper/60 text-left text-ink/70">
-                  <th className="whitespace-nowrap px-4 py-3 font-medium">学生</th>
-                  <th className="whitespace-nowrap px-4 py-3 font-medium">身份</th>
-                  <th className="whitespace-nowrap px-4 py-3 font-medium">进门考</th>
-                  <th className="whitespace-nowrap px-4 py-3 font-medium">课后测</th>
-                  <th className="whitespace-nowrap px-4 py-3 font-medium">课堂表现</th>
-                  <th className="whitespace-nowrap px-4 py-3 font-medium">掌握度</th>
-                  <th className="whitespace-nowrap px-4 py-3 font-medium">评语</th>
-                  <th className="whitespace-nowrap px-4 py-3 font-medium">操作</th>
-                </tr>
-              </thead>
-              <tbody>
-                {entries.map((entry, index) => (
-                  <tr key={`${entry.id}-${entry.isGuest ? 'guest' : 'home'}`} className="border-b border-tide/10 align-top last:border-b-0">
-                    <td className="min-w-[120px] whitespace-nowrap px-4 py-4">
-                      <input type="hidden" name={`students[${index}].id`} value={entry.id} />
-                      <input type="hidden" name={`students[${index}].isGuest`} value={entry.isGuest ? 'true' : 'false'} />
-                      <p className="font-medium text-tide">{entry.name}</p>
-                      <p className="mt-1 max-w-[160px] truncate text-xs text-ink/55" title={`${entry.gradeLabel || '未填年级'}${entry.homeGroupName ? ` · ${entry.homeGroupName}` : ''}`}>
-                        {entry.gradeLabel || '未填年级'}
-                        {entry.homeGroupName ? ` · ${entry.homeGroupName}` : ''}
-                      </p>
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-4">
-                      <span
-                        className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${
-                          entry.isGuest ? 'bg-[#f7ead5] text-[#f0932b] ring-1 ring-[#f0932b]/30' : 'bg-[#d4f2ea] text-[#00b894] ring-1 ring-[#00b894]/30'
-                        }`}
-                      >
+          <>
+            {/* Desktop table */}
+            <div className="mt-6 hidden overflow-x-auto rounded-2xl border border-border-light bg-surface md:block">
+              <table className="w-max min-w-full border-collapse text-sm">
+                <thead>
+                  <tr className="border-b border-border-light bg-surface-alt text-left text-ink/70">
+                    <th className="whitespace-nowrap px-4 py-3 font-medium">学生</th>
+                    <th className="whitespace-nowrap px-4 py-3 font-medium">身份</th>
+                    <th className="whitespace-nowrap px-4 py-3 font-medium">进门考</th>
+                    <th className="whitespace-nowrap px-4 py-3 font-medium">课后测</th>
+                    <th className="whitespace-nowrap px-4 py-3 font-medium">课堂表现</th>
+                    <th className="whitespace-nowrap px-4 py-3 font-medium">掌握度</th>
+                    <th className="whitespace-nowrap px-4 py-3 font-medium">评语</th>
+                    <th className="whitespace-nowrap px-4 py-3 font-medium">操作</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {entries.map((entry, index) => (
+                    <tr key={`${entry.id}-${entry.isGuest ? 'guest' : 'home'}-desk`} className="border-b border-border-light align-top last:border-b-0">
+                      <td className="min-w-[120px] whitespace-nowrap px-4 py-4">
+                        <p className="font-medium text-ink">{entry.name}</p>
+                        <p className="mt-1 max-w-[160px] truncate text-xs text-ink/55" title={`${entry.gradeLabel || '未填年级'}${entry.homeGroupName ? ` · ${entry.homeGroupName}` : ''}`}>
+                          {entry.gradeLabel || '未填年级'}
+                          {entry.homeGroupName ? ` · ${entry.homeGroupName}` : ''}
+                        </p>
+                      </td>
+                      <td className="whitespace-nowrap px-4 py-4">
+                        <span className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${entry.isGuest ? 'bg-[#f7ead5] text-[#f0932b] ring-1 ring-[#f0932b]/30' : 'bg-[#d4f2ea] text-[#00b894] ring-1 ring-[#00b894]/30'}`}>
+                          {entry.isGuest ? '调课' : '常驻'}
+                        </span>
+                      </td>
+                      <td className="px-4 py-4"><input type="number" step="0.1" min="0" value={entry.entryScore} onChange={(e) => updateEntry(index, 'entryScore', e.target.value)} className="w-24 rounded-lg border border-border-default bg-white px-3 py-2 text-sm outline-none focus:border-accent" /></td>
+                      <td className="px-4 py-4"><input type="number" step="0.1" min="0" value={entry.exitScore} onChange={(e) => updateEntry(index, 'exitScore', e.target.value)} className="w-24 rounded-lg border border-border-default bg-white px-3 py-2 text-sm outline-none focus:border-accent" /></td>
+                      <td className="px-4 py-4">
+                        <select value={entry.performance} onChange={(e) => updateEntry(index, 'performance', e.target.value)} className="w-28 rounded-lg border border-border-default bg-white px-3 py-2 text-sm outline-none focus:border-accent">
+                          <option value="">未填</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option>
+                        </select>
+                      </td>
+                      <td className="px-4 py-4">
+                        <select value={entry.masteryLevel} onChange={(e) => updateEntry(index, 'masteryLevel', e.target.value)} className="w-32 rounded-lg border border-border-default bg-white px-3 py-2 text-sm outline-none focus:border-accent">
+                          <option value="">未填</option>
+                          {GROWTH_V2_MASTERY_OPTIONS.map((opt) => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+                        </select>
+                      </td>
+                      <td className="px-4 py-4"><textarea rows={2} value={entry.comment} onChange={(e) => updateEntry(index, 'comment', e.target.value)} placeholder="例如：公式会背，但二问转化慢" className="min-h-[64px] w-56 rounded-lg border border-border-default bg-white px-3 py-2 text-sm outline-none focus:border-accent" /></td>
+                      <td className="whitespace-nowrap px-4 py-4">
+                        {entry.isGuest ? (
+                          <button type="button" onClick={() => removeGuestStudent(entry.id)} className="rounded-lg border border-[#e05555]/30 px-3 py-1 text-xs font-medium text-[#e05555] transition hover:bg-[#f7dede]">移除</button>
+                        ) : (
+                          <span className="text-xs text-ink/45">常驻学生</span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile card list */}
+            <div className="mt-6 grid gap-4 md:hidden">
+              {entries.map((entry, index) => (
+                <div key={`${entry.id}-${entry.isGuest ? 'guest' : 'home'}-mob`} className="rounded-2xl border border-border-light bg-surface p-4">
+                  <input type="hidden" name={`students[${index}].id`} value={entry.id} />
+                  <input type="hidden" name={`students[${index}].isGuest`} value={entry.isGuest ? 'true' : 'false'} />
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-medium text-ink">{entry.name}</p>
+                      <p className="text-xs text-ink/55">{entry.gradeLabel || '未填年级'}{entry.homeGroupName ? ` · ${entry.homeGroupName}` : ''}</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className={`rounded-full px-3 py-1 text-xs font-medium ${entry.isGuest ? 'bg-[#f7ead5] text-[#f0932b]' : 'bg-[#d4f2ea] text-[#00b894]'}`}>
                         {entry.isGuest ? '调课' : '常驻'}
                       </span>
-                    </td>
-                    <td className="px-4 py-4">
-                      <input
-                        name={`students[${index}].entryScore`}
-                        type="number"
-                        step="0.1"
-                        min="0"
-                        value={entry.entryScore}
-                        onChange={(event) => updateEntry(index, 'entryScore', event.target.value)}
-                        className="w-24 rounded-lg border border-tide/20 bg-white px-3 py-2 text-sm outline-none focus:border-accent"
-                      />
-                    </td>
-                    <td className="px-4 py-4">
-                      <input
-                        name={`students[${index}].exitScore`}
-                        type="number"
-                        step="0.1"
-                        min="0"
-                        value={entry.exitScore}
-                        onChange={(event) => updateEntry(index, 'exitScore', event.target.value)}
-                        className="w-24 rounded-lg border border-tide/20 bg-white px-3 py-2 text-sm outline-none focus:border-accent"
-                      />
-                    </td>
-                    <td className="px-4 py-4">
-                      <select
-                        name={`students[${index}].performance`}
-                        value={entry.performance}
-                        onChange={(event) => updateEntry(index, 'performance', event.target.value)}
-                        className="w-28 rounded-lg border border-tide/20 bg-white px-3 py-2 text-sm outline-none focus:border-accent"
-                      >
-                        <option value="">未填</option>
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                        <option value="5">5</option>
-                      </select>
-                    </td>
-                    <td className="px-4 py-4">
-                      <select
-                        name={`students[${index}].masteryLevel`}
-                        value={entry.masteryLevel}
-                        onChange={(event) => updateEntry(index, 'masteryLevel', event.target.value)}
-                        className="w-32 rounded-lg border border-tide/20 bg-white px-3 py-2 text-sm outline-none focus:border-accent"
-                      >
-                        <option value="">未填</option>
-                        {GROWTH_V2_MASTERY_OPTIONS.map((option) => (
-                          <option key={option.value} value={option.value}>
-                            {option.label}
-                          </option>
-                        ))}
-                      </select>
-                    </td>
-                    <td className="px-4 py-4">
-                      <textarea
-                        name={`students[${index}].comment`}
-                        rows={2}
-                        value={entry.comment}
-                        onChange={(event) => updateEntry(index, 'comment', event.target.value)}
-                        placeholder="例如：公式会背，但二问转化慢"
-                        className="min-h-[64px] w-56 rounded-lg border border-tide/20 bg-white px-3 py-2 text-sm outline-none focus:border-accent"
-                      />
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-4">
                       {entry.isGuest ? (
-                        <button
-                          type="button"
-                          onClick={() => removeGuestStudent(entry.id)}
-                          className="rounded-lg border border-[#e05555]/30 px-3 py-1 text-xs font-medium text-[#e05555] transition hover:bg-[#f7dede]"
-                        >
-                          移除
-                        </button>
-                      ) : (
-                        <span className="text-xs text-ink/45">常驻学生</span>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                        <button type="button" onClick={() => removeGuestStudent(entry.id)} className="rounded-lg border border-[#e05555]/30 px-2 py-1 text-xs text-[#e05555]">移除</button>
+                      ) : null}
+                    </div>
+                  </div>
+                  <div className="mt-3 grid grid-cols-2 gap-3">
+                    <label className="text-xs text-ink/70">
+                      进门考
+                      <input name={`students[${index}].entryScore`} type="number" step="0.1" min="0" value={entry.entryScore} onChange={(e) => updateEntry(index, 'entryScore', e.target.value)} className="mt-1 w-full rounded-lg border border-border-default bg-white px-3 py-2 text-sm outline-none focus:border-accent" />
+                    </label>
+                    <label className="text-xs text-ink/70">
+                      课后测
+                      <input name={`students[${index}].exitScore`} type="number" step="0.1" min="0" value={entry.exitScore} onChange={(e) => updateEntry(index, 'exitScore', e.target.value)} className="mt-1 w-full rounded-lg border border-border-default bg-white px-3 py-2 text-sm outline-none focus:border-accent" />
+                    </label>
+                    <label className="text-xs text-ink/70">
+                      课堂表现
+                      <select name={`students[${index}].performance`} value={entry.performance} onChange={(e) => updateEntry(index, 'performance', e.target.value)} className="mt-1 w-full rounded-lg border border-border-default bg-white px-3 py-2 text-sm outline-none focus:border-accent">
+                        <option value="">未填</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option>
+                      </select>
+                    </label>
+                    <label className="text-xs text-ink/70">
+                      掌握度
+                      <select name={`students[${index}].masteryLevel`} value={entry.masteryLevel} onChange={(e) => updateEntry(index, 'masteryLevel', e.target.value)} className="mt-1 w-full rounded-lg border border-border-default bg-white px-3 py-2 text-sm outline-none focus:border-accent">
+                        <option value="">未填</option>
+                        {GROWTH_V2_MASTERY_OPTIONS.map((opt) => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+                      </select>
+                    </label>
+                  </div>
+                  <label className="mt-3 block text-xs text-ink/70">
+                    评语
+                    <textarea name={`students[${index}].comment`} rows={2} value={entry.comment} onChange={(e) => updateEntry(index, 'comment', e.target.value)} placeholder="例如：公式会背，但二问转化慢" className="mt-1 w-full rounded-lg border border-border-default bg-white px-3 py-2 text-sm outline-none focus:border-accent" />
+                  </label>
+                </div>
+              ))}
+            </div>
+          </>
         ) : (
-          <div className="mt-6 rounded-2xl border border-dashed border-tide/20 bg-paper/40 p-8 text-center text-sm text-ink/60">
+          <div className="mt-6 rounded-2xl border border-dashed border-border-default bg-surface-alt p-8 text-center text-sm text-ink/60">
             请选择一个班组开始录入。
           </div>
         )}

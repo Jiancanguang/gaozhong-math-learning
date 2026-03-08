@@ -14,6 +14,7 @@ import {
 import { GrowthV2AdminErrorBanner, renderGrowthV2AdminGate } from '@/components/growth-v2/admin-access';
 import type { GrowthGroup, GrowthLessonDetail, GrowthStudentListItem } from '@/lib/growth-v2-store';
 import { getGrowthLessonDetailById, isGrowthV2TableMissingError, listGrowthGroups, listGrowthStudents } from '@/lib/growth-v2-store';
+import { firstValue } from '@/lib/growth-v2-format';
 
 type GrowthV2LessonDetailPageProps = {
   params: {
@@ -24,10 +25,6 @@ type GrowthV2LessonDetailPageProps = {
     saved?: string | string[];
   };
 };
-
-function firstValue(value?: string | string[]) {
-  return Array.isArray(value) ? value[0] : value;
-}
 
 function formatNumber(value: number | null, digits = 1) {
   return value === null ? '--' : value.toFixed(digits);
