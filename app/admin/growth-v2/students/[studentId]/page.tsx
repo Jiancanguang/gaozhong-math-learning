@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation';
 import { GrowthV2AdminErrorBanner, renderGrowthV2AdminGate } from '@/components/growth-v2/admin-access';
 import { MasteryBadge } from '@/components/growth-v2/ui/mastery-badge';
 import { SectionTitle } from '@/components/growth-v2/ui/section-title';
+import { StarRating } from '@/components/growth-v2/ui/star-rating';
 import { StatCard } from '@/components/growth-v2/ui/stat-card';
 import { StudentAvatar } from '@/components/growth-v2/ui/student-avatar';
 import { firstValue, fmt, fmtPct, fmtRank } from '@/lib/growth-v2-format';
@@ -291,8 +292,8 @@ export default async function StudentDetailPage({ params, searchParams }: PagePr
                         <span className="text-text-muted">--</span>
                       )}
                     </td>
-                    <td className="px-4 py-3.5 text-text-light">
-                      {item.performance !== null ? `${fmt(item.performance)}` : '--'}
+                    <td className="px-4 py-3.5">
+                      <StarRating value={item.performance} />
                     </td>
                     <td className="px-4 py-3.5">
                       <MasteryBadge value={item.masteryLevel} />
