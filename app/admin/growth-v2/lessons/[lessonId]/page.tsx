@@ -12,6 +12,7 @@ import {
   type GrowthV2LessonFormStudent
 } from '@/components/growth-v2/lesson-batch-form';
 import { GrowthV2AdminErrorBanner, renderGrowthV2AdminGate } from '@/components/growth-v2/admin-access';
+import { StarRating } from '@/components/growth-v2/ui/star-rating';
 import type { GrowthGroup, GrowthLessonDetail, GrowthStudentListItem } from '@/lib/growth-v2-store';
 import { getGrowthLessonDetailById, isGrowthV2TableMissingError, listGrowthGroups, listGrowthStudents } from '@/lib/growth-v2-store';
 import { firstValue } from '@/lib/growth-v2-format';
@@ -175,9 +176,9 @@ export default async function GrowthV2LessonDetailPage({ params, searchParams }:
         </article>
         <article className="rounded-2xl border border-border-light bg-surface p-5 shadow-card">
           <p className="text-sm text-ink/65">平均课堂表现</p>
-          <p className="mt-2 text-3xl font-semibold text-ink">
-            {formatNumber(performanceValues.length ? performanceValues.reduce((sum, value) => sum + value, 0) / performanceValues.length : null)}
-          </p>
+          <div className="mt-2">
+            <StarRating value={performanceValues.length ? performanceValues.reduce((sum, value) => sum + value, 0) / performanceValues.length : null} />
+          </div>
         </article>
       </section>
 
